@@ -29,221 +29,14 @@ FoamFile
 convertToMeters 0.000001;
     """)
     return head
-    
-def generate_vertices(cubic_size, blade_length, blade_hight, blade_thickness, bristles_num, radius, num_points, bristle_length):
-    global global_points_id
-    global_points_id = 0
-    ground_level_points = [
-        [0, 0, 0],
-        [cubic_size / 2 - blade_thickness / 2, 0, 0],
-        [cubic_size / 2 + blade_thickness / 2, 0, 0],
-        [cubic_size, 0, 0],
-        [0, cubic_size / 2 - blade_length / 2, 0],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size / 2 - blade_length / 2, 0],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size / 2 - blade_length / 2, 0],
-        [cubic_size, cubic_size / 2 - blade_length / 2, 0],
-        [0, cubic_size / 2 + blade_length / 2, 0],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size / 2 + blade_length / 2, 0],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size / 2 + blade_length / 2, 0],
-        [cubic_size, cubic_size / 2 + blade_length / 2, 0],
-        [0, cubic_size, 0],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size, 0],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size, 0],
-        [cubic_size, cubic_size, 0]
-    ]
 
-    top_level_points = [
-        [0, 0, cubic_size],
-        [cubic_size / 2 - blade_thickness / 2, 0, cubic_size],
-        [cubic_size / 2 + blade_thickness / 2, 0, cubic_size],
-        [cubic_size, 0, cubic_size],
-        [0, cubic_size / 2 - blade_length / 2, cubic_size],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size / 2 - blade_length / 2, cubic_size],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size / 2 - blade_length / 2, cubic_size],
-        [cubic_size, cubic_size / 2 - blade_length / 2, cubic_size],
-        [0, cubic_size / 2 + blade_length / 2, cubic_size],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size / 2 + blade_length / 2, cubic_size],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size / 2 + blade_length / 2, cubic_size],
-        [cubic_size, cubic_size / 2 + blade_length / 2, cubic_size],
-        [0, cubic_size, cubic_size],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size, cubic_size],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size, cubic_size],
-        [cubic_size, cubic_size, cubic_size]
-    ]
-    
-    
-    center_blade = np.array([cubic_size/2, cubic_size/2, 0])
-    
-    # 生成数据
-    all_points, edge_points = generate_circle_points(radius, num_points)
-    zigzag_points = generate_zigzag_points(edge_points)
-
-    merged_sorted_points = merge_and_sort_points(zigzag_points, edge_points)
-    
-    # plot_sorted_points_and_circle(merged_sorted_points, radius)
-
-    blade_hight_array = np.full((merged_sorted_points.shape[0], 1), blade_hight)
-    bristle_lower_surface = np.hstack((merged_sorted_points, blade_hight_array)) + center_blade
-    
-    bristle_top_surface_array = np.full((merged_sorted_points.shape[0], 1), blade_hight + bristle_length)
-    bristle_top_surface = np.hstack((merged_sorted_points, bristle_top_surface_array)) + center_blade
-    
-    
-    bristle_center_y = []
-    bristle_gap = int(blade_length / bristles_num)
-    for i in range(bristles_num):
-        bristle_center_y.append(bristle_gap / 2 + bristle_gap * i)
-    
-    output_vertices = ["vertices\n(\n"]
-    for i,point in enumerate(ground_level_points):
-        formatted_point = " ".join(format_number(p) for p in point)
-        output_vertices.append(f"    ({formatted_point})      //{i}\n")
-    global_points_id += len(ground_level_points) 
-    
-    unique_x_values = set()
-    unique_y_values = set()
-    existing_points = set()
-    for i,point in enumerate(bristle_lower_surface):
-        formatted_point = " ".join(format_number(p) for p in point)
-        output_vertices.append(f"    ({formatted_point})      //{i+global_points_id}\n")
-        x, y = point[:2]
-        unique_x_values.add(x)
-        unique_y_values.add(y)
-        existing_points.add((x, y))
-    
-    global_points_id += len(bristle_lower_surface)
-    sorted_x_values = sorted(unique_x_values)
-    sorted_y_values = sorted(unique_y_values)
-    grid_x, grid_y = np.meshgrid(sorted_x_values, sorted_y_values)
-    grid_points = np.column_stack((grid_x.ravel(), grid_y.ravel()))
-    filtered_grid_points = [tuple(p) for p in grid_points 
-                            if tuple(p) not in existing_points and np.sqrt((p[0] - cubic_size/2)**2 + (p[1] - cubic_size/2)**2) >= radius]
-    filtered_grid_points = sorted(filtered_grid_points, key=lambda p: (p[0], p[1]))
-    filtered_grid_points = np.array(filtered_grid_points)
-    
-    x_min, y_min = filtered_grid_points.min(axis=0)
-    x_max, y_max = filtered_grid_points.max(axis=0)
-
-    blade_hight_grid_array = np.full((filtered_grid_points.shape[0], 1), blade_hight)
-    bristle_lower_surface_grid = np.hstack((filtered_grid_points, blade_hight_grid_array))
-    
-    bristle_x = [point[0] for point in bristle_lower_surface]
-    bristle_y = [point[1] for point in bristle_lower_surface]
-    # 提取 filtered_grid_points 的 X 和 Y 坐标
-    grid_x = filtered_grid_points[:, 0]
-    grid_y = filtered_grid_points[:, 1]
-
-    # 绘制
-    plt.figure(figsize=(8, 8))
-
-    # 绘制 bristle_lower_surface（红色圆点）
-    plt.scatter(bristle_x, bristle_y, color='red', marker='o', label='bristle_lower_surface')
-
-    # 绘制 filtered_grid_points（蓝色叉号）
-    plt.scatter(grid_x, grid_y, color='blue', marker='x', label='filtered_grid_points')
-
-    # 添加标题和图例
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    plt.title('Bristle Lower Surface and Filtered Grid Points')
-    plt.legend()
-    plt.grid(True)
-
-    # 保存图片到文件
-    plt.savefig("bristle_grid.png", dpi=300, bbox_inches='tight')
-
-    # 关闭图像，避免显示
-    plt.close()
-    
-    blade_top_level_points = [
-        [0, 0, blade_hight],
-        [cubic_size / 2 - blade_thickness / 2, 0, blade_hight],
-        [cubic_size / 2 + blade_thickness / 2, 0, blade_hight],
-        [cubic_size, 0, blade_hight],
-        [0, cubic_size / 2 - blade_length / 2, blade_hight],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size / 2 - blade_length / 2, blade_hight],
-        [x_min, cubic_size / 2 - blade_length / 2, blade_hight],
-        [x_max, cubic_size / 2 - blade_length / 2, blade_hight],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size / 2 - blade_length / 2, blade_hight],
-        [cubic_size, cubic_size / 2 - blade_length / 2, blade_hight],
-        [cubic_size / 2 - blade_thickness / 2, y_min, blade_hight],
-        [cubic_size / 2 + blade_thickness / 2, y_min, blade_hight],
-        [cubic_size / 2 - blade_thickness / 2, y_max, blade_hight],
-        [cubic_size / 2 + blade_thickness / 2, y_max, blade_hight],
-        [0, cubic_size / 2 + blade_length / 2, blade_hight],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size / 2 + blade_length / 2, blade_hight],
-        [x_min, cubic_size / 2 + blade_length / 2, blade_hight],
-        [x_max, cubic_size / 2 + blade_length / 2, blade_hight],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size / 2 + blade_length / 2, blade_hight],
-        [cubic_size, cubic_size / 2 + blade_length / 2, blade_hight],
-        [0, cubic_size, blade_hight],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size, blade_hight],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size, blade_hight],
-        [cubic_size, cubic_size, blade_hight]
-    ]
-        
-    for i,point in enumerate(blade_top_level_points):
-        formatted_point = " ".join(format_number(p) for p in point)
-        output_vertices.append(f"    ({formatted_point})      //{i+global_points_id}\n")
-    global_points_id += len(blade_top_level_points)
-    
-    for i,point in enumerate(bristle_lower_surface_grid):
-        formatted_point = " ".join(format_number(p) for p in point)
-        output_vertices.append(f"    ({formatted_point})      //{i+global_points_id}\n")
-    global_points_id += len(bristle_lower_surface_grid)
-    
-    bristle_top_level_points = [
-        [0, 0, blade_hight + bristle_length],
-        [cubic_size / 2 - blade_thickness / 2, 0, blade_hight + bristle_length],
-        [cubic_size / 2 + blade_thickness / 2, 0, blade_hight + bristle_length],
-        [cubic_size, 0, blade_hight + bristle_length],
-        [0, cubic_size / 2 - blade_length / 2, blade_hight + bristle_length],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size / 2 - blade_length / 2, blade_hight + bristle_length],
-        [x_min, cubic_size / 2 - blade_length / 2, blade_hight + bristle_length],
-        [x_max, cubic_size / 2 - blade_length / 2, blade_hight + bristle_length],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size / 2 - blade_length / 2, blade_hight + bristle_length],
-        [cubic_size, cubic_size / 2 - blade_length / 2, blade_hight + bristle_length],
-        [cubic_size / 2 - blade_thickness / 2, y_min, blade_hight + bristle_length],
-        [cubic_size / 2 + blade_thickness / 2, y_min, blade_hight + bristle_length],
-        [cubic_size / 2 - blade_thickness / 2, y_max, blade_hight + bristle_length],
-        [cubic_size / 2 + blade_thickness / 2, y_max, blade_hight + bristle_length],
-        [0, cubic_size / 2 + blade_length / 2, blade_hight + bristle_length],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size / 2 + blade_length / 2, blade_hight + bristle_length],
-        [x_min, cubic_size / 2 + blade_length / 2, blade_hight + bristle_length],
-        [x_max, cubic_size / 2 + blade_length / 2, blade_hight + bristle_length],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size / 2 + blade_length / 2, blade_hight + bristle_length],
-        [cubic_size, cubic_size / 2 + blade_length / 2, blade_hight + bristle_length],
-        [0, cubic_size, blade_hight + bristle_length],
-        [cubic_size / 2 - blade_thickness / 2, cubic_size, blade_hight + bristle_length],
-        [cubic_size / 2 + blade_thickness / 2, cubic_size, blade_hight + bristle_length],
-        [cubic_size, cubic_size, blade_hight + bristle_length]
-    ]
-    
-    
-    for i,point in enumerate(bristle_top_level_points):
-        formatted_point = " ".join(format_number(p) for p in point)
-        output_vertices.append(f"    ({formatted_point})      //{i+global_points_id}\n")
-    global_points_id += len(bristle_top_level_points)
-    bristle_top_surface_grid_array = np.full((filtered_grid_points.shape[0], 1), blade_hight + bristle_length)
-    bristle_top_surface_grid = np.hstack((filtered_grid_points, bristle_top_surface_grid_array))
-    
-    for i,point in enumerate(bristle_top_surface_grid):
-        formatted_point = " ".join(format_number(p) for p in point)
-        output_vertices.append(f"    ({formatted_point})      //{i+global_points_id}\n")
-    global_points_id += len(bristle_top_surface_grid)
-    
-    for i,point in enumerate(bristle_top_surface):
-        formatted_point = " ".join(format_number(p) for p in point)
-        output_vertices.append(f"    ({formatted_point})      //{i+global_points_id}\n")
-    global_points_id += len(bristle_top_surface)
-    
-    for i,point in enumerate(top_level_points):
-        formatted_point = " ".join(format_number(p) for p in point)
-        output_vertices.append(f"    ({formatted_point})      //{i+global_points_id}\n")
-    output_vertices.append(");\n\n")
-    
-    return output_vertices
-    
+def bristle_points(x_center, y_center, radius):
+    """
+    points[0] 为右上， 1 为右下， 2 为左上， 3 为左下
+    """
+    angles = np.radians([45, -45, 135, -135])
+    points = [[x_center + radius * np.cos(a), y_center + radius * np.sin(a)] for a in angles]
+    return points
 
 def format_number(num):
     """ 格式化数字，保留4位小数，但如果是整数则不保留小数 """
@@ -251,141 +44,295 @@ def format_number(num):
         return "{:.4f}".format(num).rstrip('0').rstrip('.')
     return str(num)
 
-def generate_circle_points(radius, num_points):
-    """ 生成网格内的点，并找到最靠近圆弧的点 """
-    # 生成网格
-    x = np.linspace(-radius, radius, num_points)
-    y = np.linspace(-radius, radius, num_points)
-    grid_x, grid_y = np.meshgrid(x, y)
-    
-    # 筛选出在圆内的点
-    distances = np.sqrt(grid_x**2 + grid_y**2)
-    inside_circle = distances <= radius
-    points = np.column_stack((grid_x[inside_circle], grid_y[inside_circle]))
+class VertexManager:
+    def __init__(self):
+        self.global_points_id = 0
+        self.id_to_vertex = {}  # ID -> 坐标
+        self.vertex_to_id = {}  # 坐标 -> ID（用于反向查询）
+        self.output_list = ["vertices\n(\n"]
 
-    # 记录靠近圆弧的点
-    edge_points = []
-    for x_val in np.unique(points[:, 0]):
-        # 获取当前 x 的所有点
-        col_points = points[points[:, 0] == x_val]
+    def add_vertices(self, points):
+        """添加多个顶点，并自动分配ID"""
+        start_id = self.global_points_id
+        for i, point in enumerate(points):
+            point_tuple = tuple(point)  # 转换为元组，方便作为键
+            self.id_to_vertex[start_id + i] = point_tuple  # ID -> 坐标
+            self.vertex_to_id[point_tuple] = start_id + i  # 坐标 -> ID
+            formatted_point = " ".join(format_number(p) for p in point)
+            self.output_list.append(f"    ({formatted_point})      //{start_id + i}\n")
+        self.global_points_id += len(points)  # 更新全局ID
+        self.output_list.append("\n")
+    
+    def get_vertex(self, point_id):
+        """根据ID获取点坐标"""
+        return self.id_to_vertex.get(point_id, None)
+
+    def get_id_by_xy(self, x, y):
+        """ 通过 (X, Y) 查询匹配的 (Z, ID) 列表 """
+        results = []
+        for (vx, vy, vz), vid in self.vertex_to_id.items():
+            if np.isclose(vx, x) and np.isclose(vy, y):  # 避免浮点数误差
+                results.append((vz, vid))
+        return results if results else None  # 若无匹配返回 None
+
+    def get_output(self):
+        """返回 blockMeshDict 格式的字符串"""
+        self.output_list.append(");\n\n")
+        return "".join(self.output_list)
+
+
+def generate_vertices(cubic_size, radius, bristle_length):
+    center_of_bristle = [cubic_size / 2, cubic_size / 2]
+    inner_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius)
+    out_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius * 3)
+    vertices_manager = VertexManager()
+    
+    root_vertices = [
+        [0, 0, 0],
+        [out_circle_points[3][0], 0, 0],
+        [out_circle_points[1][0], 0, 0],
+        [cubic_size, 0, 0],
+        [0, out_circle_points[3][1], 0],
+        [out_circle_points[3][0], out_circle_points[3][1], 0],
+        [out_circle_points[1][0], out_circle_points[1][1], 0],
+        [cubic_size, out_circle_points[3][1], 0],
+        [inner_circle_points[3][0], inner_circle_points[3][1], 0],
+        [inner_circle_points[1][0], inner_circle_points[1][1], 0],
+        [inner_circle_points[2][0], inner_circle_points[2][1], 0],
+        [inner_circle_points[0][0], inner_circle_points[0][1], 0],
+        [0, out_circle_points[2][1], 0],
+        [out_circle_points[2][0], out_circle_points[2][1], 0],
+        [out_circle_points[0][0], out_circle_points[0][1], 0],
+        [cubic_size, out_circle_points[0][1], 0],
+        [0, cubic_size, 0],
+        [out_circle_points[2][0], cubic_size, 0],
+        [out_circle_points[0][0], cubic_size, 0],
+        [cubic_size, cubic_size, 0],
+    ]
+    length_each_layer = len(root_vertices)
+    vertices_manager.add_vertices(root_vertices)
+    
+    bristle_end_vertices = [
+        [x, y, z + bristle_length] for x, y, z in root_vertices
+        ]
+    vertices_manager.add_vertices(bristle_end_vertices)
+    
+    roof_vertices = [
+        [x, y, z + cubic_size] for x, y, z in root_vertices
+        ]
+    vertices_manager.add_vertices(roof_vertices)
+    
+    return vertices_manager, length_each_layer
+
+def corner_blocks(start_id, length_each_layer, partition_num):
+    block_line = f"    hex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num} {partition_num} 400) simpleGrading(1 1 1)\n"
+    return block_line
+def up_down_blocks(start_id, length_each_layer, partition_num):
+    block_line = f"    hex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num*2} {partition_num} 400) simpleGrading(1 1 1)\n"
+    return block_line
+def left_right_blocks(start_id, length_each_layer, partition_num):
+    block_line = f"    hex ({start_id} {start_id+1} {start_id+9} {start_id+8} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+9} {start_id+length_each_layer+8}) ({partition_num} {partition_num*2} 400) simpleGrading(1 1 1)\n"
+    return block_line
+def circle_blocks(start_id, length_each_layer, partition_num):
+    left_block_line = f"    hex ({start_id} {start_id+3} {start_id+5} {start_id+8} {start_id+length_each_layer} {start_id+3+length_each_layer} {start_id+5+length_each_layer} {start_id+8+length_each_layer}) (13 {partition_num*2} 400) simpleGrading(0.5 1 1)\n"
+    down_block_line = f"    hex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num*2} 13 400) simpleGrading(1 0.5 1)\n"
+    right_block_line = f"    hex ({start_id} {start_id-3} {start_id+5} {start_id+2} {start_id+length_each_layer} {start_id-3+length_each_layer} {start_id+5+length_each_layer} {start_id+2+length_each_layer}) (13 {partition_num*2} 400) simpleGrading(0.5 1 1)\n"
+    up_block_line = f"    hex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num*2} 13 400) simpleGrading(1 0.5 1)\n"
+    return left_block_line, down_block_line, right_block_line, up_block_line
+
+def generate_blocks(length_each_layer):
+    output_blocks = ["blocks\n(\n"]
+    partition_num = 20
+    for k in range(3):
+        points_id = [0, 1, 2, 4, 5, 9, 6, 10, 12, 13, 14]
+        for i in points_id:
+            if i == 0 or i == 2 or i == 12 or i == 14:
+                output_blocks.append(corner_blocks(i + k * length_each_layer, length_each_layer, partition_num))
+            elif i == 4 or i == 6:
+                output_blocks.append(left_right_blocks(i + k * length_each_layer, length_each_layer, partition_num))
+            elif i == 1 or i == 13:
+                output_blocks.append(up_down_blocks(i + k * length_each_layer, length_each_layer, partition_num))
+            elif i == 5:
+                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num)
+                output_blocks.append(left_block_line)
+                output_blocks.append(down_block_line)
+            elif i == 9:
+                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num)
+                output_blocks.append(right_block_line)
+            elif i == 10:
+                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num)
+                output_blocks.append(up_block_line)
+            else:
+                return ValueError
+        output_blocks.append("\n")
+    output_blocks.append(");\n\n")
+    return output_blocks
+    
+def generate_edges(cubic_size, radius, length_each_layer, bristle_length):
+    output_edges = ["edges\n(\n"]
+    z = 0
+    for k in range(3):
+        out_down_arc = f"    arc {5+k*length_each_layer} {6+k*length_each_layer} ({cubic_size/2} {cubic_size/2-radius*3} {z})\n"
+        out_right_arc = f"    arc {6+k*length_each_layer} {14+k*length_each_layer} ({cubic_size/2+radius*3} {cubic_size/2} {z})\n"
+        out_top_arc = f"    arc {14+k*length_each_layer} {13+k*length_each_layer} ({cubic_size/2} {cubic_size/2+radius*3} {z})\n"
+        out_left_arc = f"    arc {13+k*length_each_layer} {5+k*length_each_layer} ({cubic_size/2-radius*3} {cubic_size/2} {z})\n"
+        inner_down_arc = f"    arc {8+k*length_each_layer} {9+k*length_each_layer} ({cubic_size/2} {cubic_size/2-radius} {z})\n"
+        inner_right_arc = f"    arc {9+k*length_each_layer} {11+k*length_each_layer} ({cubic_size/2+radius} {cubic_size/2} {z})\n"
+        inner_top_arc = f"    arc {11+k*length_each_layer} {10+k*length_each_layer} ({cubic_size/2} {cubic_size/2+radius} {z})\n"
+        inner_left_arc = f"    arc {10+k*length_each_layer} {8+k*length_each_layer} ({cubic_size/2-radius} {cubic_size/2} {z})\n"
+        if k == 0:
+            z = bristle_length
+        elif k == 1:
+            z = cubic_size
+        output_edges.append(out_down_arc)
+        output_edges.append(out_right_arc)
+        output_edges.append(out_top_arc)
+        output_edges.append(out_left_arc)
+        output_edges.append(inner_down_arc)
+        output_edges.append(inner_right_arc)
+        output_edges.append(inner_top_arc)
+        output_edges.append(inner_left_arc)
         
-        if len(col_points) > 0:
-            # 按离圆弧的距离排序
-            col_points = col_points[np.argsort(np.abs(np.sqrt(col_points[:, 0]**2 + col_points[:, 1]**2) - radius))]
-            # 取离圆弧最近的两个点
-            edge_points.append(col_points[0])
-            edge_points.append(col_points[1])
-    
-    # 按 y 先排序，再按 x 排序
-    edge_points = sorted(edge_points, key=lambda p: (p[1], p[0]))
+        output_edges.append("\n")
+    output_edges.append(");\n\n")
+    return output_edges
 
-    return points, edge_points
+def generate_patches(length_each_layer):
+    output_patches = ["patches\n(\n"]
+    output_patches.append("    patch bottom\n")
+    output_patches.append("    (\n")
+    bottom_id = [0, 1, 2, 4, 5, 9, 6, 10, 12, 13, 14]
+    for i in bottom_id:
+        if i == 0 or i == 1 or i == 2 or i == 12 or i == 13 or i == 14:
+            output_patches.append(f"        ({i} {i+1} {i+5} {i+4})\n")
+        elif i == 4 or i == 6:
+            output_patches.append(f"        ({i} {i+1} {i+9} {i+8})\n")
+        elif i == 5:
+            output_patches.append(f"        ({i} {i+3} {i+5} {i+8})\n")
+            output_patches.append(f"        ({i} {i+1} {i+4} {i+3})\n")
+        elif i == 9:
+            output_patches.append(f"        ({i} {i-3} {i+5} {i+2})\n")
+        elif i == 10:
+            output_patches.append(f"        ({i} {i+1} {i+4} {i+3})\n")
+    output_patches.append("    )\n\n")
+    
+    top_id = [0, 1, 2, 4, 5, 9, 6, 10, 12, 13, 14]
+    output_patches.append("    patch top\n")
+    output_patches.append("    (\n")
+    for i in top_id:
+        if i == 0 or i == 1 or i == 2 or i == 12 or i == 13 or i == 14:
+            output_patches.append(f"        ({i+length_each_layer*2} {i+1+length_each_layer*2} {i+5+length_each_layer*2} {i+4+length_each_layer*2})\n")
+        elif i == 4 or i == 6:
+            output_patches.append(f"        ({i+length_each_layer*2} {i+1+length_each_layer*2} {i+9+length_each_layer*2} {i+8+length_each_layer*2})\n")
+        elif i == 5:
+            output_patches.append(f"        ({i+length_each_layer*2} {i+3+length_each_layer*2} {i+5+length_each_layer*2} {i+8+length_each_layer*2})\n")
+            output_patches.append(f"        ({i+length_each_layer*2} {i+1+length_each_layer*2} {i+4+length_each_layer*2} {i+3+length_each_layer*2})\n")
+        elif i == 9:
+            output_patches.append(f"        ({i+length_each_layer*2} {i-3+length_each_layer*2} {i+5+length_each_layer*2} {i+2+length_each_layer*2})\n")
+        elif i == 10:
+            output_patches.append(f"        ({i+length_each_layer*2} {i+1+length_each_layer*2} {i+4+length_each_layer*2} {i+3+length_each_layer*2})\n")
+    output_patches.append("    )\n\n")
+    
+    inlet_id = [40, 20, 44, 24, 52, 32]
+    output_patches.append("    patch inlet\n")
+    output_patches.append("    (\n")
+    for i in inlet_id:
+        if i == 40 or i == 20 or i == 52 or i == 32:
+            output_patches.append(f"        ({i} {i-length_each_layer} {i-length_each_layer+4} {i+4})\n")
+        elif i == 44 or i == 24:
+            output_patches.append(f"        ({i} {i-length_each_layer} {i-length_each_layer+8} {i+8})\n")
+    output_patches.append("    )\n\n")
+    
+    outlet_id = [40, 20, 44, 24, 52, 32]
+    output_patches.append("    patch outlet\n")
+    output_patches.append("    (\n")
+    for i in outlet_id:
+        if i == 40 or i == 20 or i == 52 or i == 32:
+            output_patches.append(f"        ({i+3} {i-length_each_layer+3} {i-length_each_layer+7} {i+7})\n")
+        elif i == 44 or i == 24:
+            output_patches.append(f"        ({i+3} {i-length_each_layer+3} {i-length_each_layer+11} {i+11})\n")
+    output_patches.append("    )\n\n")
+    
+    output_patches.append("    patch bristle\n")
+    output_patches.append("    (\n")
+    def patch_line_1(i):
+        return f"        ({i} {i-length_each_layer} {i-length_each_layer+1} {i+1})\n"
+    def patch_line_2(i):
+        return f"        ({i} {i-length_each_layer} {i-length_each_layer+2} {i+2})\n"
+    output_patches.append(patch_line_2(48))
+    output_patches.append(patch_line_2(28))
+    output_patches.append(patch_line_1(48))
+    output_patches.append(patch_line_1(28))
+    output_patches.append(patch_line_2(49))
+    output_patches.append(patch_line_2(29))
+    output_patches.append(patch_line_1(51))
+    output_patches.append(patch_line_1(31))
+    output_patches.append("    )\n\n")
+    
+    output_patches.append("    empty frontAndBackPlanes\n")
+    output_patches.append("    (\n")
+    def empty_line(i):
+        return f"        ({i} {i-length_each_layer} {i-length_each_layer+1} {i+1})\n"
+    empty_id = [40, 20, 41, 21, 42, 22, 56, 36, 36, 57]
+    for i in empty_id:
+        output_patches.append(empty_line(i))
+    output_patches.append("    )\n")
+    
+    output_patches.append(");\n\n")
+    return output_patches
 
-def generate_zigzag_points(edge_points):
-    """ 生成额外的锯齿点 """
-    zigzag_points = []
+def generate_ends():
+    end = textwrap.dedent("""\
+mergePatchPairs
+(
+);
 
-    # 处理成字典，key为x坐标，value为对应y的两个点
-    grouped_points = {}
-    for x, y in edge_points:
-        if x not in grouped_points:
-            grouped_points[x] = []
-        grouped_points[x].append(y)
 
-    # 确保每列只有两个点
-    for x in grouped_points:
-        grouped_points[x] = sorted(grouped_points[x])[:2]
+// ************************************************************************* //
 
-    # 遍历字典，构建锯齿点
-    x_values = sorted(grouped_points.keys())  # 按x排序
-    for i in range(len(x_values) - 1):
-        if x_values[i] < 0:
-            x1, x2 = x_values[i], x_values[i + 1]
-            y1, y2 = grouped_points[x1]  # 当前列的两个y值
-            zigzag_points.append([x2, y1])  # 右侧列的 x2，y1
-            zigzag_points.append([x2, y2])  # 右侧列的 x2，y2
-        elif x_values[i] > 0:
-            x1, x2 = x_values[i], x_values[i + 1]
-            y1, y2 = grouped_points[x2]  # 前一列的两个y值
-            zigzag_points.append([x1, y1])  # 左侧列的 x1，y1
-            zigzag_points.append([x1, y2])  # 左侧列的 x1，y2
-    
-    return zigzag_points
+    """)
+    return end
 
-def merge_and_sort_points(zigzag_points, edge_points):
-    # 合并点集并去重
-    unique_points = set(tuple(point) for point in zigzag_points + edge_points)
-    
-    # angles = np.arctan2(unique_points[:, 1], unique_points[:, 0])
-    # sorted_indices = np.argsort(-angles)
-    # sorted_points = unique_points[sorted_indices]
-    
-    # 按 X 递增排序，若 X 相同则按 Y 递增排序
-    sorted_points = sorted(unique_points, key=lambda p: (p[0], p[1]))
-    
-    return np.array(sorted_points)
-
-def plot_sorted_points_and_circle(sorted_points, radius):
-    """ 绘制 sorted_points 和 圆形轮廓 """
-    fig, ax = plt.subplots(figsize=(8, 8))
-    
-    # 绘制 sorted_points
-    ax.scatter(sorted_points[:, 0], sorted_points[:, 1], c='b', marker='o', s=10, label="Sorted Points")
-    
-    # 绘制圆的轮廓
-    circle = plt.Circle((0, 0), radius, color='r', fill=False, linestyle='dashed', label="Circle Boundary")
-    ax.add_patch(circle)
-    
-    # 设置坐标轴范围
-    ax.set_xlim(-radius - 10, radius + 10)
-    ax.set_ylim(-radius - 10, radius + 10)
-    
-    # 使坐标轴比例相等
-    ax.set_aspect('equal', adjustable='datalim')
-    
-    # 添加网格和图例
-    ax.grid(True, linestyle='--', alpha=0.6)
-    ax.legend()
-    
-    # 设置标题
-    ax.set_title("Sorted Points and Circle Outline")
-    
-    plt.show()
-
-output_file = "blockMeshDict" 
-head = generate_FOAM_head()
-# 参数
-cubic_size = 30000
-blade_length = 10000
-blade_hight = 2500
-blade_thickness = 1000
-bristles_num = 1
-radius = 250
-num_points = 50
-bristle_length = 15000 
-output_vertices = generate_vertices(cubic_size, blade_length, blade_hight, blade_thickness, bristles_num, radius, num_points, bristle_length)
-with open(output_file, 'w') as file:
-        file.write(head)
-        file.write("".join(output_vertices))
-
-def extract_vertices(output_vertices):
+def extract_vertices(vertices_manager):
+    """ 从 blockMeshDict 解析出顶点坐标 """
     vertices = []
     pattern = r"\(\s*([\d\.\-]+)\s+([\d\.\-]+)\s+([\d\.\-]+)\s*\)"  # 正则匹配 ( x y z )
-    
-    for line in output_vertices:
+
+    for line in vertices_manager.get_output().split("\n"):  # 修正：确保传入的是字符串
         match = re.search(pattern, line)
         if match:
             x, y, z = map(float, match.groups())
             vertices.append((x, y, z))
-    
+
     return np.array(vertices)
 
-# 假设 output_vertices 已经从用户提供的代码生成
-vertices = extract_vertices(output_vertices)
+# 生成 blockMeshDict 文件
+output_file = "blockMeshDict"
+head = generate_FOAM_head()
+cubic_size = 30000
+bristle_length = 15000
+radius = 250
+
+vertices, length_each_layer = generate_vertices(cubic_size, radius, bristle_length)
+blocks = generate_blocks(length_each_layer)
+edges = generate_edges(cubic_size, radius, length_each_layer, bristle_length)
+patches = generate_patches(length_each_layer)
+end = generate_ends()
+# **修正写入文件的方式**
+with open(output_file, 'w') as file:
+    file.write(head)
+    file.write(vertices.get_output())  # **修正点**
+    file.write("".join(blocks))
+    file.write("".join(edges))
+    file.write("".join(patches))
+    file.write("".join(end))
+
+# 提取顶点数据
+vertices = extract_vertices(vertices)
 
 # 绘制3D散点图
 fig = plt.figure(figsize=(10, 8))
-ax = fig.add_subplot(projection='3d')  # 直接使用 add_subplot(projection='3d')
+ax = fig.add_subplot(projection='3d')
 
 ax.scatter(vertices[:, 0], vertices[:, 1], vertices[:, 2], c='b', marker='o', s=5)
 
