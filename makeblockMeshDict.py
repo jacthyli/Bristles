@@ -59,7 +59,7 @@ class VertexManager:
             self.id_to_vertex[start_id + i] = point_tuple  # ID -> 坐标
             self.vertex_to_id[point_tuple] = start_id + i  # 坐标 -> ID
             formatted_point = " ".join(format_number(p) for p in point)
-            self.output_list.append(f"    ({formatted_point})      //{start_id + i}\n")
+            self.output_list.append(f"\t({formatted_point})      //{start_id + i}\n")
         self.global_points_id += len(points)  # 更新全局ID
         self.output_list.append("\n")
     
@@ -125,25 +125,25 @@ def generate_vertices(cubic_size, radius, bristle_length):
     return vertices_manager, length_each_layer
 
 def corner_blocks(start_id, length_each_layer, partition_num):
-    block_line = f"    hex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num} {partition_num} 400) simpleGrading(1 1 1)\n"
+    block_line = f"\thex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num} {partition_num} 400) simpleGrading (1 1 1)\n"
     return block_line
 def up_down_blocks(start_id, length_each_layer, partition_num):
-    block_line = f"    hex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num*2} {partition_num} 400) simpleGrading(1 1 1)\n"
+    block_line = f"\thex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num*2} {partition_num} 400) simpleGrading (1 1 1)\n"
     return block_line
 def left_right_blocks(start_id, length_each_layer, partition_num):
-    block_line = f"    hex ({start_id} {start_id+1} {start_id+9} {start_id+8} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+9} {start_id+length_each_layer+8}) ({partition_num} {partition_num*2} 400) simpleGrading(1 1 1)\n"
+    block_line = f"\thex ({start_id} {start_id+1} {start_id+9} {start_id+8} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+9} {start_id+length_each_layer+8}) ({partition_num} {partition_num*2} 400) simpleGrading (1 1 1)\n"
     return block_line
 def circle_blocks(start_id, length_each_layer, partition_num):
-    left_block_line = f"    hex ({start_id} {start_id+3} {start_id+5} {start_id+8} {start_id+length_each_layer} {start_id+3+length_each_layer} {start_id+5+length_each_layer} {start_id+8+length_each_layer}) (13 {partition_num*2} 400) simpleGrading(0.5 1 1)\n"
-    down_block_line = f"    hex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num*2} 13 400) simpleGrading(1 0.5 1)\n"
-    right_block_line = f"    hex ({start_id} {start_id-3} {start_id+5} {start_id+2} {start_id+length_each_layer} {start_id-3+length_each_layer} {start_id+5+length_each_layer} {start_id+2+length_each_layer}) (13 {partition_num*2} 400) simpleGrading(0.5 1 1)\n"
-    up_block_line = f"    hex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num*2} 13 400) simpleGrading(1 0.5 1)\n"
+    left_block_line = f"\thex ({start_id} {start_id+3} {start_id+5} {start_id+8} {start_id+length_each_layer} {start_id+3+length_each_layer} {start_id+5+length_each_layer} {start_id+8+length_each_layer}) (13 {partition_num*2} 400) simpleGrading (0.5 1 1)\n"
+    down_block_line = f"\thex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num*2} 13 400) simpleGrading (1 0.5 1)\n"
+    right_block_line = f"\thex ({start_id} {start_id-3} {start_id+5} {start_id+2} {start_id+length_each_layer} {start_id-3+length_each_layer} {start_id+5+length_each_layer} {start_id+2+length_each_layer}) (13 {partition_num*2} 400) simpleGrading (0.5 1 1)\n"
+    up_block_line = f"\thex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num*2} 13 400) simpleGrading (1 0.5 1)\n"
     return left_block_line, down_block_line, right_block_line, up_block_line
 
 def generate_blocks(length_each_layer):
     output_blocks = ["blocks\n(\n"]
     partition_num = 20
-    for k in range(3):
+    for k in range(2):
         points_id = [0, 1, 2, 4, 5, 9, 6, 10, 12, 13, 14]
         for i in points_id:
             if i == 0 or i == 2 or i == 12 or i == 14:
@@ -172,14 +172,14 @@ def generate_edges(cubic_size, radius, length_each_layer, bristle_length):
     output_edges = ["edges\n(\n"]
     z = 0
     for k in range(3):
-        out_down_arc = f"    arc {5+k*length_each_layer} {6+k*length_each_layer} ({cubic_size/2} {cubic_size/2-radius*3} {z})\n"
-        out_right_arc = f"    arc {6+k*length_each_layer} {14+k*length_each_layer} ({cubic_size/2+radius*3} {cubic_size/2} {z})\n"
-        out_top_arc = f"    arc {14+k*length_each_layer} {13+k*length_each_layer} ({cubic_size/2} {cubic_size/2+radius*3} {z})\n"
-        out_left_arc = f"    arc {13+k*length_each_layer} {5+k*length_each_layer} ({cubic_size/2-radius*3} {cubic_size/2} {z})\n"
-        inner_down_arc = f"    arc {8+k*length_each_layer} {9+k*length_each_layer} ({cubic_size/2} {cubic_size/2-radius} {z})\n"
-        inner_right_arc = f"    arc {9+k*length_each_layer} {11+k*length_each_layer} ({cubic_size/2+radius} {cubic_size/2} {z})\n"
-        inner_top_arc = f"    arc {11+k*length_each_layer} {10+k*length_each_layer} ({cubic_size/2} {cubic_size/2+radius} {z})\n"
-        inner_left_arc = f"    arc {10+k*length_each_layer} {8+k*length_each_layer} ({cubic_size/2-radius} {cubic_size/2} {z})\n"
+        out_down_arc = f"\tarc {5+k*length_each_layer} {6+k*length_each_layer} ({cubic_size/2} {cubic_size/2-radius*3} {z})\n"
+        out_right_arc = f"\tarc {6+k*length_each_layer} {14+k*length_each_layer} ({cubic_size/2+radius*3} {cubic_size/2} {z})\n"
+        out_top_arc = f"\tarc {14+k*length_each_layer} {13+k*length_each_layer} ({cubic_size/2} {cubic_size/2+radius*3} {z})\n"
+        out_left_arc = f"\tarc {13+k*length_each_layer} {5+k*length_each_layer} ({cubic_size/2-radius*3} {cubic_size/2} {z})\n"
+        inner_down_arc = f"\tarc {8+k*length_each_layer} {9+k*length_each_layer} ({cubic_size/2} {cubic_size/2-radius} {z})\n"
+        inner_right_arc = f"\tarc {9+k*length_each_layer} {11+k*length_each_layer} ({cubic_size/2+radius} {cubic_size/2} {z})\n"
+        inner_top_arc = f"\tarc {11+k*length_each_layer} {10+k*length_each_layer} ({cubic_size/2} {cubic_size/2+radius} {z})\n"
+        inner_left_arc = f"\tarc {10+k*length_each_layer} {8+k*length_each_layer} ({cubic_size/2-radius} {cubic_size/2} {z})\n"
         if k == 0:
             z = bristle_length
         elif k == 1:
@@ -199,66 +199,66 @@ def generate_edges(cubic_size, radius, length_each_layer, bristle_length):
 
 def generate_patches(length_each_layer):
     output_patches = ["patches\n(\n"]
-    output_patches.append("    patch bottom\n")
-    output_patches.append("    (\n")
+    output_patches.append("\tpatch bottom\n")
+    output_patches.append("\t(\n")
     bottom_id = [0, 1, 2, 4, 5, 9, 6, 10, 12, 13, 14]
     for i in bottom_id:
         if i == 0 or i == 1 or i == 2 or i == 12 or i == 13 or i == 14:
-            output_patches.append(f"        ({i} {i+1} {i+5} {i+4})\n")
+            output_patches.append(f"\t\t({i} {i+1} {i+5} {i+4})\n")
         elif i == 4 or i == 6:
-            output_patches.append(f"        ({i} {i+1} {i+9} {i+8})\n")
+            output_patches.append(f"\t\t({i} {i+1} {i+9} {i+8})\n")
         elif i == 5:
-            output_patches.append(f"        ({i} {i+3} {i+5} {i+8})\n")
-            output_patches.append(f"        ({i} {i+1} {i+4} {i+3})\n")
+            output_patches.append(f"\t\t({i} {i+3} {i+5} {i+8})\n")
+            output_patches.append(f"\t\t({i} {i+1} {i+4} {i+3})\n")
         elif i == 9:
-            output_patches.append(f"        ({i} {i-3} {i+5} {i+2})\n")
+            output_patches.append(f"\t\t({i} {i-3} {i+5} {i+2})\n")
         elif i == 10:
-            output_patches.append(f"        ({i} {i+1} {i+4} {i+3})\n")
-    output_patches.append("    )\n\n")
+            output_patches.append(f"\t\t({i} {i+1} {i+4} {i+3})\n")
+    output_patches.append("\t)\n\n")
     
     top_id = [0, 1, 2, 4, 5, 9, 6, 10, 12, 13, 14]
-    output_patches.append("    patch top\n")
-    output_patches.append("    (\n")
+    output_patches.append("\tpatch top\n")
+    output_patches.append("\t(\n")
     for i in top_id:
         if i == 0 or i == 1 or i == 2 or i == 12 or i == 13 or i == 14:
-            output_patches.append(f"        ({i+length_each_layer*2} {i+1+length_each_layer*2} {i+5+length_each_layer*2} {i+4+length_each_layer*2})\n")
+            output_patches.append(f"\t\t({i+length_each_layer*2} {i+1+length_each_layer*2} {i+5+length_each_layer*2} {i+4+length_each_layer*2})\n")
         elif i == 4 or i == 6:
-            output_patches.append(f"        ({i+length_each_layer*2} {i+1+length_each_layer*2} {i+9+length_each_layer*2} {i+8+length_each_layer*2})\n")
+            output_patches.append(f"\t\t({i+length_each_layer*2} {i+1+length_each_layer*2} {i+9+length_each_layer*2} {i+8+length_each_layer*2})\n")
         elif i == 5:
-            output_patches.append(f"        ({i+length_each_layer*2} {i+3+length_each_layer*2} {i+5+length_each_layer*2} {i+8+length_each_layer*2})\n")
-            output_patches.append(f"        ({i+length_each_layer*2} {i+1+length_each_layer*2} {i+4+length_each_layer*2} {i+3+length_each_layer*2})\n")
+            output_patches.append(f"\t\t({i+length_each_layer*2} {i+3+length_each_layer*2} {i+5+length_each_layer*2} {i+8+length_each_layer*2})\n")
+            output_patches.append(f"\t\t({i+length_each_layer*2} {i+1+length_each_layer*2} {i+4+length_each_layer*2} {i+3+length_each_layer*2})\n")
         elif i == 9:
-            output_patches.append(f"        ({i+length_each_layer*2} {i-3+length_each_layer*2} {i+5+length_each_layer*2} {i+2+length_each_layer*2})\n")
+            output_patches.append(f"\t\t({i+length_each_layer*2} {i-3+length_each_layer*2} {i+5+length_each_layer*2} {i+2+length_each_layer*2})\n")
         elif i == 10:
-            output_patches.append(f"        ({i+length_each_layer*2} {i+1+length_each_layer*2} {i+4+length_each_layer*2} {i+3+length_each_layer*2})\n")
-    output_patches.append("    )\n\n")
+            output_patches.append(f"\t\t({i+length_each_layer*2} {i+1+length_each_layer*2} {i+4+length_each_layer*2} {i+3+length_each_layer*2})\n")
+    output_patches.append("\t)\n\n")
     
     inlet_id = [40, 20, 44, 24, 52, 32]
-    output_patches.append("    patch inlet\n")
-    output_patches.append("    (\n")
+    output_patches.append("\tpatch inlet\n")
+    output_patches.append("\t(\n")
     for i in inlet_id:
         if i == 40 or i == 20 or i == 52 or i == 32:
-            output_patches.append(f"        ({i} {i-length_each_layer} {i-length_each_layer+4} {i+4})\n")
+            output_patches.append(f"\t\t({i} {i-length_each_layer} {i-length_each_layer+4} {i+4})\n")
         elif i == 44 or i == 24:
-            output_patches.append(f"        ({i} {i-length_each_layer} {i-length_each_layer+8} {i+8})\n")
-    output_patches.append("    )\n\n")
+            output_patches.append(f"\t\t({i} {i-length_each_layer} {i-length_each_layer+8} {i+8})\n")
+    output_patches.append("\t)\n\n")
     
     outlet_id = [40, 20, 44, 24, 52, 32]
-    output_patches.append("    patch outlet\n")
-    output_patches.append("    (\n")
+    output_patches.append("\tpatch outlet\n")
+    output_patches.append("\t(\n")
     for i in outlet_id:
         if i == 40 or i == 20 or i == 52 or i == 32:
-            output_patches.append(f"        ({i+3} {i-length_each_layer+3} {i-length_each_layer+7} {i+7})\n")
+            output_patches.append(f"\t\t({i+3} {i-length_each_layer+3} {i-length_each_layer+7} {i+7})\n")
         elif i == 44 or i == 24:
-            output_patches.append(f"        ({i+3} {i-length_each_layer+3} {i-length_each_layer+11} {i+11})\n")
-    output_patches.append("    )\n\n")
+            output_patches.append(f"\t\t({i+3} {i-length_each_layer+3} {i-length_each_layer+11} {i+11})\n")
+    output_patches.append("\t)\n\n")
     
-    output_patches.append("    patch bristle\n")
-    output_patches.append("    (\n")
+    output_patches.append("\tpatch bristle\n")
+    output_patches.append("\t(\n")
     def patch_line_1(i):
-        return f"        ({i} {i-length_each_layer} {i-length_each_layer+1} {i+1})\n"
+        return f"\t\t({i} {i-length_each_layer} {i-length_each_layer+1} {i+1})\n"
     def patch_line_2(i):
-        return f"        ({i} {i-length_each_layer} {i-length_each_layer+2} {i+2})\n"
+        return f"\t\t({i} {i-length_each_layer} {i-length_each_layer+2} {i+2})\n"
     output_patches.append(patch_line_2(48))
     output_patches.append(patch_line_2(28))
     output_patches.append(patch_line_1(48))
@@ -267,16 +267,16 @@ def generate_patches(length_each_layer):
     output_patches.append(patch_line_2(29))
     output_patches.append(patch_line_1(51))
     output_patches.append(patch_line_1(31))
-    output_patches.append("    )\n\n")
+    output_patches.append("\t)\n\n")
     
-    output_patches.append("    empty frontAndBackPlanes\n")
-    output_patches.append("    (\n")
+    output_patches.append("\tempty frontAndBackPlanes\n")
+    output_patches.append("\t(\n")
     def empty_line(i):
-        return f"        ({i} {i-length_each_layer} {i-length_each_layer+1} {i+1})\n"
-    empty_id = [40, 20, 41, 21, 42, 22, 56, 36, 36, 57]
+        return f"\t\t({i} {i-length_each_layer} {i-length_each_layer+1} {i+1})\n"
+    empty_id = [40, 20, 41, 21, 42, 22, 56, 36, 57, 37, 58, 38]
     for i in empty_id:
         output_patches.append(empty_line(i))
-    output_patches.append("    )\n")
+    output_patches.append("\t)\n")
     
     output_patches.append(");\n\n")
     return output_patches
