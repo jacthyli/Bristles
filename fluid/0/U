@@ -9,26 +9,51 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       pointVectorField;
-    object      pointU;
+    class       volVectorField;
+    location    "0";
+    object      U;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+dimensions      [ 0 1 -1 0 0 0 0 ];
 
-internalField   uniform (0 0 0);
+internalField   uniform ( 0 0 0 );
 
 boundaryField
 {
-    plate
+    outlet
     {
-        type            calculated;
-        value           uniform (0 0 0);
+        type            zeroGradient;
     }
-    plateFix
+    inlet
+    {
+        type            transitionalParabolicVelocity;
+        maxValue        3;
+        n               ( 1 0 0 );
+        y               ( 0 1 0 );
+        transitionPeriod 2;
+        boundBoxMin     ( 0 0 -0.025334 );
+        boundBoxMax     ( 0 0.41 0.025334 );
+        value           uniform ( 0 0 0 );
+    }
+    bristle
+    {
+        type            movingWallVelocity;
+        value           uniform ( 0 0 0 );
+    }
+    bottom
     {
         type            fixedValue;
-        value           uniform (0 0 0);
+        value           uniform ( 0 0 0 );
+    }
+    top
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    frontAndBackPlanes
+    {
+        type            empty;
     }
 }
 

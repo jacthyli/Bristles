@@ -30,7 +30,7 @@ solvers
         scaleCorrection true;
         directSolveCoarsest false;
         cacheAgglomeration true;
-        nCellsInCoarsestLevel 200;
+        nCellsInCoarsestLevel 1000;
         agglomerator    faceAreaPair;
         mergeLevels     1;
     }
@@ -38,10 +38,10 @@ solvers
     cellMotionU
     {
         solver          GAMG;
-        tolerance       1e-09;
+        tolerance       1e-06;
         relTol          0;
         minIter         1;
-        maxIter         200;
+        maxIter         100;
         smoother        GaussSeidel;
         nPreSweeps      0;
         nPostSweeps     2;
@@ -49,7 +49,7 @@ solvers
         scaleCorrection true;
         directSolveCoarsest false;
         cacheAgglomeration true;
-        nCellsInCoarsestLevel 200;
+        nCellsInCoarsestLevel 1000;
         agglomerator    faceAreaPair;
         mergeLevels     1;
     }

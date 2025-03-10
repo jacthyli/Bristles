@@ -15,11 +15,11 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 
-solidPatch plate;
-solidZone plateZone;
+solidPatch cylinder;
+solidZone cylinderZone;
 
-fluidPatch plate;
-fluidZone plateZone;
+fluidPatch cylinder;
+fluidZone cylinderZone;
 
 relaxationFactor 0.05;
 

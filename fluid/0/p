@@ -9,19 +9,48 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    object      dynamicMeshDict;
+    class       volScalarField;
+    location    "0";
+    object      p;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dynamicFvMesh dynamicMotionSolverFvMesh;
+dimensions      [ 0 2 -2 0 0 0 0 ];
 
-solver refVelocityLaplacian;
+internalField   uniform 0;
 
-diffusivity quadratic inverseDistance 1(plate cylinder);
-
-nNonOrthogonalCorrectors 2;
-leastSquaresVolPoint yes;
+boundaryField
+{
+    outlet
+    {
+        type            fixedValue;
+        value           uniform 0;
+    }
+    inlet
+    {
+        type            extrapolatedPressure;
+        value           uniform 0;
+    }
+    bristle
+    {
+        type            extrapolatedPressure;
+        value           uniform 0;
+    }
+    bottom
+    {
+        type            extrapolatedPressure;
+        value           uniform 0;
+    }
+    top
+    {
+        type            extrapolatedPressure;
+        value           uniform 0;
+    }
+    frontAndBackPlanes
+    {
+        type            empty;
+    }
+}
 
 
 // ************************************************************************* //
