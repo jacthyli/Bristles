@@ -84,7 +84,7 @@ class VertexManager:
 def generate_vertices(cubic_size, radius, bristle_length):
     center_of_bristle = [cubic_size / 2, cubic_size / 2]
     inner_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius)
-    out_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius * 3)
+    out_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius * 2)
     vertices_manager = VertexManager()
     
     root_vertices = [
@@ -122,48 +122,72 @@ def generate_vertices(cubic_size, radius, bristle_length):
         ]
     vertices_manager.add_vertices(roof_vertices)
     
+    bristle_center_vertices = [
+        [cubic_size / 2, cubic_size / 2, bristle_length],
+        [cubic_size / 2, cubic_size / 2, cubic_size]
+    ]
+    vertices_manager.add_vertices(bristle_center_vertices)
+    
     return vertices_manager, length_each_layer
 
-def corner_blocks(start_id, length_each_layer, partition_num):
-    block_line = f"\thex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num} {partition_num} 400) simpleGrading (1 1 1)\n"
+def corner_blocks(start_id, length_each_layer, partition_num, Z):
+    block_line = f"\thex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
     return block_line
-def up_down_blocks(start_id, length_each_layer, partition_num):
-    block_line = f"\thex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num*2} {partition_num} 400) simpleGrading (1 1 1)\n"
+def up_down_blocks(start_id, length_each_layer, partition_num, Z):
+    block_line = f"\thex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
     return block_line
-def left_right_blocks(start_id, length_each_layer, partition_num):
-    block_line = f"\thex ({start_id} {start_id+1} {start_id+9} {start_id+8} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+9} {start_id+length_each_layer+8}) ({partition_num} {partition_num*2} 400) simpleGrading (1 1 1)\n"
+def left_right_blocks(start_id, length_each_layer, partition_num, Z):
+    block_line = f"\thex ({start_id} {start_id+1} {start_id+9} {start_id+8} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+9} {start_id+length_each_layer+8}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
     return block_line
-def circle_blocks(start_id, length_each_layer, partition_num):
-    left_block_line = f"\thex ({start_id} {start_id+3} {start_id+5} {start_id+8} {start_id+length_each_layer} {start_id+3+length_each_layer} {start_id+5+length_each_layer} {start_id+8+length_each_layer}) (13 {partition_num*2} 400) simpleGrading (0.5 1 1)\n"
-    down_block_line = f"\thex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num*2} 13 400) simpleGrading (1 0.5 1)\n"
-    right_block_line = f"\thex ({start_id} {start_id-3} {start_id+5} {start_id+2} {start_id+length_each_layer} {start_id-3+length_each_layer} {start_id+5+length_each_layer} {start_id+2+length_each_layer}) (13 {partition_num*2} 400) simpleGrading (0.5 1 1)\n"
-    up_block_line = f"\thex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num*2} 13 400) simpleGrading (1 0.5 1)\n"
+def circle_blocks(start_id, length_each_layer, partition_num, Z):
+    left_block_line = f"\thex ({start_id} {start_id+3} {start_id+5} {start_id+8} {start_id+length_each_layer} {start_id+3+length_each_layer} {start_id+5+length_each_layer} {start_id+8+length_each_layer}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
+    down_block_line = f"\thex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
+    right_block_line = f"\thex ({start_id} {start_id-3} {start_id+5} {start_id+2} {start_id+length_each_layer} {start_id-3+length_each_layer} {start_id+5+length_each_layer} {start_id+2+length_each_layer}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
+    up_block_line = f"\thex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
+    return left_block_line, down_block_line, right_block_line, up_block_line
+
+def bristle_top_blocks(start_id, length_each_layer, partition_num, Z):
+    left_block_line = f"\thex ({start_id+2} {start_id} 60 60 {start_id+length_each_layer+2} {start_id+length_each_layer} 61 61) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
+    down_block_line = f"\thex ({start_id} {start_id+1} 60 60 {start_id+length_each_layer} {start_id+length_each_layer+1} 61 61) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
+    right_block_line = f"\thex ({start_id+1} {start_id+3} 60 60 {start_id+length_each_layer+1} {start_id+length_each_layer+3} 61 61) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
+    up_block_line = f"\thex ({start_id+3} {start_id+2} 60 60 {start_id+length_each_layer+3} {start_id+length_each_layer+2} 61 61) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
     return left_block_line, down_block_line, right_block_line, up_block_line
 
 def generate_blocks(length_each_layer):
     output_blocks = ["blocks\n(\n"]
     partition_num = 20
     for k in range(2):
-        points_id = [0, 1, 2, 4, 5, 9, 6, 10, 12, 13, 14]
+        points_id = [0, 1, 2, 4, 5, 9, 6, 10, 12, 13, 14, 28]
+        if k == 0:
+            Z = 40
+        elif k == 1:
+            Z = 13
         for i in points_id:
             if i == 0 or i == 2 or i == 12 or i == 14:
-                output_blocks.append(corner_blocks(i + k * length_each_layer, length_each_layer, partition_num))
+                output_blocks.append(corner_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z))
             elif i == 4 or i == 6:
-                output_blocks.append(left_right_blocks(i + k * length_each_layer, length_each_layer, partition_num))
+                output_blocks.append(left_right_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z))
             elif i == 1 or i == 13:
-                output_blocks.append(up_down_blocks(i + k * length_each_layer, length_each_layer, partition_num))
+                output_blocks.append(up_down_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z))
             elif i == 5:
-                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num)
+                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z)
                 output_blocks.append(left_block_line)
                 output_blocks.append(down_block_line)
             elif i == 9:
-                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num)
+                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z)
                 output_blocks.append(right_block_line)
             elif i == 10:
-                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num)
+                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z)
                 output_blocks.append(up_block_line)
-            else:
-                return ValueError
+            elif i == 28 and k == 1:
+                output_blocks.append("\n")
+                left_block_line, down_block_line, right_block_line, up_block_line = bristle_top_blocks(i, length_each_layer, partition_num, Z)
+                output_blocks.append(left_block_line)
+                output_blocks.append(down_block_line)
+                output_blocks.append(right_block_line)
+                output_blocks.append(up_block_line)
+            # else:
+            #     return ValueError
         output_blocks.append("\n")
     output_blocks.append(");\n\n")
     return output_blocks
@@ -172,10 +196,10 @@ def generate_edges(cubic_size, radius, length_each_layer, bristle_length):
     output_edges = ["edges\n(\n"]
     z = 0
     for k in range(3):
-        out_down_arc = f"\tarc {5+k*length_each_layer} {6+k*length_each_layer} ({cubic_size/2} {cubic_size/2-radius*3} {z})\n"
-        out_right_arc = f"\tarc {6+k*length_each_layer} {14+k*length_each_layer} ({cubic_size/2+radius*3} {cubic_size/2} {z})\n"
-        out_top_arc = f"\tarc {14+k*length_each_layer} {13+k*length_each_layer} ({cubic_size/2} {cubic_size/2+radius*3} {z})\n"
-        out_left_arc = f"\tarc {13+k*length_each_layer} {5+k*length_each_layer} ({cubic_size/2-radius*3} {cubic_size/2} {z})\n"
+        out_down_arc = f"\t//arc {5+k*length_each_layer} {6+k*length_each_layer} ({cubic_size/2} {cubic_size/2-radius*3} {z})\n"
+        out_right_arc = f"\t//arc {6+k*length_each_layer} {14+k*length_each_layer} ({cubic_size/2+radius*3} {cubic_size/2} {z})\n"
+        out_top_arc = f"\t//arc {14+k*length_each_layer} {13+k*length_each_layer} ({cubic_size/2} {cubic_size/2+radius*3} {z})\n"
+        out_left_arc = f"\t//arc {13+k*length_each_layer} {5+k*length_each_layer} ({cubic_size/2-radius*3} {cubic_size/2} {z})\n"
         inner_down_arc = f"\tarc {8+k*length_each_layer} {9+k*length_each_layer} ({cubic_size/2} {cubic_size/2-radius} {z})\n"
         inner_right_arc = f"\tarc {9+k*length_each_layer} {11+k*length_each_layer} ({cubic_size/2+radius} {cubic_size/2} {z})\n"
         inner_top_arc = f"\tarc {11+k*length_each_layer} {10+k*length_each_layer} ({cubic_size/2} {cubic_size/2+radius} {z})\n"
@@ -230,6 +254,10 @@ def generate_patches(length_each_layer):
         elif i == 9:
             output_patches.append(f"\t\t({i+length_each_layer*2} {i-3+length_each_layer*2} {i+5+length_each_layer*2} {i+2+length_each_layer*2})\n")
         elif i == 10:
+            output_patches.append(f"\t\t({i+length_each_layer*2} {i-2+length_each_layer*2} 61 61)\n")
+            output_patches.append(f"\t\t({i-2+length_each_layer*2} {i-1+length_each_layer*2} 61 61)\n")
+            output_patches.append(f"\t\t({i-1+length_each_layer*2} {i+1+length_each_layer*2} 61 61)\n")
+            output_patches.append(f"\t\t({i+1+length_each_layer*2} {i+length_each_layer*2} 61 61)\n")
             output_patches.append(f"\t\t({i+length_each_layer*2} {i+1+length_each_layer*2} {i+4+length_each_layer*2} {i+3+length_each_layer*2})\n")
     output_patches.append("\t)\n\n")
     
@@ -256,17 +284,17 @@ def generate_patches(length_each_layer):
     output_patches.append("\tpatch bristle\n")
     output_patches.append("\t(\n")
     def patch_line_1(i):
-        return f"\t\t({i} {i-length_each_layer} {i-length_each_layer+1} {i+1})\n"
+        return f"\t\t({i} {i + 1} {i+length_each_layer+1} {i+length_each_layer})\n"
     def patch_line_2(i):
-        return f"\t\t({i} {i-length_each_layer} {i-length_each_layer+2} {i+2})\n"
-    output_patches.append(patch_line_2(48))
-    output_patches.append(patch_line_2(28))
-    output_patches.append(patch_line_1(48))
-    output_patches.append(patch_line_1(28))
-    output_patches.append(patch_line_2(49))
-    output_patches.append(patch_line_2(29))
-    output_patches.append(patch_line_1(51))
-    output_patches.append(patch_line_1(31))
+        return f"\t\t({i} {i + 2} {i+length_each_layer+2} {i+length_each_layer})\n"
+    output_patches.append(patch_line_1(8))
+    output_patches.append(patch_line_2(9))
+    output_patches.append(patch_line_1(10))
+    output_patches.append(patch_line_2(8))
+    output_patches.append(f"\t\t(30 28 60 60)\n")
+    output_patches.append(f"\t\t(28 29 60 60)\n")
+    output_patches.append(f"\t\t(29 31 60 60)\n")
+    output_patches.append(f"\t\t(31 30 60 60)\n")
     output_patches.append("\t)\n\n")
     
     output_patches.append("\tempty frontAndBackPlanes\n")
@@ -309,8 +337,8 @@ def extract_vertices(vertices_manager):
 # 生成 blockMeshDict 文件
 output_file = "blockMeshDict"
 head = generate_FOAM_head()
-cubic_size = 30000
-bristle_length = 15000
+cubic_size = 2000
+bristle_length = 1500
 radius = 250
 
 vertices, length_each_layer = generate_vertices(cubic_size, radius, bristle_length)

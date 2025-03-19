@@ -18,7 +18,7 @@ dynamicFvMesh dynamicMotionSolverFvMesh;
 
 solver refVelocityLaplacian;
 
-diffusivity quadratic inverseDistance 1(plate cylinder);
+diffusivity quadratic inverseDistance 1( bristle );
 
 nNonOrthogonalCorrectors 2;
 leastSquaresVolPoint yes;

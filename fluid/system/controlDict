@@ -54,6 +54,8 @@ adjustTimeStep  no;
 
 maxCo           0.2;
 
+rbfUpdate       true;
+
 functions
 (
    pointHistory
