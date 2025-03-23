@@ -48,7 +48,8 @@ boundaryField
     }
     frontAndBackPlanes
     {
-        type            empty;
+        type            extrapolatedPressure;
+        value           uniform 0;
     }
 }
 

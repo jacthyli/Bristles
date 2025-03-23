@@ -83,8 +83,8 @@ class VertexManager:
 
 def generate_vertices(cubic_size, radius, bristle_length):
     center_of_bristle = [cubic_size / 2, cubic_size / 2]
-    inner_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius)
-    out_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius * 2)
+    inner_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius / 2)
+    out_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius)
     vertices_manager = VertexManager()
     
     root_vertices = [
@@ -122,11 +122,11 @@ def generate_vertices(cubic_size, radius, bristle_length):
         ]
     vertices_manager.add_vertices(roof_vertices)
     
-    bristle_center_vertices = [
-        [cubic_size / 2, cubic_size / 2, bristle_length],
-        [cubic_size / 2, cubic_size / 2, cubic_size]
-    ]
-    vertices_manager.add_vertices(bristle_center_vertices)
+    # bristle_center_vertices = [
+    #     [cubic_size / 2, cubic_size / 2, bristle_length],
+    #     [cubic_size / 2, cubic_size / 2, cubic_size]
+    # ]
+    # vertices_manager.add_vertices(bristle_center_vertices)
     
     return vertices_manager, length_each_layer
 
@@ -342,17 +342,17 @@ bristle_length = 1500
 radius = 250
 
 vertices, length_each_layer = generate_vertices(cubic_size, radius, bristle_length)
-blocks = generate_blocks(length_each_layer)
-edges = generate_edges(cubic_size, radius, length_each_layer, bristle_length)
-patches = generate_patches(length_each_layer)
+# blocks = generate_blocks(length_each_layer)
+# edges = generate_edges(cubic_size, radius, length_each_layer, bristle_length)
+# patches = generate_patches(length_each_layer)
 end = generate_ends()
 # **修正写入文件的方式**
 with open(output_file, 'w') as file:
     file.write(head)
     file.write(vertices.get_output())  # **修正点**
-    file.write("".join(blocks))
-    file.write("".join(edges))
-    file.write("".join(patches))
+    # file.write("".join(blocks))
+    # file.write("".join(edges))
+    # file.write("".join(patches))
     file.write("".join(end))
 
 # 提取顶点数据
