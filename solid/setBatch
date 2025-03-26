@@ -1,2 +1,2 @@
-faceSet plateZone new patchToFace plate
+faceSet bristle_Zone new patchToFace bristle
 quit

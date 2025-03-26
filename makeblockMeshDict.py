@@ -32,9 +32,9 @@ convertToMeters 0.000001;
 
 def bristle_points(x_center, y_center, radius):
     """
-    points[0] 为右上， 1 为右下， 2 为左上， 3 为左下
+    points[0] 为左下， 1 为右下， 2 为右上， 3 为左上
     """
-    angles = np.radians([45, -45, 135, -135])
+    angles = np.radians([-135, -45, 45, 135])
     points = [[x_center + radius * np.cos(a), y_center + radius * np.sin(a)] for a in angles]
     return points
 
@@ -87,108 +87,193 @@ def generate_vertices(cubic_size, radius, bristle_length):
     out_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius)
     vertices_manager = VertexManager()
     
+    # === 1. 生成 root_vertices（Z = 0，不包含 inner_circle_points） ===
     root_vertices = [
         [0, 0, 0],
-        [out_circle_points[3][0], 0, 0],
+        [out_circle_points[0][0], 0, 0],
         [out_circle_points[1][0], 0, 0],
         [cubic_size, 0, 0],
-        [0, out_circle_points[3][1], 0],
-        [out_circle_points[3][0], out_circle_points[3][1], 0],
-        [out_circle_points[1][0], out_circle_points[1][1], 0],
-        [cubic_size, out_circle_points[3][1], 0],
-        [inner_circle_points[3][0], inner_circle_points[3][1], 0],
-        [inner_circle_points[1][0], inner_circle_points[1][1], 0],
-        [inner_circle_points[2][0], inner_circle_points[2][1], 0],
-        [inner_circle_points[0][0], inner_circle_points[0][1], 0],
-        [0, out_circle_points[2][1], 0],
-        [out_circle_points[2][0], out_circle_points[2][1], 0],
+        [0, out_circle_points[0][1], 0],
         [out_circle_points[0][0], out_circle_points[0][1], 0],
-        [cubic_size, out_circle_points[0][1], 0],
+        [out_circle_points[1][0], out_circle_points[1][1], 0],
+        [cubic_size, out_circle_points[1][1], 0],
+        [0, out_circle_points[2][1], 0],
+        [out_circle_points[3][0], out_circle_points[3][1], 0],
+        [out_circle_points[2][0], out_circle_points[2][1], 0],
+        [cubic_size, out_circle_points[3][1], 0],
         [0, cubic_size, 0],
+        [out_circle_points[3][0], cubic_size, 0],
         [out_circle_points[2][0], cubic_size, 0],
-        [out_circle_points[0][0], cubic_size, 0],
         [cubic_size, cubic_size, 0],
     ]
+    
     length_each_layer = len(root_vertices)
     vertices_manager.add_vertices(root_vertices)
-    
-    bristle_end_vertices = [
-        [x, y, z + bristle_length] for x, y, z in root_vertices
-        ]
+
+    # === 2. 生成 bristle_end_vertices（Z = bristle_length，包含 inner_circle_points） ===
+    bristle_end_vertices = [[x, y, bristle_length] for x, y, _ in root_vertices]
+    bristle_end_vertices += [[x, y, bristle_length] for x, y in inner_circle_points]  # 这里添加 inner_circle_points
+
+    # 按 X 方向排序
+    # bristle_end_vertices.sort(key=lambda v: (v[0], v[1]))
+
     vertices_manager.add_vertices(bristle_end_vertices)
-    
-    roof_vertices = [
-        [x, y, z + cubic_size] for x, y, z in root_vertices
-        ]
+
+    # === 3. 生成 roof_vertices（Z = cubic_size，包含 inner_circle_points） ===
+    roof_vertices = [[x, y, cubic_size] for x, y, _ in root_vertices]
+    roof_vertices += [[x, y, cubic_size] for x, y in inner_circle_points]  # 这里添加 inner_circle_points
+
+    # 按 Y 方向排序
+    # roof_vertices.sort(key=lambda v: (v[0], v[1]))
+
     vertices_manager.add_vertices(roof_vertices)
+
+    return vertices_manager, length_each_layer, inner_circle_points, out_circle_points
+
+def find_left_bottom_vertices(vertex_manager, target_z, inner_circle_points, out_circle_points):
+    filtered_points = []
+    for point_id, coords in vertex_manager.id_to_vertex.items():
+        x, y, z = coords
+        if np.isclose(z, target_z):
+            filtered_points.append((x, y, point_id))
+    num_of_points = len(filtered_points)
     
-    # bristle_center_vertices = [
-    #     [cubic_size / 2, cubic_size / 2, bristle_length],
-    #     [cubic_size / 2, cubic_size / 2, cubic_size]
-    # ]
-    # vertices_manager.add_vertices(bristle_center_vertices)
+    if not filtered_points:
+        return []
     
-    return vertices_manager, length_each_layer
+    # 2.1 找出 X 最大的点和 Y 最大的点
+    max_x_point = max(filtered_points, key=lambda item: item[0])
+    max_y_point = max(filtered_points, key=lambda item: item[1])
+    
+    # 2.2 获取 out_circle_points[3]（左下点）的 ID
+    out_lower_left = out_circle_points[0]  # [x, y]
+    out_lower_left_id = None
+    for x, y, point_id in filtered_points:
+        if np.isclose(x, out_lower_left[0]) and np.isclose(y, out_lower_left[1]):
+            out_lower_left_id = point_id
+            break
+    
+    # 2.3 获取 inner_circle_points 所有 4 个点的 ID
+    inner_point_ids = []
+    for inner_point in inner_circle_points:  # 遍历所有 4 个内圈点
+        for x, y, point_id in filtered_points:
+            if np.isclose(x, inner_point[0]) and np.isclose(y, inner_point[1]):
+                inner_point_ids.append(point_id)
+                break
+    
+    # 2.4 构造最终列表
+    result_ids = []
+    for x, y, point_id in filtered_points:
+        # 排除 X 和 Y 最大的点
+        if np.isclose(x, max_x_point[0]) or np.isclose(y, max_y_point[1]):
+            continue
+        # 排除 out_circle_points[3]
+        if point_id == out_lower_left_id:
+            continue
+        # 排除所有 inner_circle_points 的点
+        if point_id in inner_point_ids:
+            continue
+        result_ids.append(point_id)
+    
+    return result_ids, num_of_points
 
-def corner_blocks(start_id, length_each_layer, partition_num, Z):
-    block_line = f"\thex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
-    return block_line
-def up_down_blocks(start_id, length_each_layer, partition_num, Z):
-    block_line = f"\thex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
-    return block_line
-def left_right_blocks(start_id, length_each_layer, partition_num, Z):
-    block_line = f"\thex ({start_id} {start_id+1} {start_id+9} {start_id+8} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+9} {start_id+length_each_layer+8}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
-    return block_line
-def circle_blocks(start_id, length_each_layer, partition_num, Z):
-    left_block_line = f"\thex ({start_id} {start_id+3} {start_id+5} {start_id+8} {start_id+length_each_layer} {start_id+3+length_each_layer} {start_id+5+length_each_layer} {start_id+8+length_each_layer}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
-    down_block_line = f"\thex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
-    right_block_line = f"\thex ({start_id} {start_id-3} {start_id+5} {start_id+2} {start_id+length_each_layer} {start_id-3+length_each_layer} {start_id+5+length_each_layer} {start_id+2+length_each_layer}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
-    up_block_line = f"\thex ({start_id} {start_id+1} {start_id+4} {start_id+3} {start_id+length_each_layer} {start_id+1+length_each_layer} {start_id+4+length_each_layer} {start_id+3+length_each_layer}) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
-    return left_block_line, down_block_line, right_block_line, up_block_line
+def get_specific_circle_points(vertex_manager, target_z, inner_circle_points, out_circle_points):
+    # 1. 筛选出所有Z坐标为target_z的点
+    filtered_points = []
+    for point_id, coords in vertex_manager.id_to_vertex.items():
+        x, y, z = coords
+        if np.isclose(z, target_z):
+            filtered_points.append((x, y, point_id))
+    
+    if not filtered_points:
+        return []
+    
+    # 2. 获取目标点的ID
+    result_ids = []
+    
+    # 2.3 获取 out_circle_points[3]（左下外圈点），并重复一次
+    out_bottom_left = out_circle_points[0]
+    for x, y, point_id in filtered_points:
+        if np.isclose(x, out_bottom_left[0]) and np.isclose(y, out_bottom_left[1]):
+            result_ids.append(point_id)
+            result_ids.append(point_id)  # 重复一次
+            break
+    
+    # 2.2 获取 inner_circle_points[1]（右下内圈点）
+    inner_bottom_right = inner_circle_points[1]
+    for x, y, point_id in filtered_points:
+        if np.isclose(x, inner_bottom_right[0]) and np.isclose(y, inner_bottom_right[1]):
+            result_ids.append(point_id)
+            break
+    
+    # 2.1 获取 inner_circle_points[2]（左上内圈点）
+    inner_top_left = inner_circle_points[3]
+    for x, y, point_id in filtered_points:
+        if np.isclose(x, inner_top_left[0]) and np.isclose(y, inner_top_left[1]):
+            result_ids.append(point_id)
+            break
+    
+    return result_ids
 
-def bristle_top_blocks(start_id, length_each_layer, partition_num, Z):
-    left_block_line = f"\thex ({start_id+2} {start_id} 60 60 {start_id+length_each_layer+2} {start_id+length_each_layer} 61 61) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
-    down_block_line = f"\thex ({start_id} {start_id+1} 60 60 {start_id+length_each_layer} {start_id+length_each_layer+1} 61 61) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
-    right_block_line = f"\thex ({start_id+1} {start_id+3} 60 60 {start_id+length_each_layer+1} {start_id+length_each_layer+3} 61 61) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
-    up_block_line = f"\thex ({start_id+3} {start_id+2} 60 60 {start_id+length_each_layer+3} {start_id+length_each_layer+2} 61 61) ({partition_num} {partition_num} {int(Z)}) simpleGrading (1 1 1)\n"
-    return left_block_line, down_block_line, right_block_line, up_block_line
+def get_all_circle_points_separately(vertex_manager, target_z, inner_circle_points, out_circle_points):
+    # 1. 筛选出所有Z坐标为target_z的点
+    filtered_points = []
+    for point_id, coords in vertex_manager.id_to_vertex.items():
+        x, y, z = coords
+        if np.isclose(z, target_z):
+            filtered_points.append((x, y, point_id))
+    
+    # 2. 初始化存储列表
+    out_circle_ids = []
+    inner_circle_ids = []
+    
+    # 3. 查找外圈4个点的ID（按原始顺序）
+    for out_point in out_circle_points:
+        found = False
+        for x, y, point_id in filtered_points:
+            if np.isclose(x, out_point[0]) and np.isclose(y, out_point[1]):
+                out_circle_ids.append(point_id)
+                found = True
+                break
+        if not found:
+            out_circle_ids.append(None)  # 如果没找到，用None占位
+    
+    # 4. 查找内圈4个点的ID（按原始顺序）
+    for inner_point in inner_circle_points:
+        found = False
+        for x, y, point_id in filtered_points:
+            if np.isclose(x, inner_point[0]) and np.isclose(y, inner_point[1]):
+                inner_circle_ids.append(point_id)
+                found = True
+                break
+        if not found:
+            inner_circle_ids.append(None)  # 如果没找到，用None占位
+    
+    return out_circle_ids, inner_circle_ids
 
-def generate_blocks(length_each_layer):
+def surrounding_blocks(start_id, length_each_layer, partition_XY, partition_Z):
+    block_line = f"\thex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_XY} {partition_XY} {partition_Z}) simpleGrading (1 1 1)\n"
+    return block_line
+
+def generate_blocks(vertices, bristle_length, inner_circle_points, out_circle_points, partition_XY, partition_Z):
     output_blocks = ["blocks\n(\n"]
-    partition_num = 20
-    for k in range(2):
-        points_id = [0, 1, 2, 4, 5, 9, 6, 10, 12, 13, 14, 28]
-        if k == 0:
-            Z = 40
-        elif k == 1:
-            Z = 13
-        for i in points_id:
-            if i == 0 or i == 2 or i == 12 or i == 14:
-                output_blocks.append(corner_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z))
-            elif i == 4 or i == 6:
-                output_blocks.append(left_right_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z))
-            elif i == 1 or i == 13:
-                output_blocks.append(up_down_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z))
-            elif i == 5:
-                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z)
-                output_blocks.append(left_block_line)
-                output_blocks.append(down_block_line)
-            elif i == 9:
-                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z)
-                output_blocks.append(right_block_line)
-            elif i == 10:
-                left_block_line, down_block_line, right_block_line, up_block_line = circle_blocks(i + k * length_each_layer, length_each_layer, partition_num, Z)
-                output_blocks.append(up_block_line)
-            elif i == 28 and k == 1:
-                output_blocks.append("\n")
-                left_block_line, down_block_line, right_block_line, up_block_line = bristle_top_blocks(i, length_each_layer, partition_num, Z)
-                output_blocks.append(left_block_line)
-                output_blocks.append(down_block_line)
-                output_blocks.append(right_block_line)
-                output_blocks.append(up_block_line)
-            # else:
-            #     return ValueError
-        output_blocks.append("\n")
+    root_left_bottom_points, root_points_num = find_left_bottom_vertices(vertices, 0, inner_circle_points, out_circle_points)
+    bristle_top_left_bottom_points, bristle_top_points_num = find_left_bottom_vertices(vertices, bristle_length, inner_circle_points, out_circle_points)
+    
+    for id in root_left_bottom_points:
+        output_blocks.append(surrounding_blocks(id, root_points_num, partition_XY, partition_Z))
+    
+    for id in bristle_top_left_bottom_points:
+        output_blocks.append(surrounding_blocks(id, bristle_top_points_num, partition_XY, partition_Z))
+        
+    quad_groups = [
+    [out_circle_points[0], inner_circle_points[0], inner_circle_points[3], out_circle_points[3]],
+    [out_circle_points[0], out_circle_points[1], inner_circle_points[1], inner_circle_points[0]],
+    [inner_circle_points[1], out_circle_points[1], out_circle_points[2], inner_circle_points[2]],
+    [inner_circle_points[3], inner_circle_points[2], out_circle_points[2], out_circle_points[3]]
+    ]
+    
+    output_blocks.append("\n")
     output_blocks.append(");\n\n")
     return output_blocks
     
@@ -340,34 +425,39 @@ head = generate_FOAM_head()
 cubic_size = 2000
 bristle_length = 1500
 radius = 250
+partition_XY = 5
+partition_Z = 10
 
-vertices, length_each_layer = generate_vertices(cubic_size, radius, bristle_length)
-# blocks = generate_blocks(length_each_layer)
+vertices, length_each_layer, inner_circle_points, out_circle_points = generate_vertices(cubic_size, radius, bristle_length)
+test = get_specific_circle_points(vertices, bristle_length, inner_circle_points, out_circle_points)
+print(test)
+out_circle_ids, inner_circle_ids = get_all_circle_points_separately(vertices, bristle_length, inner_circle_points, out_circle_points)
+blocks = generate_blocks(vertices, bristle_length, inner_circle_points, out_circle_points, partition_XY, partition_Z)
 # edges = generate_edges(cubic_size, radius, length_each_layer, bristle_length)
 # patches = generate_patches(length_each_layer)
 end = generate_ends()
 # **修正写入文件的方式**
-with open(output_file, 'w') as file:
-    file.write(head)
-    file.write(vertices.get_output())  # **修正点**
-    # file.write("".join(blocks))
-    # file.write("".join(edges))
-    # file.write("".join(patches))
-    file.write("".join(end))
+# with open(output_file, 'w') as file:
+#     file.write(head)
+#     file.write(vertices.get_output())  # **修正点**
+#     # file.write("".join(blocks))
+#     # file.write("".join(edges))
+#     # file.write("".join(patches))
+#     file.write("".join(end))
 
 # 提取顶点数据
-vertices = extract_vertices(vertices)
+# vertices = extract_vertices(vertices)
 
-# 绘制3D散点图
-fig = plt.figure(figsize=(10, 8))
-ax = fig.add_subplot(projection='3d')
+# # 绘制3D散点图
+# fig = plt.figure(figsize=(10, 8))
+# ax = fig.add_subplot(projection='3d')
 
-ax.scatter(vertices[:, 0], vertices[:, 1], vertices[:, 2], c='b', marker='o', s=5)
+# ax.scatter(vertices[:, 0], vertices[:, 1], vertices[:, 2], c='b', marker='o', s=5)
 
-# 设置坐标轴标签
-ax.set_xlabel("X Axis")
-ax.set_ylabel("Y Axis")
-ax.set_zlabel("Z Axis")
-ax.set_title("3D Scatter Plot of Extracted Vertices")
+# # 设置坐标轴标签
+# ax.set_xlabel("X Axis")
+# ax.set_ylabel("Y Axis")
+# ax.set_zlabel("Z Axis")
+# ax.set_title("3D Scatter Plot of Extracted Vertices")
 
-plt.show()
+# plt.show()

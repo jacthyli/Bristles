@@ -20,7 +20,7 @@ internalField   uniform (0 0 0);
 
 boundaryField
 {
-    cylinder
+    bristle
     {
         type            tractionDisplacement;
         traction        uniform ( 0 0 0 );
