@@ -120,8 +120,8 @@ def generate_vertices(cubic_size, radius, bristle_length):
     vertices_manager.add_vertices(bristle_end_vertices)
 
     # === 3. 生成 roof_vertices（Z = cubic_size，包含 inner_circle_points） ===
-    roof_vertices = [[x, y, cubic_size] for x, y, _ in root_vertices]
-    roof_vertices += [[x, y, cubic_size] for x, y in inner_circle_points]  # 这里添加 inner_circle_points
+    roof_vertices = [[x, y, bristle_length*4/3] for x, y, _ in root_vertices]
+    roof_vertices += [[x, y, bristle_length*4/3] for x, y in inner_circle_points]  # 这里添加 inner_circle_points
 
     # 按 Y 方向排序
     # roof_vertices.sort(key=lambda v: (v[0], v[1]))
@@ -176,6 +176,31 @@ def find_left_bottom_vertices(vertex_manager, target_z, inner_circle_points, out
         result_ids.append(point_id)
     
     return result_ids, num_of_points
+
+def find_left_bottom_vertices_simple(vertex_manager, target_z):
+    filtered_points = []
+    
+    # 筛选出符合目标 Z 坐标的点
+    for point_id, coords in vertex_manager.id_to_vertex.items():
+        x, y, z = coords
+        if np.isclose(z, target_z):
+            filtered_points.append((x, y, point_id))
+    
+    if not filtered_points:
+        return []
+    
+    # 找到 X 最小的点和 Y 最小的点
+    min_x_point = min(filtered_points, key=lambda item: item[0])  # X 最小
+    min_y_point = min(filtered_points, key=lambda item: item[1])  # Y 最小
+    
+    # 获取 X 或 Y 坐标相同的点
+    left_bottom_ids = [
+        point_id
+        for x, y, point_id in filtered_points
+        if np.isclose(x, min_x_point[0]) or np.isclose(y, min_y_point[1])
+    ]
+    
+    return left_bottom_ids
 
 def get_specific_circle_points(vertex_manager, target_z, inner_circle_points, out_circle_points):
     # 1. 筛选出所有Z坐标为target_z的点
@@ -264,7 +289,7 @@ def generate_blocks(vertices, bristle_length, inner_circle_points, out_circle_po
         output_blocks.append(surrounding_blocks(id, root_points_num, partition_XY, partition_Z))
     
     for id in bristle_top_left_bottom_points:
-        output_blocks.append(surrounding_blocks(id, bristle_top_points_num, partition_XY, partition_Z))
+        output_blocks.append(surrounding_blocks(id, bristle_top_points_num, partition_XY, int(partition_Z/3)))
         
     quad_groups = [
     [out_circle_points[0], inner_circle_points[0], inner_circle_points[3], out_circle_points[3]],
@@ -273,122 +298,98 @@ def generate_blocks(vertices, bristle_length, inner_circle_points, out_circle_po
     [inner_circle_points[3], inner_circle_points[2], out_circle_points[2], out_circle_points[3]]
     ]
     
+    top_patches = []
+    for quad in quad_groups:
+        # 通过 (x, y) 查找 ID，并提取 ID 值
+        ids = []  # Z = bristle_length
+        ids_upper = []  # Z = cubic_size
+        
+        
+        for x, y in quad:
+            matched_points = vertices.get_id_by_xy(x, y)  # 获取 (Z, ID) 列表
+            
+            # 用字典查找 Z 值
+            z_id_map = {z: vid for z, vid in matched_points}
+            
+            if bristle_length in z_id_map and bristle_length*4/3 in z_id_map:
+                ids.append(z_id_map[bristle_length])  # 取 Z = bristle_length 的 ID
+                ids_upper.append(z_id_map[bristle_length*4/3])  # 取 Z = bristle_length*4/3 的 ID
+            else:
+                raise ValueError(f"无法找到点 ({x}, {y}) 在 Z = {bristle_length} 或 Z = {bristle_length*4/3} 的 ID")
+        
+        # 生成 hex 结构的文本
+        hex_line = f"\thex ({ids[0]} {ids[1]} {ids[2]} {ids[3]} {ids_upper[0]} {ids_upper[1]} {ids_upper[2]} {ids_upper[3]}) ({partition_XY} {partition_XY} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+        output_blocks.append(hex_line)
+        top_patches.append(ids_upper)
+    
+    bristle_out_circle_ids, bristle_inner_circle_ids = get_all_circle_points_separately(vertices, bristle_length, inner_circle_points, out_circle_points)
+    top_out_circle_ids, top_inner_circle_ids = get_all_circle_points_separately(vertices, bristle_length*4/3, inner_circle_points, out_circle_points)
+    brislte_center_hex = f"\thex ({bristle_inner_circle_ids[0]} {bristle_inner_circle_ids[1]} {bristle_inner_circle_ids[2]} {bristle_inner_circle_ids[3]} {top_inner_circle_ids[0]} {top_inner_circle_ids[1]} {top_inner_circle_ids[2]} {top_inner_circle_ids[3]}) ({partition_XY} {partition_XY} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+    output_blocks.append(brislte_center_hex)
     output_blocks.append("\n")
     output_blocks.append(");\n\n")
-    return output_blocks
+    return output_blocks, top_patches
     
-def generate_edges(cubic_size, radius, length_each_layer, bristle_length):
+def generate_edges(vertices, cubic_size, bristle_length, inner_circle_points, out_circle_points):
     output_edges = ["edges\n(\n"]
-    z = 0
-    for k in range(3):
-        out_down_arc = f"\t//arc {5+k*length_each_layer} {6+k*length_each_layer} ({cubic_size/2} {cubic_size/2-radius*3} {z})\n"
-        out_right_arc = f"\t//arc {6+k*length_each_layer} {14+k*length_each_layer} ({cubic_size/2+radius*3} {cubic_size/2} {z})\n"
-        out_top_arc = f"\t//arc {14+k*length_each_layer} {13+k*length_each_layer} ({cubic_size/2} {cubic_size/2+radius*3} {z})\n"
-        out_left_arc = f"\t//arc {13+k*length_each_layer} {5+k*length_each_layer} ({cubic_size/2-radius*3} {cubic_size/2} {z})\n"
-        inner_down_arc = f"\tarc {8+k*length_each_layer} {9+k*length_each_layer} ({cubic_size/2} {cubic_size/2-radius} {z})\n"
-        inner_right_arc = f"\tarc {9+k*length_each_layer} {11+k*length_each_layer} ({cubic_size/2+radius} {cubic_size/2} {z})\n"
-        inner_top_arc = f"\tarc {11+k*length_each_layer} {10+k*length_each_layer} ({cubic_size/2} {cubic_size/2+radius} {z})\n"
-        inner_left_arc = f"\tarc {10+k*length_each_layer} {8+k*length_each_layer} ({cubic_size/2-radius} {cubic_size/2} {z})\n"
-        if k == 0:
-            z = bristle_length
-        elif k == 1:
-            z = cubic_size
-        output_edges.append(out_down_arc)
-        output_edges.append(out_right_arc)
-        output_edges.append(out_top_arc)
-        output_edges.append(out_left_arc)
-        output_edges.append(inner_down_arc)
-        output_edges.append(inner_right_arc)
-        output_edges.append(inner_top_arc)
-        output_edges.append(inner_left_arc)
-        
-        output_edges.append("\n")
+    root_out_circle_ids, root_inner_circle_ids = get_all_circle_points_separately(vertices, 0, inner_circle_points, out_circle_points)
+    bristle_out_circle_ids, bristle_inner_circle_ids = get_all_circle_points_separately(vertices, bristle_length, inner_circle_points, out_circle_points)
+    top_out_circle_ids, top_inner_circle_ids = get_all_circle_points_separately(vertices, bristle_length*4/3, inner_circle_points, out_circle_points)
+
+    def edge_generation(ids, z):
+        alpha = 0
+        beta = 0
+        num_points = len(ids)
+        for i in range(num_points):
+            start_id = ids[i]
+            end_id = ids[(i + 1) % num_points]
+            edge_line = f"\tarc {start_id} {end_id} ({cubic_size/2+radius*np.sin(alpha)} {cubic_size/2-radius*np.cos(beta)} {z})\n"
+            alpha += np.pi/2
+            beta += np.pi/2
+            output_edges.append(edge_line)
+    
+    edge_generation(root_out_circle_ids, 0)
+    edge_generation(bristle_out_circle_ids, bristle_length)
+    edge_generation(top_out_circle_ids, bristle_length*4/3)
+    
     output_edges.append(");\n\n")
     return output_edges
 
-def generate_patches(length_each_layer):
+def generate_patches(vertices, inner_circle_points, out_circle_points, top_patches):
     output_patches = ["patches\n(\n"]
     output_patches.append("\tpatch bottom\n")
     output_patches.append("\t(\n")
-    bottom_id = [0, 1, 2, 4, 5, 9, 6, 10, 12, 13, 14]
-    for i in bottom_id:
-        if i == 0 or i == 1 or i == 2 or i == 12 or i == 13 or i == 14:
-            output_patches.append(f"\t\t({i} {i+1} {i+5} {i+4})\n")
-        elif i == 4 or i == 6:
-            output_patches.append(f"\t\t({i} {i+1} {i+9} {i+8})\n")
-        elif i == 5:
-            output_patches.append(f"\t\t({i} {i+3} {i+5} {i+8})\n")
-            output_patches.append(f"\t\t({i} {i+1} {i+4} {i+3})\n")
-        elif i == 9:
-            output_patches.append(f"\t\t({i} {i-3} {i+5} {i+2})\n")
-        elif i == 10:
-            output_patches.append(f"\t\t({i} {i+1} {i+4} {i+3})\n")
+    bottom_ids, root_points_num=find_left_bottom_vertices(vertices, 0, inner_circle_points, out_circle_points)
+    for id in bottom_ids:
+        output_patches.append(f"\t\t({id} {id+1} {id+5} {id+4})\n")
     output_patches.append("\t)\n\n")
     
-    top_id = [0, 1, 2, 4, 5, 9, 6, 10, 12, 13, 14]
     output_patches.append("\tpatch top\n")
     output_patches.append("\t(\n")
-    for i in top_id:
-        if i == 0 or i == 1 or i == 2 or i == 12 or i == 13 or i == 14:
-            output_patches.append(f"\t\t({i+length_each_layer*2} {i+1+length_each_layer*2} {i+5+length_each_layer*2} {i+4+length_each_layer*2})\n")
-        elif i == 4 or i == 6:
-            output_patches.append(f"\t\t({i+length_each_layer*2} {i+1+length_each_layer*2} {i+9+length_each_layer*2} {i+8+length_each_layer*2})\n")
-        elif i == 5:
-            output_patches.append(f"\t\t({i+length_each_layer*2} {i+3+length_each_layer*2} {i+5+length_each_layer*2} {i+8+length_each_layer*2})\n")
-            output_patches.append(f"\t\t({i+length_each_layer*2} {i+1+length_each_layer*2} {i+4+length_each_layer*2} {i+3+length_each_layer*2})\n")
-        elif i == 9:
-            output_patches.append(f"\t\t({i+length_each_layer*2} {i-3+length_each_layer*2} {i+5+length_each_layer*2} {i+2+length_each_layer*2})\n")
-        elif i == 10:
-            output_patches.append(f"\t\t({i+length_each_layer*2} {i-2+length_each_layer*2} 61 61)\n")
-            output_patches.append(f"\t\t({i-2+length_each_layer*2} {i-1+length_each_layer*2} 61 61)\n")
-            output_patches.append(f"\t\t({i-1+length_each_layer*2} {i+1+length_each_layer*2} 61 61)\n")
-            output_patches.append(f"\t\t({i+1+length_each_layer*2} {i+length_each_layer*2} 61 61)\n")
-            output_patches.append(f"\t\t({i+length_each_layer*2} {i+1+length_each_layer*2} {i+4+length_each_layer*2} {i+3+length_each_layer*2})\n")
+    top_left_bottom_points, top_points_num = find_left_bottom_vertices(vertices, bristle_length*4/3, inner_circle_points, out_circle_points)
+    top_out_circle_ids, top_inner_circle_ids = get_all_circle_points_separately(vertices, bristle_length*4/3, inner_circle_points, out_circle_points)
+    for id in top_left_bottom_points:
+        output_patches.append(f"\t\t({id} {id+1} {id+5} {id+4})\n")
+    for i in range(len(top_patches)):
+        output_patches.append(f"\t\t({top_patches[i][0]} {top_patches[i][1]} {top_patches[i][2]} {top_patches[i][3]})\n")
+    output_patches.append(f"\t\t({top_inner_circle_ids[0]} {top_inner_circle_ids[1]} {top_inner_circle_ids[2]} {top_inner_circle_ids[3]})\n")
     output_patches.append("\t)\n\n")
     
     inlet_id = [40, 20, 44, 24, 52, 32]
     output_patches.append("\tpatch inlet\n")
     output_patches.append("\t(\n")
-    for i in inlet_id:
-        if i == 40 or i == 20 or i == 52 or i == 32:
-            output_patches.append(f"\t\t({i} {i-length_each_layer} {i-length_each_layer+4} {i+4})\n")
-        elif i == 44 or i == 24:
-            output_patches.append(f"\t\t({i} {i-length_each_layer} {i-length_each_layer+8} {i+8})\n")
+    
     output_patches.append("\t)\n\n")
     
-    outlet_id = [40, 20, 44, 24, 52, 32]
     output_patches.append("\tpatch outlet\n")
     output_patches.append("\t(\n")
-    for i in outlet_id:
-        if i == 40 or i == 20 or i == 52 or i == 32:
-            output_patches.append(f"\t\t({i+3} {i-length_each_layer+3} {i-length_each_layer+7} {i+7})\n")
-        elif i == 44 or i == 24:
-            output_patches.append(f"\t\t({i+3} {i-length_each_layer+3} {i-length_each_layer+11} {i+11})\n")
     output_patches.append("\t)\n\n")
     
     output_patches.append("\tpatch bristle\n")
-    output_patches.append("\t(\n")
-    def patch_line_1(i):
-        return f"\t\t({i} {i + 1} {i+length_each_layer+1} {i+length_each_layer})\n"
-    def patch_line_2(i):
-        return f"\t\t({i} {i + 2} {i+length_each_layer+2} {i+length_each_layer})\n"
-    output_patches.append(patch_line_1(8))
-    output_patches.append(patch_line_2(9))
-    output_patches.append(patch_line_1(10))
-    output_patches.append(patch_line_2(8))
-    output_patches.append(f"\t\t(30 28 60 60)\n")
-    output_patches.append(f"\t\t(28 29 60 60)\n")
-    output_patches.append(f"\t\t(29 31 60 60)\n")
-    output_patches.append(f"\t\t(31 30 60 60)\n")
     output_patches.append("\t)\n\n")
     
-    output_patches.append("\tempty frontAndBackPlanes\n")
+    output_patches.append("\tpatch frontAndBackPlanes\n")
     output_patches.append("\t(\n")
-    def empty_line(i):
-        return f"\t\t({i} {i-length_each_layer} {i-length_each_layer+1} {i+1})\n"
-    empty_id = [40, 20, 41, 21, 42, 22, 56, 36, 57, 37, 58, 38]
-    for i in empty_id:
-        output_patches.append(empty_line(i))
     output_patches.append("\t)\n")
     
     output_patches.append(");\n\n")
@@ -429,21 +430,18 @@ partition_XY = 5
 partition_Z = 10
 
 vertices, length_each_layer, inner_circle_points, out_circle_points = generate_vertices(cubic_size, radius, bristle_length)
-test = get_specific_circle_points(vertices, bristle_length, inner_circle_points, out_circle_points)
-print(test)
-out_circle_ids, inner_circle_ids = get_all_circle_points_separately(vertices, bristle_length, inner_circle_points, out_circle_points)
-blocks = generate_blocks(vertices, bristle_length, inner_circle_points, out_circle_points, partition_XY, partition_Z)
-# edges = generate_edges(cubic_size, radius, length_each_layer, bristle_length)
-# patches = generate_patches(length_each_layer)
+blocks, top_patches = generate_blocks(vertices, bristle_length, inner_circle_points, out_circle_points, partition_XY, partition_Z)
+edges = generate_edges(vertices, cubic_size, bristle_length, inner_circle_points, out_circle_points)
+patches = generate_patches(vertices, inner_circle_points, out_circle_points, top_patches)
 end = generate_ends()
 # **修正写入文件的方式**
-# with open(output_file, 'w') as file:
-#     file.write(head)
-#     file.write(vertices.get_output())  # **修正点**
-#     # file.write("".join(blocks))
-#     # file.write("".join(edges))
-#     # file.write("".join(patches))
-#     file.write("".join(end))
+with open(output_file, 'w') as file:
+    file.write(head)
+    file.write(vertices.get_output())  # **修正点**
+    file.write("".join(blocks))
+    file.write("".join(edges))
+    file.write("".join(patches))
+    file.write("".join(end))
 
 # 提取顶点数据
 # vertices = extract_vertices(vertices)
