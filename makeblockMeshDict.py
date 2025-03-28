@@ -495,7 +495,6 @@ def generate_patches(vertices, inner_circle_points, out_circle_points, top_patch
     
     output_patches.append("\tpatch frontAndBackPlanes\n")
     output_patches.append("\t(\n")
-    output_patches.append("\t)\n")
     front_left_coner_ids = find_left_bottom_vertices_simple(vertices, 0, "Y")
     for id in front_left_coner_ids:
         if id < (max(front_left_coner_ids) + min(front_left_coner_ids))/2:
@@ -508,6 +507,7 @@ def generate_patches(vertices, inner_circle_points, out_circle_points, top_patch
             output_patches.append(f"\t\t({id} {id+1} {id+root_points_num+1} {id+root_points_num})\n")
         else:
             output_patches.append(f"\t\t({id} {id+1} {id+top_points_num+1} {id+top_points_num})\n")
+    output_patches.append("\t)\n")
     output_patches.append(");\n\n")
     return output_patches
 

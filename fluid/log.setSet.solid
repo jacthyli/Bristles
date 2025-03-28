@@ -1,0 +1,38 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  | For copyright notice see file Copyright         |
+\*---------------------------------------------------------------------------*/
+Build    : 4.0-268bb07d15d8
+Exec     : setSet -case ../solid -batch ../solid/setBatch
+Date     : Mar 28 2025
+Time     : 14:35:55
+Host     : 3c95f7901f0c
+PID      : 928
+CtrlDict : "../solid/system/controlDict"
+Case     : ../solid
+nProcs   : 1
+SigFpe   : Enabling floating point exception trapping (FOAM_SIGFPE).
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = 0
+
+Time:0  cells:1250  faces:3975  points:1496  patches:2  bb:(0.753078 0.753078 0) (1.24692 1.24692 1.5)
+
+Reading commands from file "../solid/setBatch"
+Please type 'help', 'quit' or a set command after prompt.
+Doing:"faceSet bristle_Zone new patchToFace bristle"
+    Set:bristle_Zone  Size:0  Action:new
+    Adding all faces of patch bristle ...
+    Found matching patch bristle with 325 faces.
+    Writing bristle_Zone (size 325) to "constant/polyMesh/sets/bristle_Zone" and to vtk file "VTK/bristle_Zone/bristle_Zone_1.vtk"
+
+Doing:"quit"
+Quitting ...
+
+End
+

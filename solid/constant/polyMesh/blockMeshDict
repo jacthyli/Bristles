@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-convertToMeters 0.000001;
+convertToMeters 0.001;
 vertices
 (
 	(823.2233 823.2233 0)      //0

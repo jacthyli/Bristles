@@ -1,0 +1,96 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  | For copyright notice see file Copyright         |
+\*---------------------------------------------------------------------------*/
+Build    : 4.0-268bb07d15d8
+Exec     : blockMesh -case ../solid
+Date     : Mar 28 2025
+Time     : 14:35:55
+Host     : 3c95f7901f0c
+PID      : 927
+CtrlDict : "../solid/system/controlDict"
+Case     : ../solid
+nProcs   : 1
+SigFpe   : Enabling floating point exception trapping (FOAM_SIGFPE).
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+
+Creating block mesh from
+    "../solid/constant/polyMesh/blockMeshDict"
+
+Creating curved edges
+Creating topology blocks
+Creating topology patches
+
+Reading patches section
+
+Creating block mesh topology
+
+Reading physicalType from existing boundary file
+
+Default patch type set to empty
+
+Check topology
+
+	Basic statistics
+		Number of internal faces : 8
+		Number of boundary faces : 14
+		Number of defined boundary faces : 14
+		Number of undefined boundary faces : 0
+	Checking patch -> block consistency
+
+Creating block offsets
+Creating merge list .
+
+Creating polyMesh from blockMesh
+Creating patches
+Creating cells
+Creating points with scale 0.001
+    Block 0 cell size :
+        i : 0.025 .. 0.025
+        j : 0.0782172 .. 0.0782172
+        k : 0.15 .. 0.15
+
+    Block 1 cell size :
+        i : 0.0782172 .. 0.0782172
+        j : 0.025 .. 0.025
+        k : 0.15 .. 0.15
+
+    Block 2 cell size :
+        i : 0.025 .. 0.025
+        j : 0.0353553 .. 0.0353553
+        k : 0.15 .. 0.15
+
+    Block 3 cell size :
+        i : 0.0353553 .. 0.0353553
+        j : 0.025 .. 0.025
+        k : 0.15 .. 0.15
+
+    Block 4 cell size :
+        i : 0.0353553 .. 0.0353553
+        j : 0.0353553 .. 0.0353553
+        k : 0.15 .. 0.15
+
+
+Writing polyMesh
+----------------
+Mesh Information
+----------------
+  boundingBox: (0.753078 0.753078 0) (1.24692 1.24692 1.5)
+  nPoints: 1496
+  nCells: 1250
+  nFaces: 3975
+  nInternalFaces: 3525
+----------------
+Patches
+----------------
+  patch 0 (start: 3525 size: 325) name: bristle
+  patch 1 (start: 3850 size: 125) name: plateFix
+
+End
+

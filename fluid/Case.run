@@ -1,28 +1,28 @@
 
 BASIC JOB DATA                                  
 Number of processors used                              1
-Number of nodes that were restrained                2041
-Number of equations solved                        244920
-Number of loaded nodes                              5241
+Number of nodes that were restrained                 136
+Number of equations solved                          4080
+Number of loaded nodes                               336
 
 PROGRAM SECTION EXECUTION TIMES                    SECONDS  %TOTAL    
-Load the Structure                              1.131887   13.80
-Set Starting conditions                         0.013821    0.17
+Load the Structure                              0.001330    1.18
+Set Starting conditions                         0.000250    0.22
 
 NEWTON RAPHSON ITERATIONS (1)
 
 PCG ITERATIONS 
 ****
-Gather Displacement Increment                   0.005171    0.06
-Build Stiffness and Mass Matricies              6.545001   79.79
-Set internal Forces                             0.007182    0.09
+Gather Displacement Increment                   0.000104    0.09
+Build Stiffness and Mass Matricies              0.102939   91.59
+Set internal Forces                             0.000119    0.11
 Set Newmark and Residual                        0.000000    0.00
 Build the preconditioner                        0.000000    0.00
 Solve equations                                 0.000000    0.00
-Check convergence                             153.833112 1875.43
+Check convergence                               0.253309  225.37
 
-Total Time in N-R loop                          7.037990   85.80
-Update Velocity and Acceleration                0.002125    0.03
-Gather Data to pass out                         0.016509    0.20
-Total execution time                            8.202571  100.00
+Total Time in N-R loop                          0.110538   98.35
+Update Velocity and Acceleration                0.000019    0.02
+Gather Data to pass out                         0.000248    0.22
+Total execution time                            0.112395  100.00
 

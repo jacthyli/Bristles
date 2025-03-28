@@ -1,0 +1,35 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  | For copyright notice see file Copyright         |
+\*---------------------------------------------------------------------------*/
+Build    : 4.0-268bb07d15d8
+Exec     : setsToZones -case ../solid -noFlipMap
+Date     : Mar 28 2025
+Time     : 14:35:55
+Host     : 3c95f7901f0c
+PID      : 929
+CtrlDict : "../solid/system/controlDict"
+Case     : ../solid
+nProcs   : 1
+SigFpe   : Enabling floating point exception trapping (FOAM_SIGFPE).
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = 0
+
+Searched : "constant/polyMesh/sets"
+Found    : 
+1
+(
+bristle_Zone
+)
+
+
+Adding set bristle_Zone as a faceZone.
+Writing mesh.
+
+End

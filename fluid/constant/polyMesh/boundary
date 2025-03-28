@@ -20,38 +20,38 @@ FoamFile
     bottom
     {
         type            patch;
-        nFaces          4000;
-        startFace       684320;
+        nFaces          200;
+        startFace       8110;
     }
     top
     {
         type            patch;
-        nFaces          5600;
-        startFace       688320;
+        nFaces          325;
+        startFace       8310;
     }
     inlet
     {
         type            patch;
-        nFaces          3180;
-        startFace       693920;
+        nFaces          195;
+        startFace       8635;
     }
     outlet
     {
         type            patch;
-        nFaces          3180;
-        startFace       697100;
+        nFaces          195;
+        startFace       8830;
     }
     bristle
     {
         type            patch;
-        nFaces          4800;
-        startFace       700280;
+        nFaces          325;
+        startFace       9025;
     }
     frontAndBackPlanes
     {
-        type            empty;
-        nFaces          6360;
-        startFace       705080;
+        type            patch;
+        nFaces          390;
+        startFace       9350;
     }
 )
 
