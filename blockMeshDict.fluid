@@ -186,7 +186,6 @@ patches
 
 	patch frontAndBackPlanes
 	(
-	)
 		(0 1 17 16)
 		(1 2 18 17)
 		(2 3 19 18)
@@ -199,6 +198,7 @@ patches
 		(28 29 49 48)
 		(29 30 50 49)
 		(30 31 51 50)
+	)
 );
 
 mergePatchPairs
