@@ -22,13 +22,13 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         0.1;
+endTime         0.01;
 
 deltaT          1e-3;
 
 writeControl    timeStep;
 
-writeInterval   1;
+writeInterval   5;
 
 purgeWrite      0;
 
@@ -47,8 +47,6 @@ runTimeModifiable yes;
 adjustTimeStep  no;
 
 maxCo           0.2;
-
-rbfUpdate       true;
 
 
 // ************************************************************************* //

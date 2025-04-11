@@ -21,6 +21,11 @@ internalField   uniform ( 0 0 0 );
 
 boundaryField
 {
+    bristle
+    {
+        type            movingWallVelocity;
+        value           uniform ( 0 0 0 );
+    }
     outlet
     {
         type            zeroGradient;
@@ -31,14 +36,14 @@ boundaryField
         maxValue        3;
         n               ( 1 0 0 );
         y               ( 0 1 0 );
-        transitionPeriod 1;
+        transitionPeriod 2;
         boundBoxMin     ( 0 0 -0.025334 );
         boundBoxMax     ( 0 0.41 0.025334 );
-        value           uniform (0 0 0);
+        value           uniform ( 0 0 0 );
     }
-    bristle
+    frontAndBackPlanes
     {
-        type            movingWallVelocity;
+        type            fixedValue;
         value           uniform ( 0 0 0 );
     }
     bottom
@@ -47,11 +52,6 @@ boundaryField
         value           uniform ( 0 0 0 );
     }
     top
-    {
-        type            fixedValue;
-        value           uniform ( 0 0 0 );
-    }
-    frontAndBackPlanes
     {
         type            fixedValue;
         value           uniform ( 0 0 0 );

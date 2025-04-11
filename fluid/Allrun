@@ -15,8 +15,7 @@ runApplication -l log.setToZones.solid setsToZones -case ../solid -noFlipMap
 
 cd ../solid
 # cp -rf 0/polyMesh/sets constant/polyMesh/.
-mkdir -p constant/oldPoints
-cp -rf constant/polyMesh constant/oldPoints/
+cp -rf constant/polyMesh constant/oldPoints
 cd ../fluid
 
 
@@ -33,6 +32,6 @@ cd ..
 
 cd fluid
 
-# runApplication $application &
+#runApplication $application &
 
 # ----------------------------------------------------------------- end-of-file

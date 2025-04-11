@@ -16,10 +16,10 @@ FoamFile
 
 
 solidPatch bristle;
-solidZone bristle_Zone;
+solidZone plateZone;
 
 fluidPatch bristle;
-fluidZone bristle_Zone;
+fluidZone plateZone;
 
 relaxationFactor 0.05;
 

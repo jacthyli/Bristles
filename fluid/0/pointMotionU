@@ -21,6 +21,11 @@ internalField   uniform ( 0 0 0 );
 
 boundaryField
 {
+    bristle
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
     outlet
     {
         type            fixedValue;
@@ -31,7 +36,7 @@ boundaryField
         type            fixedValue;
         value           uniform ( 0 0 0 );
     }
-    bristle
+    frontAndBackPlanes
     {
         type            fixedValue;
         value           uniform ( 0 0 0 );
@@ -42,11 +47,6 @@ boundaryField
         value           uniform ( 0 0 0 );
     }
     top
-    {
-        type            fixedValue;
-        value           uniform ( 0 0 0 );
-    }
-    frontAndBackPlanes
     {
         type            fixedValue;
         value           uniform ( 0 0 0 );

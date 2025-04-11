@@ -18,7 +18,7 @@ dynamicFvMesh dynamicMotionSolverFvMesh;
 
 solver refVelocityLaplacian;
 
-diffusivity quadratic inverseDistance 1( bristle );
+diffusivity quadratic inverseDistance (bristle);
 
 nNonOrthogonalCorrectors 2;
 leastSquaresVolPoint yes;

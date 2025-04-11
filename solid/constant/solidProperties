@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// Large Strain
+/// Large Strain
 solidSolver femLargeStrain;
 
 femLargeStrainCoeffs
@@ -36,7 +36,6 @@ femLargeStrainCoeffs
 
     rbfUpdate false;
 }
-
 
 
 

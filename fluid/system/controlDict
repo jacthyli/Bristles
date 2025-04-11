@@ -28,15 +28,15 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         0.1;
+endTime         0.01;
 
 deltaT          1e-3;
 
 writeControl    timeStep;
 
-writeInterval   1;
+writeInterval   5;
 
-purgeWrite      20;
+purgeWrite      0;
 
 writeFormat     ascii;
 
@@ -54,8 +54,6 @@ adjustTimeStep  no;
 
 maxCo           0.2;
 
-rbfUpdate       true;
-
 functions
 (
    pointHistory
@@ -70,14 +68,14 @@ functions
         refHistoryPoint (0.6 0.2 0.025334);
    }
 
-//   hronTurekReport
-//   {
-//       type hronTurekReport;
-//       functionObjectLibs
-//       (
-//         "libhronTurekReport.so"
-//       );
-//   }
+   //hronTurekReport
+   //{
+   //    type hronTurekReport;
+   //    functionObjectLibs
+   //    (
+   //      "libhronTurekReport.so"
+   //    );
+   //}
 );
 
 

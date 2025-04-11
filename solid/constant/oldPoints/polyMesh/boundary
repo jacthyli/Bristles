@@ -20,14 +20,14 @@ FoamFile
     bristle
     {
         type            patch;
-        nFaces          325;
-        startFace       3525;
+        nFaces          13;
+        startFace       21;
     }
     plateFix
     {
         type            patch;
-        nFaces          125;
-        startFace       3850;
+        nFaces          5;
+        startFace       34;
     }
 )
 
