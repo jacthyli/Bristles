@@ -80,32 +80,65 @@ class VertexManager:
         self.output_list.append(");\n\n")
         return "".join(self.output_list)
 
-
-def generate_vertices(cubic_size, radius, bristle_length):
-    center_of_bristle = [cubic_size / 2, cubic_size / 2]
-    inner_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius / 2)
-    out_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius)
+def generate_vertices(cubic_size, radius, bristle_length, num_bristles, bristle_gap, root_block_hight, root_block_length, root_block_width):
     vertices_manager = VertexManager()
+    inner_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius / 2)
     
-    # === 1. 生成 root_vertices（Z = 0，不包含 inner_circle_points） ===
-    root_vertices = [
+    bottom_vertices = [
         [0, 0, 0],
-        [out_circle_points[0][0], 0, 0],
-        [out_circle_points[1][0], 0, 0],
+        [cubic_size/2-root_block_width, 0, 0],
+        [cubic_size/2+root_block_width, 0, 0],
         [cubic_size, 0, 0],
-        [0, out_circle_points[0][1], 0],
-        [out_circle_points[0][0], out_circle_points[0][1], 0],
-        [out_circle_points[1][0], out_circle_points[1][1], 0],
-        [cubic_size, out_circle_points[1][1], 0],
-        [0, out_circle_points[2][1], 0],
-        [out_circle_points[3][0], out_circle_points[3][1], 0],
-        [out_circle_points[2][0], out_circle_points[2][1], 0],
-        [cubic_size, out_circle_points[3][1], 0],
+        [0, cubic_size/2-root_block_length, 0],
+        [cubic_size/2-root_block_width, cubic_size/2-root_block_length, 0],
+        [cubic_size/2+root_block_width, cubic_size/2-root_block_length, 0],
+        [cubic_size, cubic_size/2-root_block_length, 0],
+        [0, cubic_size/2+root_block_length, 0],
+        [cubic_size/2-root_block_width, cubic_size/2+root_block_length, 0],
+        [cubic_size/2+root_block_width, cubic_size/2+root_block_length, 0],
+        [cubic_size, cubic_size/2+root_block_length, 0],
         [0, cubic_size, 0],
-        [out_circle_points[3][0], cubic_size, 0],
-        [out_circle_points[2][0], cubic_size, 0],
+        [cubic_size/2-root_block_width, cubic_size, 0],
+        [cubic_size/2+root_block_width, cubic_size, 0],
         [cubic_size, cubic_size, 0]
     ]
+    
+    vertices_manager.add_vertices(bottom_vertices)
+    
+    # === 1. 生成 root_vertices（Z = 0，不包含 inner_circle_points） ===
+    root_vertices = [[x, y, root_block_hight] for x, y, _ in bottom_vertices]
+    center_of_bristle = [cubic_size / 2, cubic_size / 2]
+    out_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius)
+    
+    add_middle_vertices = [
+        [out_circle_points[0][0], out_circle_points[0][1], root_block_hight],
+        [out_circle_points[1][0], out_circle_points[1][1], root_block_hight],
+        [out_circle_points[3][0], out_circle_points[3][1], root_block_hight],
+        [out_circle_points[2][0], out_circle_points[2][1], root_block_hight],
+        [cubic_size/2-root_block_width, cubic_size / 2 + bristle_gap / 2, root_block_hight],
+        [cubic_size/2+root_block_width, cubic_size / 2 + bristle_gap / 2, root_block_hight],
+        [cubic_size/2-root_block_width, cubic_size / 2 - bristle_gap / 2, root_block_hight],
+        [cubic_size/2+root_block_width, cubic_size / 2 - bristle_gap / 2, root_block_hight]
+    ]
+    root_vertices.append(add_middle_vertices)
+    count = 2
+    for i in range(1, num_bristles, -1):
+        # 奇数往下，偶数往上
+        center_of_bristle = [cubic_size / 2 + np.cos(i*np.pi) * count * bristle_gap, cubic_size / 2 + np.cos(i*np.pi) * count * bristle_gap]
+        out_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius)
+        
+        add_rest_vertices = [
+            [out_circle_points[0][0], out_circle_points[0][1], root_block_hight],
+            [out_circle_points[1][0], out_circle_points[1][1], root_block_hight],
+            [out_circle_points[3][0], out_circle_points[3][1], root_block_hight],
+            [out_circle_points[2][0], out_circle_points[2][1], root_block_hight],
+            [cubic_size/2-root_block_width, cubic_size / 2 + np.cos(i*np.pi) * count * 3 / 2 * bristle_gap, root_block_hight],
+            [cubic_size/2+root_block_width, cubic_size / 2 + np.cos(i*np.pi) * count * 3 / 2 * bristle_gap, root_block_hight]
+            
+        ]
+        if i % 2 == 1 and i != 0:
+            count -= 1
+        root_vertices.append(add_rest_vertices)
     
     vertices_manager.add_vertices(root_vertices)
 
@@ -356,13 +389,19 @@ def generate_solid_blocks(vertices, bristle_length, inner_circle_points, out_cir
         
     quad_groups = [
     [out_circle_points[0], inner_circle_points[0], inner_circle_points[3], out_circle_points[3]],
-    [out_circle_points[0], out_circle_points[1], inner_circle_points[1], inner_circle_points[0]],
-    [inner_circle_points[1], out_circle_points[1], out_circle_points[2], inner_circle_points[2]],
-    [inner_circle_points[3], inner_circle_points[2], out_circle_points[2], out_circle_points[3]]
+    [out_circle_points[1], inner_circle_points[1], inner_circle_points[0], out_circle_points[0]],
+    [out_circle_points[2], inner_circle_points[2], inner_circle_points[1], out_circle_points[1]],
+    [out_circle_points[3], inner_circle_points[3], inner_circle_points[2], out_circle_points[2]]
     ]
     
     bottom_patches = []
     bristle_top_patches = []
+    
+    bristle_out_circle_ids, bristle_inner_circle_ids = get_all_circle_points_separately(vertices, bristle_length, inner_circle_points, out_circle_points)
+    root_out_circle_ids, root_inner_circle_ids = get_all_circle_points_separately(vertices, 0, inner_circle_points, out_circle_points)
+    brislte_center_hex = f"\thex ({root_inner_circle_ids[0]} {root_inner_circle_ids[1]} {root_inner_circle_ids[2]} {root_inner_circle_ids[3]} {bristle_inner_circle_ids[0]} {bristle_inner_circle_ids[1]} {bristle_inner_circle_ids[2]} {bristle_inner_circle_ids[3]}) ({partition_XY} {partition_XY} {partition_Z}) simpleGrading (1 1 1)\n"
+    output_blocks.append(brislte_center_hex)
+    
     for quad in quad_groups:
         # 通过 (x, y) 查找 ID，并提取 ID 值
         ids = []  # Z = bristle_length
@@ -386,10 +425,6 @@ def generate_solid_blocks(vertices, bristle_length, inner_circle_points, out_cir
         bottom_patches.append(ids)
         bristle_top_patches.append(ids_upper)
     
-    bristle_out_circle_ids, bristle_inner_circle_ids = get_all_circle_points_separately(vertices, bristle_length, inner_circle_points, out_circle_points)
-    root_out_circle_ids, root_inner_circle_ids = get_all_circle_points_separately(vertices, 0, inner_circle_points, out_circle_points)
-    brislte_center_hex = f"\thex ({root_inner_circle_ids[0]} {root_inner_circle_ids[1]} {root_inner_circle_ids[2]} {root_inner_circle_ids[3]} {bristle_inner_circle_ids[0]} {bristle_inner_circle_ids[1]} {bristle_inner_circle_ids[2]} {bristle_inner_circle_ids[3]}) ({partition_XY} {partition_XY} {partition_Z}) simpleGrading (1 1 1)\n"
-    output_blocks.append(brislte_center_hex)
     output_blocks.append("\n")
     output_blocks.append(");\n\n")
     return output_blocks, bottom_patches, bristle_top_patches
@@ -569,8 +604,14 @@ bristle_length = 1500
 radius = 250
 partition_XY = 5
 partition_Z = 10
+num_bristles = 5
+bristle_gap = 50
+root_block_hight = int(bristle_length / partition_Z)
+root_block_length = radius * 2 + bristle_gap
+root_block_width = radius * 4
 
-vertices, inner_circle_points, out_circle_points = generate_vertices(cubic_size, radius, bristle_length)
+
+vertices, inner_circle_points, out_circle_points = generate_vertices(cubic_size, radius, bristle_length, num_bristles, bristle_gap, root_block_hight, root_block_length, root_block_width)
 blocks, top_patches, bristle_top_patches = generate_blocks(vertices, bristle_length, inner_circle_points, out_circle_points, partition_XY, partition_Z)
 edges = generate_edges(vertices, cubic_size, bristle_length, inner_circle_points, out_circle_points)
 patches = generate_patches(vertices, inner_circle_points, out_circle_points, top_patches, bristle_top_patches, cubic_size)
