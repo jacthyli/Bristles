@@ -82,7 +82,6 @@ class VertexManager:
 
 def generate_vertices(cubic_size, radius, bristle_length, num_bristles, bristle_gap, root_block_hight, root_block_length, root_block_width):
     vertices_manager = VertexManager()
-    inner_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius / 2)
     
     bottom_vertices = [
         [0, 0, 0],
@@ -114,17 +113,13 @@ def generate_vertices(cubic_size, radius, bristle_length, num_bristles, bristle_
         [out_circle_points[0][0], out_circle_points[0][1], root_block_hight],
         [out_circle_points[1][0], out_circle_points[1][1], root_block_hight],
         [out_circle_points[3][0], out_circle_points[3][1], root_block_hight],
-        [out_circle_points[2][0], out_circle_points[2][1], root_block_hight],
-        [cubic_size/2-root_block_width, cubic_size / 2 + bristle_gap / 2, root_block_hight],
-        [cubic_size/2+root_block_width, cubic_size / 2 + bristle_gap / 2, root_block_hight],
-        [cubic_size/2-root_block_width, cubic_size / 2 - bristle_gap / 2, root_block_hight],
-        [cubic_size/2+root_block_width, cubic_size / 2 - bristle_gap / 2, root_block_hight]
+        [out_circle_points[2][0], out_circle_points[2][1], root_block_hight]
     ]
     root_vertices.append(add_middle_vertices)
     count = 2
     for i in range(1, num_bristles, -1):
         # 奇数往下，偶数往上
-        center_of_bristle = [cubic_size / 2 + np.cos(i*np.pi) * count * bristle_gap, cubic_size / 2 + np.cos(i*np.pi) * count * bristle_gap]
+        center_of_bristle = [cubic_size / 2 + np.cos(i*np.pi) * count * (bristle_gap + radius * 2), cubic_size / 2 + np.cos(i*np.pi) * count * (bristle_gap + radius * 2)]
         out_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius)
         
         add_rest_vertices = [
@@ -132,8 +127,8 @@ def generate_vertices(cubic_size, radius, bristle_length, num_bristles, bristle_
             [out_circle_points[1][0], out_circle_points[1][1], root_block_hight],
             [out_circle_points[3][0], out_circle_points[3][1], root_block_hight],
             [out_circle_points[2][0], out_circle_points[2][1], root_block_hight],
-            [cubic_size/2-root_block_width, cubic_size / 2 + np.cos(i*np.pi) * count * 3 / 2 * bristle_gap, root_block_hight],
-            [cubic_size/2+root_block_width, cubic_size / 2 + np.cos(i*np.pi) * count * 3 / 2 * bristle_gap, root_block_hight]
+            [cubic_size/2-root_block_width, cubic_size / 2 + np.cos(i*np.pi) * (count - 0.5) * (bristle_gap + radius * 2), root_block_hight],
+            [cubic_size/2+root_block_width, cubic_size / 2 + np.cos(i*np.pi) * (count - 0.5) * (bristle_gap + radius * 2), root_block_hight]
             
         ]
         if i % 2 == 1 and i != 0:
@@ -143,21 +138,32 @@ def generate_vertices(cubic_size, radius, bristle_length, num_bristles, bristle_
     vertices_manager.add_vertices(root_vertices)
 
     # === 2. 生成 bristle_end_vertices（Z = bristle_length，包含 inner_circle_points） ===
-    bristle_end_vertices = [[x, y, bristle_length] for x, y, _ in root_vertices]
-    bristle_end_vertices += [[x, y, bristle_length] for x, y in inner_circle_points]  # 这里添加 inner_circle_points
-
-    # 按 X 方向排序
-    # bristle_end_vertices.sort(key=lambda v: (v[0], v[1]))
-
+    bristle_end_vertices = [[x, y, bristle_length + root_block_hight] for x, y, _ in root_vertices]
+    inner_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius / 2)
+    bristle_end_vertices += [[x, y, bristle_length + root_block_hight] for x, y in inner_circle_points]  # 这里添加 inner_circle_points
+    count = 2
+    for i in range(1, num_bristles, -1):
+        # 奇数往下，偶数往上
+        center_of_bristle = [cubic_size / 2 + np.cos(i*np.pi) * count * (bristle_gap + radius * 2), cubic_size / 2 + np.cos(i*np.pi) * count * (bristle_gap + radius * 2)]
+        inner_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius / 2)
+        bristle_end_vertices += [[x, y, bristle_length + root_block_hight] for x, y in inner_circle_points]
+        if i % 2 == 1 and i != 0:
+            count -= 1
+    
     vertices_manager.add_vertices(bristle_end_vertices)
 
     # === 3. 生成 roof_vertices（Z = cubic_size，包含 inner_circle_points） ===
-    roof_vertices = [[x, y, bristle_length*4/3] for x, y, _ in root_vertices]
-    roof_vertices += [[x, y, bristle_length*4/3] for x, y in inner_circle_points]  # 这里添加 inner_circle_points
-
-    # 按 Y 方向排序
-    # roof_vertices.sort(key=lambda v: (v[0], v[1]))
-
+    roof_vertices = [[x, y, bristle_length*4/3 + root_block_hight] for x, y, _ in root_vertices]
+    roof_vertices += [[x, y, bristle_length*4/3 + root_block_hight] for x, y in inner_circle_points]  # 这里添加 inner_circle_points
+    count = 2
+    for i in range(1, num_bristles, -1):
+        # 奇数往下，偶数往上
+        center_of_bristle = [cubic_size / 2 + np.cos(i*np.pi) * count * (bristle_gap + radius * 2), cubic_size / 2 + np.cos(i*np.pi) * count * (bristle_gap + radius * 2)]
+        inner_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius / 2)
+        roof_vertices += [[x, y, bristle_length + root_block_hight] for x, y in inner_circle_points]
+        if i % 2 == 1 and i != 0:
+            count -= 1
+    
     vertices_manager.add_vertices(roof_vertices)
 
     return vertices_manager, inner_circle_points, out_circle_points
