@@ -481,7 +481,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         matches = vertices.get_id_by_xy(x, y)
         if matches:
             for z, vid in matches:
-                if np.isclose(z, root_block_hight+bristle_length*4/3):
+                if np.isclose(z, root_block_hight+bristle_length):
                     bristle_top_inner_vertices_ids.append(vid)
     bristle_top_inner_vertices_ids_sorted = sort_ids_by_axis(vertices, bristle_top_inner_vertices_ids, axis='y')
     top_patches = []
