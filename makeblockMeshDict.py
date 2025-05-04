@@ -456,7 +456,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
                     
     bristle_top_left_vertices_ids_sorted = sort_ids_by_axis(vertices, bristle_top_left_vertices_ids, axis='y')
     bristle_top_vertices_ids_sorted = sort_ids_by_axis(vertices, bristle_top_bristle_vertices_ids, axis='y')
-    
+    top_patches = []
     for index, id in enumerate(bristle_top_vertices_ids_sorted):
         hex_line = (f"\thex ({bristle_top_left_vertices_ids_sorted[index]} {id} {id+2} {bristle_top_left_vertices_ids_sorted[index+1]} "
                     f"{bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num} {id+bristle_top_points_num} {id+2+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num}) "
@@ -474,6 +474,13 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
                     f"{bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num} {id+2+bristle_top_points_num} {id+3+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num}) "
                     f"({partition_X} {partition_X} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
         )
+        top_patch_outside_bristle = [
+            [bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num, id+bristle_top_points_num, id+2+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num],
+            [bristle_top_left_vertices_ids_sorted[index]+1+bristle_top_points_num, id+1+bristle_top_points_num, id+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num],
+            [bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num, id+3+bristle_top_points_num, id+1+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index]+1+bristle_top_points_num],
+            [bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num, id+2+bristle_top_points_num, id+3+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num]
+        ]
+        top_patches.extend(top_patch_outside_bristle)
         output_blocks.append(hex_line)
     output_blocks.append("\n")
     bristle_top_inner_vertices_ids = []
@@ -484,7 +491,6 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
                 if np.isclose(z, root_block_hight+bristle_length):
                     bristle_top_inner_vertices_ids.append(vid)
     bristle_top_inner_vertices_ids_sorted = sort_ids_by_axis(vertices, bristle_top_inner_vertices_ids, axis='y')
-    top_patches = []
     top_inner_patches = []
     for index, id in enumerate(bristle_top_inner_vertices_ids_sorted):
         hex_line = (f"\thex ({id} {id+1} {id+2} {id+3} "
@@ -782,10 +788,10 @@ def generate_patches(vertices, root_block_hight, root_bristle_bit_group, top_pat
     for index, id in enumerate(root_bristle_vertices_ids_sorted):
         bristle_top_patch = (
             f"\t\t({bristle_top_inner_left_ids_sorted[index]+3} {bristle_top_inner_left_ids_sorted[index]+2} {bristle_top_inner_left_ids_sorted[index]+1} {bristle_top_inner_left_ids_sorted[index]})\n"
-            f"\t\t({id+2} {bristle_top_inner_left_ids_sorted[index]+3} {bristle_top_inner_left_ids_sorted[index]} {id})\n"
-            f"\t\t({id} {bristle_top_inner_left_ids_sorted[index]} {bristle_top_inner_left_ids_sorted[index]+1} {id+1})\n"
-            f"\t\t({id+1} {bristle_top_inner_left_ids_sorted[index]+1} {bristle_top_inner_left_ids_sorted[index]+2} {id+3})\n"
-            f"\t\t({id+3} {bristle_top_inner_left_ids_sorted[index]+2} {bristle_top_inner_left_ids_sorted[index]+3} {id+2})\n"
+            f"\t\t({id+2+root_points_num} {bristle_top_inner_left_ids_sorted[index]+3} {bristle_top_inner_left_ids_sorted[index]} {id+root_points_num})\n"
+            f"\t\t({id+root_points_num} {bristle_top_inner_left_ids_sorted[index]} {bristle_top_inner_left_ids_sorted[index]+1} {id+1+root_points_num})\n"
+            f"\t\t({id+1+root_points_num} {bristle_top_inner_left_ids_sorted[index]+1} {bristle_top_inner_left_ids_sorted[index]+2} {id+3+root_points_num})\n"
+            f"\t\t({id+3+root_points_num} {bristle_top_inner_left_ids_sorted[index]+2} {bristle_top_inner_left_ids_sorted[index]+3} {id+2+root_points_num})\n"
         )
         output_patches.append(bristle_top_patch)
         bristle_side_patch = (
@@ -953,7 +959,7 @@ def extract_vertices(vertices_manager):
     return np.array(vertices)
 
 # 生成 blockMeshDict 文件
-fluid_mesh = r"fluid\constant\polyMesh\blockMeshDict"
+fluid_mesh = "fluid/constant/polyMesh/blockMeshDict"
 head = generate_FOAM_head()
 cubic_size = 2000
 bristle_length = 1500
@@ -984,7 +990,7 @@ with open(fluid_mesh, 'w') as file:
     file.write("".join(patches))
     file.write("".join(end))
 
-solid_mesh = r"solid\constant\polyMesh\blockMeshDict"#"blockMeshDict.solid"
+solid_mesh = "solid/constant/polyMesh/blockMeshDict"#"blockMeshDict.solid"
 solid_partition_XY = 5
 solid_partition_Z = 10
 solid_vertices = generate_solid_vertices(solid_blocks_xy_vertices, root_block_hight, bristle_length, root_block_width)
