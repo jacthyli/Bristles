@@ -397,12 +397,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     root_left_bottom_points = [id + bottom_points_num for id in bottom_ids_left_corner]
     for id in root_left_bottom_points:
         output_blocks.append(surrounding_blocks(id, root_points_num, partition_X, partition_X, partition_Z))
-    output_blocks.append("\n")
-    
-    bristle_top_left_bottom_points = [id + root_points_num for id in root_left_bottom_points]
-    for id in bristle_top_left_bottom_points:
-        output_blocks.append(surrounding_blocks(id, bristle_top_points_num, partition_X, partition_X, int(partition_Z/3)))
-    output_blocks.append("\n")        
+    output_blocks.append("\n")       
     
     root_left_vertices_ids = set(root_ids) & set(bristle_left_ids)
     root_left_vertices_ids = root_left_vertices_ids - set(stream_right_wall) - set(stream_left_wall)
@@ -440,7 +435,12 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         ]
         root_patches.extend(root_patch)
         output_blocks.append(hex_line)
-    output_blocks.append("\n")    
+    output_blocks.append("\n")
+    
+    bristle_top_left_bottom_points = [id + root_points_num for id in root_left_bottom_points]
+    for id in bristle_top_left_bottom_points:
+        output_blocks.append(surrounding_blocks(id, bristle_top_points_num, partition_X, partition_X, int(partition_Z/3)))
+    output_blocks.append("\n")     
 
     bristle_top_left_vertices_ids = set(bristle_top_ids) & set(bristle_left_ids)
     bristle_top_left_vertices_ids = bristle_top_left_vertices_ids - set(stream_right_wall) - set(stream_left_wall)
@@ -706,7 +706,8 @@ def generate_patches(vertices, root_block_hight, top_patches, root_patches, bris
     output_patches.append("\t(\n")
     bottom_ids, bottom_points_num = find_left_bottom_vertices_simple(vertices, 0, XYZ="Z")
     bristle_left_ids, bristle_left_points_num = find_vertices(vertices, root_block_width, XYZ="X")
-    bristle_left_ids_not_full = bristle_left_ids[1:-2]
+    bristle_left_ids_not_full = [i for i in bristle_left_ids if i<= bottom_points_num]
+    bristle_left_ids_not_full = bristle_left_ids_not_full[1:-2]
     bottom_ids_left_corner = set(bottom_ids)-set(bristle_left_ids_not_full)
     for id in bottom_ids_left_corner:
         output_patches.append(f"\t\t({id+4} {id+5} {id+1} {id})\n")
@@ -952,7 +953,6 @@ def extract_vertices(vertices_manager):
 # 生成 blockMeshDict 文件
 fluid_mesh = "fluid/constant/polyMesh/blockMeshDict"
 head = generate_FOAM_head()
-cubic_size = 2000
 bristle_length = 1500
 radius = 250
 partition_X = 5
