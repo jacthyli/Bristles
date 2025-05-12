@@ -79,6 +79,27 @@ class VertexManager:
         """返回 blockMeshDict 格式的字符串"""
         self.output_list.append(");\n\n")
         return "".join(self.output_list)
+    
+    def sort_vertices_by_zyx(self):
+        """按 Z, Y, X 排序所有点并重新分配 ID"""
+        # 提取所有点并排序
+        sorted_points = sorted(self.id_to_vertex.values(), key=lambda p: (p[2], p[1], p[0]))
+
+        # 清空原有数据
+        self.id_to_vertex.clear()
+        self.vertex_to_id.clear()
+        self.output_list = ["vertices\n(\n"]
+
+        # 重新分配ID并更新结构
+        for new_id, point in enumerate(sorted_points):
+            point_tuple = tuple(point)
+            self.id_to_vertex[new_id] = point_tuple
+            self.vertex_to_id[point_tuple] = new_id
+            formatted_point = " ".join(format_number(p) for p in point)
+            self.output_list.append(f"\t({formatted_point})      //{new_id}\n")
+
+        self.global_points_id = len(sorted_points)
+        self.output_list.append("\n")
 
 def generate_vertices(cubic_width, cubic_length, radius, bristle_length, num_bristles, bristle_gap, root_block_hight, root_block_length, root_block_width):
     vertices_manager = VertexManager()
@@ -183,6 +204,7 @@ def generate_vertices(cubic_width, cubic_length, radius, bristle_length, num_bri
     # === 3. 生成 roof_vertices（Z = cubic_size，包含 inner_circle_points） ===
     roof_vertices = [[x, y, bristle_length*4/3 + root_block_hight] for x, y, _ in bristle_end_vertices]
     vertices_manager.add_vertices(roof_vertices)
+    vertices_manager.sort_vertices_by_zyx()
 
     return vertices_manager, solid_blocks_xy_vertices
 
@@ -203,7 +225,8 @@ def generate_solid_vertices(solid_blocks_xy_vertices, root_block_hight, bristle_
                             if not np.isclose(x, root_block_width) and not np.isclose(x, root_block_width * 2)
                             ]
     vertices_manager.add_vertices(bristle_end_vertices)
-
+    vertices_manager.sort_vertices_by_zyx()
+    
     return vertices_manager
 
 def sort_ids_by_axis(vertex_manager, id_list, axis='z'):
