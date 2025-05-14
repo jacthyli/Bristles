@@ -412,42 +412,110 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     bristle_left_ids, bristle_left_points_num = find_vertices(vertices, root_block_width, XYZ="X")
     bristle_left_ids_not_full = [id for id in bristle_left_ids if id < bottom_points_num]
     bottom_ids_left_corner = set(bottom_ids)-set(bristle_left_ids_not_full[1:-2])
+    bristle_left_ids_not_full_root = [id for id in bristle_left_ids if id < root_points_num+bottom_points_num and id > bottom_points_num]
+    bristle_left_ids_not_full_top = [id for id in bristle_left_ids if id > root_points_num+bottom_points_num and id < root_points_num+bottom_points_num+bristle_top_points_num]
+    root_ids_left_corner = set(root_ids)-set(bristle_left_ids_not_full_root[1:-2])
     
-    for id in bottom_ids_left_corner:
-        output_blocks.append(surrounding_blocks(id, bottom_points_num, partition_X, partition_X, 1))
+    bottom_ids_all, bottom_points_num = find_vertices(vertices, 0, XYZ="Z")
+    inlet_ids, inlet_points_num = find_vertices(vertices, 0, XYZ="X")
+    bristle_right_ids, bristle_right_points_num = find_vertices(vertices, root_block_width*2, XYZ="X")
+    bottom_ids_left_corner_left_row = sorted(list(set(bottom_ids_all) & set(inlet_ids)))
+    bottom_ids_left_corner_right_row = sorted(list(set(bottom_ids_all) & set(bristle_right_ids)))
+    
+    for index, id in enumerate(bottom_ids_left_corner_left_row[0:-1]):
+        block_line = (
+            f"\thex ({id} {id+1} {bottom_ids_left_corner_left_row[index+1]+1} {bottom_ids_left_corner_left_row[index+1]} "
+            f"{id+bottom_points_num} {id+1+bottom_points_num} {bottom_ids_left_corner_left_row[index+1]+1+bottom_points_num} {bottom_ids_left_corner_left_row[index+1]+bottom_points_num}) "
+            f"({partition_X} {partition_Y} 1) simpleGrading (1 1 1)\n"
+        )
+        output_blocks.append(block_line)
     output_blocks.append("\n")
-
-    root_left_bottom_points = [id + bottom_points_num for id in bottom_ids_left_corner]
-    for id in root_left_bottom_points:
-        output_blocks.append(surrounding_blocks(id, root_points_num, partition_X, partition_X, partition_Z))
-    output_blocks.append("\n")       
+    
+    for index, id in enumerate(bottom_ids_left_corner_right_row[0:-1]):
+        block_line = (
+            f"\thex ({id} {id+1} {bottom_ids_left_corner_right_row[index+1]+1} {bottom_ids_left_corner_right_row[index+1]} "
+            f"{id+bottom_points_num} {id+1+bottom_points_num} {bottom_ids_left_corner_right_row[index+1]+1+bottom_points_num} {bottom_ids_left_corner_right_row[index+1]+bottom_points_num}) "
+            f"({partition_X} {partition_Y} 1) simpleGrading (1 1 1)\n"
+        )
+        output_blocks.append(block_line)
+    output_blocks.append("\n")
+    
+    bottom_top_left_corner = sorted(list(set(bottom_ids)-set(bristle_left_ids_not_full[1:-2])-set(bottom_ids_left_corner_right_row)-set(bottom_ids_left_corner_left_row)))
+    for index, id in enumerate(bottom_top_left_corner):
+        block_line = (
+            f"\thex ({id} {id+1} {id+5} {id+4} "
+            f"{id+bottom_points_num} {id+1+bottom_points_num} {id+5+bottom_points_num} {id+4+bottom_points_num}) "
+            f"({partition_X} {partition_Y} 1) simpleGrading (1 1 1)\n"
+        )
+        output_blocks.append(block_line)
+    output_blocks.append("\n")
+    bottom_ids_left_corner = bottom_top_left_corner + bottom_ids_left_corner_left_row + bottom_ids_left_corner_right_row
+    
+    root_ids_all, root_points_num = find_vertices(vertices, root_block_hight, XYZ="Z")
+    root_left_bottom_points_left_row = sorted(list(set(root_ids_all) & set(inlet_ids)))
+    root_left_bottom_points_right_row = sorted(list(set(root_ids_all) & set(bristle_right_ids)))
+    for index, id in enumerate(root_left_bottom_points_left_row[0:-1]):
+        block_line = (
+            f"\thex ({id} {id+1} {root_left_bottom_points_left_row[index+1]+1} {root_left_bottom_points_left_row[index+1]} "
+            f"{id+root_points_num} {id+1+root_points_num} {root_left_bottom_points_left_row[index+1]+1+root_points_num} {root_left_bottom_points_left_row[index+1]+root_points_num}) "
+            f"({partition_X} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
+        )
+        output_blocks.append(block_line)
+    output_blocks.append("\n")
+    
+    for index, id in enumerate(root_left_bottom_points_right_row[0:-1]):
+        block_line = (
+            f"\thex ({id} {id+1} {root_left_bottom_points_right_row[index+1]+1} {root_left_bottom_points_right_row[index+1]} "
+            f"{id+root_points_num} {id+1+root_points_num} {root_left_bottom_points_right_row[index+1]+1+root_points_num} {root_left_bottom_points_right_row[index+1]+root_points_num}) "
+            f"({partition_X} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
+        )
+        output_blocks.append(block_line)
+    output_blocks.append("\n")
     
     root_left_vertices_ids = set(root_ids) & set(bristle_left_ids)
     root_left_vertices_ids = root_left_vertices_ids - set(stream_right_wall) - set(stream_left_wall)
     root_left_vertices_ids_sorted = sort_ids_by_axis(vertices, root_left_vertices_ids, axis='y')
     
     bristle_ids, bristle_points_num = find_vertices(vertices, root_block_width*3/2-radius/(2**(0.5)), XYZ="X")
+    bristle_ids_right, bristle_points_num = find_vertices(vertices, root_block_width*3/2+radius/(2**(0.5)), XYZ="X")
+    root_ids_left_corner = sorted(list(set(root_ids)-set(bristle_left_ids_not_full_root[1:-2])-set(root_left_bottom_points_right_row)-set(root_left_bottom_points_left_row)-set(bristle_ids_right)-set(bristle_ids)))
+    for index, id in enumerate(root_ids_left_corner):
+        block_line = (
+            f"\thex ({id} {id+1} {id+5} {id+4} "
+            f"{id+root_points_num} {id+1+root_points_num} {id+5+root_points_num} {id+4+root_points_num}) "
+            f"({partition_X} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
+        )
+        output_blocks.append(block_line)
+    output_blocks.append("\n")
     
     root_bristle_vertices_ids = set(root_ids) & set(bristle_ids)
     root_bristle_vertices_ids_sorted = sort_ids_by_axis(vertices, root_bristle_vertices_ids, axis='y')
     root_bristle_vertices_ids_sorted = root_bristle_vertices_ids_sorted[::2]
     
+    top_bristle_vertices_ids = set(bristle_top_ids) & set(bristle_ids)
+    top_bristle_vertices_ids_sorted = sort_ids_by_axis(vertices, top_bristle_vertices_ids, axis='y')
+    top_bristle_vertices_ids_sorted = top_bristle_vertices_ids_sorted[::2]
+    
+    bristle_top_left_vertices_ids = set(bristle_top_ids) & set(bristle_left_ids)
+    bristle_top_left_vertices_ids = bristle_top_left_vertices_ids - set(stream_right_wall) - set(stream_left_wall)
+    bristle_top_left_vertices_ids_sorted = sort_ids_by_axis(vertices, bristle_top_left_vertices_ids, axis='y')
+    
     root_patches = []
     for index, id in enumerate(root_bristle_vertices_ids_sorted):
         hex_line = (f"\thex ({root_left_vertices_ids_sorted[index]} {id} {id+2} {root_left_vertices_ids_sorted[index+1]} "
-                    f"{root_left_vertices_ids_sorted[index]+root_points_num} {id+root_points_num} {id+2+root_points_num} {root_left_vertices_ids_sorted[index+1]+root_points_num}) "
+                    f"{bristle_top_left_vertices_ids_sorted[index]} {top_bristle_vertices_ids_sorted[index]} {top_bristle_vertices_ids_sorted[index]+6} {bristle_top_left_vertices_ids_sorted[index+1]}) "
                     f"({partition_X} {partition_X} {partition_Z}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({root_left_vertices_ids_sorted[index]+1} {id+1} {id} {root_left_vertices_ids_sorted[index]} "
-                    f"{root_left_vertices_ids_sorted[index]+1+root_points_num} {id+1+root_points_num} {id+root_points_num} {root_left_vertices_ids_sorted[index]+root_points_num}) "
+                    f"{bristle_top_left_vertices_ids_sorted[index]+1} {top_bristle_vertices_ids_sorted[index]+1} {top_bristle_vertices_ids_sorted[index]} {bristle_top_left_vertices_ids_sorted[index]}) "
                     f"({partition_X} {partition_X} {partition_Z}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({root_left_vertices_ids_sorted[index+1]+1} {id+3} {id+1} {root_left_vertices_ids_sorted[index]+1} "
-                    f"{root_left_vertices_ids_sorted[index+1]+1+root_points_num} {id+3+root_points_num} {id+1+root_points_num} {root_left_vertices_ids_sorted[index]+1+root_points_num}) "
+                    f"{bristle_top_left_vertices_ids_sorted[index+1]+1} {top_bristle_vertices_ids_sorted[index]+7} {top_bristle_vertices_ids_sorted[index]+1} {bristle_top_left_vertices_ids_sorted[index]+1}) "
                     f"({partition_X} {partition_X} {partition_Z}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({root_left_vertices_ids_sorted[index+1]} {id+2} {id+3} {root_left_vertices_ids_sorted[index+1]+1} "
-                    f"{root_left_vertices_ids_sorted[index+1]+root_points_num} {id+2+root_points_num} {id+3+root_points_num} {root_left_vertices_ids_sorted[index+1]+1+root_points_num}) "
+                    f"{bristle_top_left_vertices_ids_sorted[index+1]} {top_bristle_vertices_ids_sorted[index]+6} {top_bristle_vertices_ids_sorted[index]+7} {bristle_top_left_vertices_ids_sorted[index+1]+1}) "
                     f"({partition_X} {partition_X} {partition_Z}) simpleGrading (1 1 1)\n"
         )
         root_patch = [
@@ -460,42 +528,72 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         output_blocks.append(hex_line)
     output_blocks.append("\n")
     
-    bristle_top_left_bottom_points = [id + root_points_num for id in root_left_bottom_points]
-    for id in bristle_top_left_bottom_points:
-        output_blocks.append(surrounding_blocks(id, bristle_top_points_num, partition_X, partition_X, int(partition_Z/3)))
-    output_blocks.append("\n")     
+    top_patches = []
+    bristle_top_ids_all, bristle_top_points_num = find_vertices(vertices, root_block_hight+bristle_length, XYZ="Z")
+    bristle_top_left_bottom_points_left_row = sorted(list(set(bristle_top_ids_all) & set(inlet_ids)))
+    bristle_top_left_bottom_points_right_row = sorted(list(set(bristle_top_ids_all) & set(bristle_right_ids)))
+    for index, id in enumerate(bristle_top_left_bottom_points_left_row[0:-1]):
+        block_line = (
+            f"\thex ({id} {id+1} {bristle_top_left_bottom_points_left_row[index+1]} {bristle_top_left_bottom_points_left_row[index+1]+1} "
+            f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_bottom_points_left_row[index+1]+1+bristle_top_points_num} {bristle_top_left_bottom_points_left_row[index+1]+bristle_top_points_num}) "
+            f"({partition_X} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+        )
+        top_patches.append([id+bristle_top_points_num, id+1+bristle_top_points_num, bristle_top_left_bottom_points_left_row[index+1]+1+bristle_top_points_num, bristle_top_left_bottom_points_left_row[index+1]+bristle_top_points_num])
+        output_blocks.append(block_line)
+    output_blocks.append("\n")
+    
+    for index, id in enumerate(bristle_top_left_bottom_points_right_row[0:-1]):
+        block_line = (
+            f"\thex ({id} {id+1} {bristle_top_left_bottom_points_right_row[index+1]} {bristle_top_left_bottom_points_right_row[index+1]+1} "
+            f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_bottom_points_right_row[index+1]+1+bristle_top_points_num} {bristle_top_left_bottom_points_right_row[index+1]+bristle_top_points_num}) "
+            f"({partition_X} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+        )
+        top_patches.append([id+bristle_top_points_num, id+1+bristle_top_points_num, bristle_top_left_bottom_points_right_row[index+1]+1+bristle_top_points_num, bristle_top_left_bottom_points_right_row[index+1]+bristle_top_points_num])
+        output_blocks.append(block_line)
+    output_blocks.append("\n")
 
-    bristle_top_left_vertices_ids = set(bristle_top_ids) & set(bristle_left_ids)
-    bristle_top_left_vertices_ids = bristle_top_left_vertices_ids - set(stream_right_wall) - set(stream_left_wall)
-    bristle_top_left_vertices_ids_sorted = sort_ids_by_axis(vertices, bristle_top_left_vertices_ids, axis='y')
+    inner_bristle_ids_left, bristle_points_num = find_vertices(vertices, root_block_width*3/2-radius/2/(2**(0.5)), XYZ="X")
+    inner_bristle_ids_right, bristle_points_num = find_vertices(vertices, root_block_width*3/2+radius/2/(2**(0.5)), XYZ="X")
+    top_ids_left_corner = sorted(list(set(bristle_top_ids)-set(bristle_left_ids_not_full_top[1:-2])
+                                       -set(bristle_top_left_bottom_points_right_row)-set(bristle_top_left_bottom_points_left_row)
+                                       -set(bristle_ids_right)-set(bristle_ids)-set(inner_bristle_ids_left)-set(inner_bristle_ids_right)))
+    for index, id in enumerate(top_ids_left_corner):
+        block_line = (
+            f"\thex ({id} {id+1} {id+5} {id+4} "
+            f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {id+4+bristle_top_points_num} {id+5+bristle_top_points_num}) "
+            f"({partition_X} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+        )
+        top_patches.append([id+bristle_top_points_num, id+1+bristle_top_points_num, id+4+bristle_top_points_num, id+5+bristle_top_points_num])
+        output_blocks.append(block_line)
+    output_blocks.append("\n")
     
     bristle_top_vertices_ids = set(bristle_top_ids) & set(bristle_ids)
     bristle_top_vertices_ids_sorted = sort_ids_by_axis(vertices, bristle_top_vertices_ids, axis='y')
     bristle_top_vertices_ids_sorted = bristle_top_vertices_ids_sorted[::2]
     
-    top_patches = []
+    
     for index, id in enumerate(bristle_top_vertices_ids_sorted):
-        hex_line = (f"\thex ({bristle_top_left_vertices_ids_sorted[index]} {id} {id+2} {bristle_top_left_vertices_ids_sorted[index+1]} "
-                    f"{bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num} {id+bristle_top_points_num} {id+2+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num}) "
+        hex_line = (f"\thex ({bristle_top_left_vertices_ids_sorted[index]} {id} {id+6} {bristle_top_left_vertices_ids_sorted[index+1]} "
+                    f"{bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num} {id+bristle_top_points_num} {id+6+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num}) "
                     f"({partition_X} {partition_X} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({bristle_top_left_vertices_ids_sorted[index]+1} {id+1} {id} {bristle_top_left_vertices_ids_sorted[index]} "
                     f"{bristle_top_left_vertices_ids_sorted[index]+1+bristle_top_points_num} {id+1+bristle_top_points_num} {id+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num}) "
                     f"({partition_X} {partition_X} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
                     
-                    f"\thex ({bristle_top_left_vertices_ids_sorted[index+1]+1} {id+3} {id+1} {bristle_top_left_vertices_ids_sorted[index]+1} "
-                    f"{bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num} {id+3+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index]+1+bristle_top_points_num}) "
+                    f"\thex ({bristle_top_left_vertices_ids_sorted[index+1]+1} {id+7} {id+1} {bristle_top_left_vertices_ids_sorted[index]+1} "
+                    f"{bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num} {id+7+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index]+1+bristle_top_points_num}) "
                     f"({partition_X} {partition_X} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
                     
-                    f"\thex ({bristle_top_left_vertices_ids_sorted[index+1]} {id+2} {id+3} {bristle_top_left_vertices_ids_sorted[index+1]+1} "
-                    f"{bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num} {id+2+bristle_top_points_num} {id+3+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num}) "
+                    f"\thex ({bristle_top_left_vertices_ids_sorted[index+1]} {id+6} {id+7} {bristle_top_left_vertices_ids_sorted[index+1]+1} "
+                    f"{bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num} {id+6+bristle_top_points_num} {id+7+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num}) "
                     f"({partition_X} {partition_X} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
         )
         top_patch_outside_bristle = [
-            [bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num, id+bristle_top_points_num, id+2+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num],
+            [bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num, id+bristle_top_points_num, id+6+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num],
             [bristle_top_left_vertices_ids_sorted[index]+1+bristle_top_points_num, id+1+bristle_top_points_num, id+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num],
-            [bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num, id+3+bristle_top_points_num, id+1+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index]+1+bristle_top_points_num],
-            [bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num, id+2+bristle_top_points_num, id+3+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num]
+            [bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num, id+7+bristle_top_points_num, id+1+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index]+1+bristle_top_points_num],
+            [bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num, id+6+bristle_top_points_num, id+7+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num]
         ]
         top_patches.extend(top_patch_outside_bristle)
         output_blocks.append(hex_line)
@@ -509,35 +607,35 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
 
     top_inner_patches = []
     for index, id in enumerate(bristle_top_inner_vertices_ids_sorted):
-        hex_line = (f"\thex ({id} {id+1} {id+2} {id+3} "
-                    f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {id+2+bristle_top_points_num} {id+3+bristle_top_points_num}) "
+        hex_line = (f"\thex ({id} {id+1} {id+3} {id+2} "
+                    f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {id+3+bristle_top_points_num} {id+2+bristle_top_points_num}) "
                     f"({partition_X} {partition_X} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
                     
-                    f"\thex ({bristle_top_vertices_ids_sorted[index]} {id} {id+3} {bristle_top_vertices_ids_sorted[index]+2} "
-                    f"{bristle_top_vertices_ids_sorted[index]+bristle_top_points_num} {id+bristle_top_points_num} {id+3+bristle_top_points_num} {bristle_top_vertices_ids_sorted[index]+2+bristle_top_points_num}) "
+                    f"\thex ({bristle_top_vertices_ids_sorted[index]} {id} {id+2} {bristle_top_vertices_ids_sorted[index]+6} "
+                    f"{bristle_top_vertices_ids_sorted[index]+bristle_top_points_num} {id+bristle_top_points_num} {id+2+bristle_top_points_num} {bristle_top_vertices_ids_sorted[index]+6+bristle_top_points_num}) "
                     f"({partition_X} {partition_X} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({bristle_top_vertices_ids_sorted[index]+1} {id+1} {id} {bristle_top_vertices_ids_sorted[index]} "
                     f"{bristle_top_vertices_ids_sorted[index]+1+bristle_top_points_num} {id+1+bristle_top_points_num} {id+bristle_top_points_num} {bristle_top_vertices_ids_sorted[index]+bristle_top_points_num}) "
                     f"({partition_X} {partition_X} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
                     
-                    f"\thex ({bristle_top_vertices_ids_sorted[index]+3} {id+2} {id+1} {bristle_top_vertices_ids_sorted[index]+1} "
-                    f"{bristle_top_vertices_ids_sorted[index]+3+bristle_top_points_num} {id+2+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_vertices_ids_sorted[index]+1+bristle_top_points_num}) "
+                    f"\thex ({bristle_top_vertices_ids_sorted[index]+7} {id+3} {id+1} {bristle_top_vertices_ids_sorted[index]+1} "
+                    f"{bristle_top_vertices_ids_sorted[index]+7+bristle_top_points_num} {id+3+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_vertices_ids_sorted[index]+1+bristle_top_points_num}) "
                     f"({partition_X} {partition_X} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
                     
-                    f"\thex ({bristle_top_vertices_ids_sorted[index]+2} {id+3} {id+2} {bristle_top_vertices_ids_sorted[index]+3} "
-                    f"{bristle_top_vertices_ids_sorted[index]+2+bristle_top_points_num} {id+3+bristle_top_points_num} {id+2+bristle_top_points_num} {bristle_top_vertices_ids_sorted[index]+3+bristle_top_points_num}) "
+                    f"\thex ({bristle_top_vertices_ids_sorted[index]+6} {id+2} {id+3} {bristle_top_vertices_ids_sorted[index]+7} "
+                    f"{bristle_top_vertices_ids_sorted[index]+6+bristle_top_points_num} {id+2+bristle_top_points_num} {id+3+bristle_top_points_num} {bristle_top_vertices_ids_sorted[index]+7+bristle_top_points_num}) "
                     f"({partition_X} {partition_X} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
         )
         top_patch = [
-            [id+bristle_top_points_num, id+1+bristle_top_points_num, id+2+bristle_top_points_num, id+3+bristle_top_points_num],
-            [bristle_top_vertices_ids_sorted[index]+bristle_top_points_num, id+bristle_top_points_num, id+3+bristle_top_points_num, bristle_top_vertices_ids_sorted[index]+2+bristle_top_points_num],
+            [id+bristle_top_points_num, id+1+bristle_top_points_num, id+3+bristle_top_points_num, id+2+bristle_top_points_num],
+            [bristle_top_vertices_ids_sorted[index]+bristle_top_points_num, id+bristle_top_points_num, id+2+bristle_top_points_num, bristle_top_vertices_ids_sorted[index]+6+bristle_top_points_num],
             [bristle_top_vertices_ids_sorted[index]+1+bristle_top_points_num, id+1+bristle_top_points_num, id+bristle_top_points_num, bristle_top_vertices_ids_sorted[index]+bristle_top_points_num],
-            [bristle_top_vertices_ids_sorted[index]+3+bristle_top_points_num, id+2+bristle_top_points_num, id+1+bristle_top_points_num, bristle_top_vertices_ids_sorted[index]+1+bristle_top_points_num],
-            [bristle_top_vertices_ids_sorted[index]+2+bristle_top_points_num, id+3+bristle_top_points_num, id+2+bristle_top_points_num, bristle_top_vertices_ids_sorted[index]+3+bristle_top_points_num]
+            [bristle_top_vertices_ids_sorted[index]+7+bristle_top_points_num, id+3+bristle_top_points_num, id+1+bristle_top_points_num, bristle_top_vertices_ids_sorted[index]+1+bristle_top_points_num],
+            [bristle_top_vertices_ids_sorted[index]+6+bristle_top_points_num, id+2+bristle_top_points_num, id+3+bristle_top_points_num, bristle_top_vertices_ids_sorted[index]+7+bristle_top_points_num]
         ]
         top_patches.extend(top_patch)
-        top_inner_patches.append([id, id+1, id+2, id+3])
+        top_inner_patches.append([id, id+1, id+3, id+2])
         output_blocks.append(hex_line)
     
     # 展平二维list，提取所有唯一ID
@@ -597,65 +695,65 @@ def generate_solid_blocks(vertices, root_block_width, root_block_hight, bristle_
     cylinder_top_inner_left_ids_sorted = cylinder_top_inner_left_ids_sorted[::2]
     
     for index, id in enumerate(cylinder_inner_left_ids_sorted):
-        hex_line = f"\thex ({id} {id+1} {id+2} {id+3} {id+bottom_points_num} {id+1+bottom_points_num} {id+2+bottom_points_num} {id+3+bottom_points_num}) ({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
+        hex_line = f"\thex ({id} {id+1} {id+3} {id+2} {id+bottom_points_num} {id+1+bottom_points_num} {id+3+bottom_points_num} {id+2+bottom_points_num}) ({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
         output_blocks.append(hex_line)
         cylinder_hex_line = (
-            f"\thex ({cylinder_left_ids_sorted[index]} {id} {id+3} {cylinder_left_ids_sorted[index]+2} " 
-            f"{cylinder_left_ids_sorted[index]+bottom_points_num} {id+bottom_points_num} {id+3+bottom_points_num} {cylinder_left_ids_sorted[index]+2+bottom_points_num}) "
+            f"\thex ({cylinder_left_ids_sorted[index]} {id} {id+2} {cylinder_left_ids_sorted[index]+6} " 
+            f"{cylinder_left_ids_sorted[index]+bottom_points_num} {id+bottom_points_num} {id+2+bottom_points_num} {cylinder_left_ids_sorted[index]+6+bottom_points_num}) "
             f"({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
             
             f"\thex ({cylinder_left_ids_sorted[index]+1} {id+1} {id} {cylinder_left_ids_sorted[index]} " 
             f"{cylinder_left_ids_sorted[index]+1+bottom_points_num} {id+1+bottom_points_num} {id+bottom_points_num} {cylinder_left_ids_sorted[index]+bottom_points_num}) "
             f"({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
             
-            f"\thex ({cylinder_left_ids_sorted[index]+3} {id+2} {id+1} {cylinder_left_ids_sorted[index]+1} " 
-            f"{cylinder_left_ids_sorted[index]+3+bottom_points_num} {id+2+bottom_points_num} {id+1+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num}) "
+            f"\thex ({cylinder_left_ids_sorted[index]+7} {id+3} {id+1} {cylinder_left_ids_sorted[index]+1} " 
+            f"{cylinder_left_ids_sorted[index]+7+bottom_points_num} {id+3+bottom_points_num} {id+1+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num}) "
             f"({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
             
-            f"\thex ({cylinder_left_ids_sorted[index]+2} {id+3} {id+2} {cylinder_left_ids_sorted[index]+3} " 
-            f"{cylinder_left_ids_sorted[index]+2+bottom_points_num} {id+3+bottom_points_num} {id+2+bottom_points_num} {cylinder_left_ids_sorted[index]+3+bottom_points_num}) "
+            f"\thex ({cylinder_left_ids_sorted[index]+6} {id+2} {id+3} {cylinder_left_ids_sorted[index]+7} " 
+            f"{cylinder_left_ids_sorted[index]+6+bottom_points_num} {id+2+bottom_points_num} {id+3+bottom_points_num} {cylinder_left_ids_sorted[index]+7+bottom_points_num}) "
             f"({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
         )
         output_blocks.append(cylinder_hex_line)
         cylinder_out_hex_line = (
-            f"\thex ({bottom_left_vertices_ids_sorted[index]} {cylinder_left_ids_sorted[index]} {cylinder_left_ids_sorted[index]+2} {bottom_left_vertices_ids_sorted[index+1]} " 
-            f"{bottom_left_vertices_ids_sorted[index]+bottom_points_num} {cylinder_left_ids_sorted[index]+bottom_points_num} {cylinder_left_ids_sorted[index]+2+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+bottom_points_num}) "
+            f"\thex ({bottom_left_vertices_ids_sorted[index]} {cylinder_left_ids_sorted[index]} {cylinder_left_ids_sorted[index]+6} {bottom_left_vertices_ids_sorted[index+1]} " 
+            f"{bottom_left_vertices_ids_sorted[index]+bottom_points_num} {cylinder_left_ids_sorted[index]+bottom_points_num} {cylinder_left_ids_sorted[index]+6+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+bottom_points_num}) "
             f"({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
             
             f"\thex ({bottom_left_vertices_ids_sorted[index]+1} {cylinder_left_ids_sorted[index]+1} {cylinder_left_ids_sorted[index]} {bottom_left_vertices_ids_sorted[index]} " 
             f"{bottom_left_vertices_ids_sorted[index]+1+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num} {cylinder_left_ids_sorted[index]+bottom_points_num} {bottom_left_vertices_ids_sorted[index]+bottom_points_num}) "
             f"({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
             
-            f"\thex ({bottom_left_vertices_ids_sorted[index+1]+1} {cylinder_left_ids_sorted[index]+3} {cylinder_left_ids_sorted[index]+1} {bottom_left_vertices_ids_sorted[index]+1} " 
-            f"{bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num} {cylinder_left_ids_sorted[index]+3+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num} {bottom_left_vertices_ids_sorted[index]+1+bottom_points_num}) "
+            f"\thex ({bottom_left_vertices_ids_sorted[index+1]+1} {cylinder_left_ids_sorted[index]+7} {cylinder_left_ids_sorted[index]+1} {bottom_left_vertices_ids_sorted[index]+1} " 
+            f"{bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num} {cylinder_left_ids_sorted[index]+7+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num} {bottom_left_vertices_ids_sorted[index]+1+bottom_points_num}) "
             f"({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
             
-            f"\thex ({bottom_left_vertices_ids_sorted[index+1]} {cylinder_left_ids_sorted[index]+2} {cylinder_left_ids_sorted[index]+3} {bottom_left_vertices_ids_sorted[index+1]+1} " 
-            f"{bottom_left_vertices_ids_sorted[index+1]+bottom_points_num} {cylinder_left_ids_sorted[index]+2+bottom_points_num} {cylinder_left_ids_sorted[index]+3+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num}) "
+            f"\thex ({bottom_left_vertices_ids_sorted[index+1]} {cylinder_left_ids_sorted[index]+3} {cylinder_left_ids_sorted[index]+2} {bottom_left_vertices_ids_sorted[index+1]+1} " 
+            f"{bottom_left_vertices_ids_sorted[index+1]+bottom_points_num} {cylinder_left_ids_sorted[index]+3+bottom_points_num} {cylinder_left_ids_sorted[index]+2+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num}) "
             f"({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
         )
         output_blocks.append(cylinder_out_hex_line)
         hex_line = (
-            f"\thex ({id+bottom_points_num} {id+1+bottom_points_num} {id+2+bottom_points_num} {id+3+bottom_points_num} "
-            f"{cylinder_top_inner_left_ids_sorted[index]} {1+cylinder_top_inner_left_ids_sorted[index]} {cylinder_top_inner_left_ids_sorted[index]+2} {cylinder_top_inner_left_ids_sorted[index]+3}) "
+            f"\thex ({id+bottom_points_num} {id+1+bottom_points_num} {id+3+bottom_points_num} {id+2+bottom_points_num} "
+            f"{cylinder_top_inner_left_ids_sorted[index]} {1+cylinder_top_inner_left_ids_sorted[index]} {cylinder_top_inner_left_ids_sorted[index]+3} {cylinder_top_inner_left_ids_sorted[index]+2}) "
             f"({partition_X} {partition_X} {partition_Z}) simpleGrading (1 1 1)\n"
         )
         output_blocks.append(hex_line)
         bristle_hex_line = (
-            f"\thex ({cylinder_left_ids_sorted[index]+bottom_points_num} {id+bottom_points_num} {id+3+bottom_points_num} {cylinder_left_ids_sorted[index]+2+bottom_points_num} " 
-            f"{cylinder_top_left_ids_sorted[index]} {cylinder_top_inner_left_ids_sorted[index]} {cylinder_top_inner_left_ids_sorted[index]+3} {cylinder_top_left_ids_sorted[index]+2}) "
+            f"\thex ({cylinder_left_ids_sorted[index]+bottom_points_num} {id+bottom_points_num} {id+2+bottom_points_num} {cylinder_left_ids_sorted[index]+6+bottom_points_num} " 
+            f"{cylinder_top_left_ids_sorted[index]} {cylinder_top_inner_left_ids_sorted[index]} {cylinder_top_inner_left_ids_sorted[index]+2} {cylinder_top_left_ids_sorted[index]+6}) "
             f"({partition_X} {partition_X} {partition_Z}) simpleGrading (1 1 1)\n"
             
             f"\thex ({cylinder_left_ids_sorted[index]+1+bottom_points_num} {id+1+bottom_points_num} {id+bottom_points_num} {cylinder_left_ids_sorted[index]+bottom_points_num} " 
             f"{cylinder_top_left_ids_sorted[index]+1} {cylinder_top_inner_left_ids_sorted[index]+1} {cylinder_top_inner_left_ids_sorted[index]} {cylinder_top_left_ids_sorted[index]}) "
             f"({partition_X} {partition_X} {partition_Z}) simpleGrading (1 1 1)\n"
             
-            f"\thex ({cylinder_left_ids_sorted[index]+3+bottom_points_num} {id+2+bottom_points_num} {id+1+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num} " 
-            f"{cylinder_top_left_ids_sorted[index]+3} {cylinder_top_inner_left_ids_sorted[index]+2} {cylinder_top_inner_left_ids_sorted[index]+1} {cylinder_top_left_ids_sorted[index]+1}) "
+            f"\thex ({cylinder_left_ids_sorted[index]+7+bottom_points_num} {id+3+bottom_points_num} {id+1+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num} " 
+            f"{cylinder_top_left_ids_sorted[index]+7} {cylinder_top_inner_left_ids_sorted[index]+3} {cylinder_top_inner_left_ids_sorted[index]+1} {cylinder_top_left_ids_sorted[index]+1}) "
             f"({partition_X} {partition_X} {partition_Z}) simpleGrading (1 1 1)\n"
             
-            f"\thex ({cylinder_left_ids_sorted[index]+2+bottom_points_num} {id+3+bottom_points_num} {id+2+bottom_points_num} {cylinder_left_ids_sorted[index]+3+bottom_points_num} " 
-            f"{cylinder_top_left_ids_sorted[index]+2} {cylinder_top_inner_left_ids_sorted[index]+3} {cylinder_top_inner_left_ids_sorted[index]+2} {cylinder_top_left_ids_sorted[index]+3}) "
+            f"\thex ({cylinder_left_ids_sorted[index]+6+bottom_points_num} {id+2+bottom_points_num} {id+3+bottom_points_num} {cylinder_left_ids_sorted[index]+7+bottom_points_num} " 
+            f"{cylinder_top_left_ids_sorted[index]+6} {cylinder_top_inner_left_ids_sorted[index]+2} {cylinder_top_inner_left_ids_sorted[index]+3} {cylinder_top_left_ids_sorted[index]+7}) "
             f"({partition_X} {partition_X} {partition_Z}) simpleGrading (1 1 1)\n"
         )
         output_blocks.append(bristle_hex_line)
@@ -681,15 +779,15 @@ def generate_edges(bristle_length, root_block_hight, cubic_width, cubic_length, 
     output_edges = ["edges\n(\n"]
     
     for index in root_bristle_vertices_ids_sorted:
-        root_out_circle_ids = [index, index+1, index+3, index+2]
+        root_out_circle_ids = [index, index+1, index+7, index+6]
         edge_generation(root_out_circle_ids, root_block_hight)
     output_edges.append("\n")
     for index in bristle_top_vertices_ids_sorted:
-        bristle_out_circle_ids = [index, index+1, index+3, index+2]
+        bristle_out_circle_ids = [index, index+1, index+7, index+6]
         edge_generation(bristle_out_circle_ids, root_block_hight+bristle_length)
     output_edges.append("\n")
     for index in bristle_top_vertices_ids_sorted:
-        top_out_circle_ids = [index+bristle_top_points_num, index+1+bristle_top_points_num, index+3+bristle_top_points_num, index+2+bristle_top_points_num]
+        top_out_circle_ids = [index+bristle_top_points_num, index+1+bristle_top_points_num, index+7+bristle_top_points_num, index+6+bristle_top_points_num]
         edge_generation(top_out_circle_ids, root_block_hight+bristle_length*4/3)
 
     output_edges.append(");\n\n")
@@ -711,12 +809,12 @@ def generate_solid_edges(cubic_width, cubic_length, radius, bristle_length, root
             output_edges.append(edge_line)
 
     for index in cylinder_left_ids_sorted:
-        bottom_out_circle_ids = [index, index+1, index+3, index+2]
+        bottom_out_circle_ids = [index, index+1, index+7, index+6]
         root_out_circle_ids = [i+bottom_points_num for i in bottom_out_circle_ids]
         edge_generation(bottom_out_circle_ids, 0)
         edge_generation(root_out_circle_ids, root_block_hight)
     for index in cylinder_top_left_ids_sorted:
-        root_out_circle_ids = [index, index+1, index+3, index+2]
+        root_out_circle_ids = [index, index+1, index+7, index+6]
         edge_generation(root_out_circle_ids, root_block_hight+bristle_length)
 
     
@@ -740,58 +838,63 @@ def generate_patches(vertices, root_block_hight, top_patches, root_patches, bris
     output_patches.append("\t(\n")
     root_ids, root_points_num = find_left_bottom_vertices_simple(vertices, root_block_hight, XYZ="Z")
     bristle_top_ids, bristle_top_points_num = find_left_bottom_vertices_simple(vertices, root_block_hight+bristle_length, XYZ="Z")
-    top_left_bottom_ids = [i + bottom_points_num + root_points_num + bristle_top_points_num for i in bottom_ids_left_corner]
-    for id in top_left_bottom_ids:
-        output_patches.append(f"\t\t({id} {id+1} {id+5} {id+4})\n")
     for ids in top_patches:
         output_patches.append(f"\t\t({ids[0]} {ids[1]} {ids[2]} {ids[3]})\n")
     output_patches.append("\t)\n\n")
     
     output_patches.append("\tpatch inlet\n")
     output_patches.append("\t(\n")
-    inlet_left_coner_ids, inlet_points_num = find_left_bottom_vertices_simple(vertices, 0, "X")
+    inlet_left_coner_ids, inlet_points_num = find_vertices(vertices, 0, "X")
     bottom_left_coner_ids, bottom_points_num = find_vertices(vertices, 0, "Z")
     root_left_coner_ids, root_points_num = find_vertices(vertices, root_block_hight, "Z")
     bristle_top_left_coner_ids, bristle_top_points_num = find_vertices(vertices, root_block_hight+bristle_length, "Z")
-    inlet_bottom_left_coner_ids = set(inlet_left_coner_ids) & set(bottom_left_coner_ids)
-    inlet_root_left_coner_ids = set(inlet_left_coner_ids) & set(root_left_coner_ids)
-    inlet_bristle_top_left_coner_ids = set(inlet_left_coner_ids) & set(bristle_top_left_coner_ids)
-    for id in inlet_bottom_left_coner_ids:
-        output_patches.append(f"\t\t({id+bottom_points_num} {id+bottom_points_num+4} {id+4} {id})\n")
-    for id in inlet_root_left_coner_ids:
-        output_patches.append(f"\t\t({id+root_points_num} {id+root_points_num+4} {id+4} {id})\n")
-    for id in inlet_bristle_top_left_coner_ids:
-        output_patches.append(f"\t\t({id+bristle_top_points_num} {id+bristle_top_points_num+4} {id+4} {id})\n")
+    roof_left_coner_ids, roof_points_num = find_vertices(vertices, root_block_hight+bristle_length*4/3, "Z")
+    inlet_bottom_left_coner_ids = sorted(list(set(inlet_left_coner_ids) & set(bottom_left_coner_ids)))
+    inlet_root_left_coner_ids = sorted(list(set(inlet_left_coner_ids) & set(root_left_coner_ids)))
+    inlet_bristle_top_left_coner_ids = sorted(list(set(inlet_left_coner_ids) & set(bristle_top_left_coner_ids)))
+    inlet_roof_left_coner_ids = sorted(list(set(inlet_left_coner_ids) & set(roof_left_coner_ids)))
+    for index, id in enumerate(inlet_bottom_left_coner_ids[0:-1]):
+        output_patches.append(f"\t\t({inlet_root_left_coner_ids[index]} {inlet_root_left_coner_ids[index+1]} {inlet_bottom_left_coner_ids[index+1]} {inlet_bottom_left_coner_ids[index]})\n")
+        output_patches.append(f"\t\t({inlet_bristle_top_left_coner_ids[index]} {inlet_bristle_top_left_coner_ids[index+1]} {inlet_root_left_coner_ids[index+1]} {inlet_root_left_coner_ids[index]})\n")
+        output_patches.append(f"\t\t({inlet_roof_left_coner_ids[index]} {inlet_roof_left_coner_ids[index+1]} {inlet_bristle_top_left_coner_ids[index+1]} {inlet_bristle_top_left_coner_ids[index]})\n")
     output_patches.append("\t)\n\n")
     
     output_patches.append("\tpatch outlet\n")
     output_patches.append("\t(\n")
-    outlet_left_coner_ids, outlet_points_num = find_left_bottom_vertices_simple(vertices, cubic_width, "X")
-    outlet_bottom_left_coner_ids = set(outlet_left_coner_ids) & set(bottom_left_coner_ids)
-    outlet_root_left_coner_ids = set(outlet_left_coner_ids) & set(root_left_coner_ids)
-    outlet_bristle_top_left_coner_ids = set(outlet_left_coner_ids) & set(bristle_top_left_coner_ids)
-    for id in outlet_bottom_left_coner_ids:
-        output_patches.append(f"\t\t({id} {id+4} {id+bottom_points_num+4} {id+bottom_points_num})\n")
-    for id in outlet_root_left_coner_ids:
-        output_patches.append(f"\t\t({id} {id+4} {id+root_points_num+4} {id+root_points_num})\n")
-    for id in outlet_bristle_top_left_coner_ids:
-        output_patches.append(f"\t\t({id} {id+4} {id+bristle_top_points_num+4} {id+bristle_top_points_num})\n")
+    outlet_left_coner_ids, outlet_points_num = find_vertices(vertices, cubic_width, "X")
+    outlet_bottom_left_coner_ids = sorted(list(set(outlet_left_coner_ids) & set(bottom_left_coner_ids)))
+    outlet_root_left_coner_ids = sorted(list(set(outlet_left_coner_ids) & set(root_left_coner_ids)))
+    outlet_roof_left_coner_ids = sorted(list(set(outlet_left_coner_ids) & set(roof_left_coner_ids)))
+    outlet_bristle_top_left_coner_ids = sorted(list(set(outlet_left_coner_ids) & set(bristle_top_left_coner_ids)))
+    for index, id in enumerate(outlet_bottom_left_coner_ids[0:-1]):
+        output_patches.append(f"\t\t({outlet_bottom_left_coner_ids[index]} {outlet_bottom_left_coner_ids[index+1]} {outlet_root_left_coner_ids[index+1]} {outlet_root_left_coner_ids[index]})\n")
+        output_patches.append(f"\t\t({outlet_root_left_coner_ids[index]} {outlet_root_left_coner_ids[index+1]} {outlet_bristle_top_left_coner_ids[index+1]} {outlet_bristle_top_left_coner_ids[index]})\n")
+        output_patches.append(f"\t\t({outlet_bristle_top_left_coner_ids[index]} {outlet_bristle_top_left_coner_ids[index+1]} {outlet_roof_left_coner_ids[index+1]} {outlet_roof_left_coner_ids[index]})\n")
     output_patches.append("\t)\n\n")
     
     output_patches.append("\tpatch bristle\n")
     output_patches.append("\t(\n")
     root_block_corner = bristle_left_ids[1:-1]
-    root_block_left_up_corner = set(bottom_ids) & set(root_block_corner)
+    bottom_block_left_up_corner = sorted(list(set(bottom_ids) & set(root_block_corner)))
+    bottom_block_left_up_corner_ids_sorted = sort_ids_by_axis(vertices, bottom_block_left_up_corner, axis='y')
+    root_block_left_up_corner = sorted(list(set(root_left_coner_ids) & set(root_block_corner)))
     root_block_left_up_corner_ids_sorted = sort_ids_by_axis(vertices, root_block_left_up_corner, axis='y')
-    for index, id in enumerate(root_block_left_up_corner_ids_sorted[0:-1]):
-        root_block_patches = (f"\t\t({root_block_left_up_corner_ids_sorted[index+1]} {root_block_left_up_corner_ids_sorted[index+1]+bottom_points_num} {id+bottom_points_num} {id})\n"
-                              f"\t\t({id+1} {id+bottom_points_num+1} {root_block_left_up_corner_ids_sorted[index+1]+bottom_points_num+1} {root_block_left_up_corner_ids_sorted[index+1]+1})\n"
+    root_block_left_up_corner_ids_sorted = root_block_left_up_corner_ids_sorted[1:-1]
+    
+    bristle_out_left_coner_ids, bristle_top_inner_points_num = find_vertices(vertices, root_block_width*3/2-radius/(2**(0.5)), "X")
+    top_block_left_up_corner = sorted(list(set(bristle_top_left_coner_ids) & set(bristle_out_left_coner_ids)))
+    top_block_left_up_corner_ids_sorted = sort_ids_by_axis(vertices, top_block_left_up_corner, axis='y')
+    top_block_left_up_corner_ids_sorted = top_block_left_up_corner_ids_sorted[::2]
+    for index, id in enumerate(bottom_block_left_up_corner_ids_sorted[0:-1]):
+        root_block_patches = (f"\t\t({bottom_block_left_up_corner_ids_sorted[index+1]} {root_block_left_up_corner_ids_sorted[index+1]} {root_block_left_up_corner_ids_sorted[index]} {id})\n"
+                              f"\t\t({bottom_block_left_up_corner_ids_sorted[index+1]+1} {root_block_left_up_corner_ids_sorted[index+1]+1} {root_block_left_up_corner_ids_sorted[index]+1} {id+1})\n"
                               )
         output_patches.append(root_block_patches)
     root_block_side_patches = (
-        f"\t\t({root_block_left_up_corner_ids_sorted[0]} {root_block_left_up_corner_ids_sorted[0]+bottom_points_num} {root_block_left_up_corner_ids_sorted[0]+bottom_points_num+1} {root_block_left_up_corner_ids_sorted[0]+1})\n"
-        f"\t\t({root_block_left_up_corner_ids_sorted[-1]+1} {root_block_left_up_corner_ids_sorted[-1]+1+bottom_points_num} {root_block_left_up_corner_ids_sorted[-1]+bottom_points_num} {root_block_left_up_corner_ids_sorted[-1]})\n"
+        f"\t\t({bottom_block_left_up_corner_ids_sorted[0]} {root_block_left_up_corner_ids_sorted[0]} {root_block_left_up_corner_ids_sorted[0]+1} {bottom_block_left_up_corner_ids_sorted[0]+1})\n"
+        f"\t\t({bottom_block_left_up_corner_ids_sorted[-1]+1} {root_block_left_up_corner_ids_sorted[-1]+1} {root_block_left_up_corner_ids_sorted[-1]} {bottom_block_left_up_corner_ids_sorted[-1]})\n"
     )
+    output_patches.append(root_block_side_patches)
     for i in range(len(root_patches)):
         output_patches.append(f"\t\t({root_patches[i][3]} {root_patches[i][2]} {root_patches[i][1]} {root_patches[i][0]})\n")
     
@@ -801,44 +904,42 @@ def generate_patches(vertices, root_block_hight, top_patches, root_patches, bris
     bristle_top_inner_left_ids_sorted = bristle_top_inner_left_ids_sorted[::2]
     for index, id in enumerate(root_bristle_vertices_ids_sorted):
         bristle_top_patch = (
-            f"\t\t({bristle_top_inner_left_ids_sorted[index]+3} {bristle_top_inner_left_ids_sorted[index]+2} {bristle_top_inner_left_ids_sorted[index]+1} {bristle_top_inner_left_ids_sorted[index]})\n"
-            f"\t\t({id+2+root_points_num} {bristle_top_inner_left_ids_sorted[index]+3} {bristle_top_inner_left_ids_sorted[index]} {id+root_points_num})\n"
-            f"\t\t({id+root_points_num} {bristle_top_inner_left_ids_sorted[index]} {bristle_top_inner_left_ids_sorted[index]+1} {id+1+root_points_num})\n"
-            f"\t\t({id+1+root_points_num} {bristle_top_inner_left_ids_sorted[index]+1} {bristle_top_inner_left_ids_sorted[index]+2} {id+3+root_points_num})\n"
-            f"\t\t({id+3+root_points_num} {bristle_top_inner_left_ids_sorted[index]+2} {bristle_top_inner_left_ids_sorted[index]+3} {id+2+root_points_num})\n"
+            f"\t\t({bristle_top_inner_left_ids_sorted[index]+2} {bristle_top_inner_left_ids_sorted[index]+3} {bristle_top_inner_left_ids_sorted[index]+1} {bristle_top_inner_left_ids_sorted[index]})\n"
+            f"\t\t({top_block_left_up_corner_ids_sorted[index]+6} {bristle_top_inner_left_ids_sorted[index]+2} {bristle_top_inner_left_ids_sorted[index]} {top_block_left_up_corner_ids_sorted[index]})\n"
+            f"\t\t({top_block_left_up_corner_ids_sorted[index]} {bristle_top_inner_left_ids_sorted[index]} {bristle_top_inner_left_ids_sorted[index]+1} {top_block_left_up_corner_ids_sorted[index]+1})\n"
+            f"\t\t({top_block_left_up_corner_ids_sorted[index]+1} {bristle_top_inner_left_ids_sorted[index]+1} {bristle_top_inner_left_ids_sorted[index]+3} {top_block_left_up_corner_ids_sorted[index]+7})\n"
+            f"\t\t({top_block_left_up_corner_ids_sorted[index]+7} {bristle_top_inner_left_ids_sorted[index]+3} {bristle_top_inner_left_ids_sorted[index]+2} {top_block_left_up_corner_ids_sorted[index]+6})\n"
         )
         output_patches.append(bristle_top_patch)
         bristle_side_patch = (
-            f"\t\t({id+2} {id+2+root_points_num} {id+root_points_num} {id})\n"
-            f"\t\t({id} {id+root_points_num} {id+root_points_num+1} {id+1})\n"
-            f"\t\t({id+1} {id+root_points_num+1} {id+root_points_num+3} {id+3})\n"
-            f"\t\t({id+3} {id+root_points_num+3} {id+root_points_num+2} {id+2})\n"
+            f"\t\t({id+2} {top_block_left_up_corner_ids_sorted[index]+6} {top_block_left_up_corner_ids_sorted[index]} {id})\n"
+            f"\t\t({id} {top_block_left_up_corner_ids_sorted[index]} {top_block_left_up_corner_ids_sorted[index]+1} {id+1})\n"
+            f"\t\t({id+1} {top_block_left_up_corner_ids_sorted[index]+1} {top_block_left_up_corner_ids_sorted[index]+7} {id+3})\n"
+            f"\t\t({id+3} {top_block_left_up_corner_ids_sorted[index]+7} {top_block_left_up_corner_ids_sorted[index]+6} {id+2})\n"
         )
         output_patches.append(bristle_side_patch)
     output_patches.append("\t)\n\n")
     
     output_patches.append("\tpatch frontAndBackPlanes\n")
     output_patches.append("\t(\n")
-    stream_right_wall_left_coner_ids, stream_right_wall_points_num = find_left_bottom_vertices_simple(vertices, 0, "Y")
-    stream_left_wall_left_coner_ids, stream_left_wall_points_num = find_left_bottom_vertices_simple(vertices, cubic_length, "Y")
-    stream_right_wall_bottom_left_coner_ids = set(stream_right_wall_left_coner_ids) & set(bottom_left_coner_ids)
-    stream_right_wall_root_left_coner_ids = set(stream_right_wall_left_coner_ids) & set(root_left_coner_ids)
-    stream_right_wall_top_left_coner_ids = set(stream_right_wall_left_coner_ids) & set(bristle_top_left_coner_ids)
-    stream_left_wall_bottom_left_coner_ids = set(stream_left_wall_left_coner_ids) & set(bottom_left_coner_ids)
-    stream_left_wall_root_left_coner_ids = set(stream_left_wall_left_coner_ids) & set(root_left_coner_ids)
-    stream_left_wall_top_left_coner_ids = set(stream_left_wall_left_coner_ids) & set(bristle_top_left_coner_ids)
-    for id in stream_right_wall_bottom_left_coner_ids:
-        output_patches.append(f"\t\t({id} {id+1} {id+bottom_points_num+1} {id+bottom_points_num})\n")
-    for id in stream_right_wall_root_left_coner_ids:
-        output_patches.append(f"\t\t({id} {id+1} {id+root_points_num+1} {id+root_points_num})\n")
-    for id in stream_right_wall_top_left_coner_ids:
-        output_patches.append(f"\t\t({id} {id+1} {id+bristle_top_points_num+1} {id+bristle_top_points_num})\n")
-    for id in stream_left_wall_bottom_left_coner_ids:
-        output_patches.append(f"\t\t({id} {id+bottom_points_num} {id+bottom_points_num+1} {id+1})\n")
-    for id in stream_left_wall_root_left_coner_ids:
-        output_patches.append(f"\t\t({id} {id+root_points_num} {id+root_points_num+1} {id+1})\n")
-    for id in stream_left_wall_top_left_coner_ids:
-        output_patches.append(f"\t\t({id} {id+bristle_top_points_num} {id+bristle_top_points_num+1} {id+1})\n")
+    stream_right_wall_left_coner_ids, stream_right_wall_points_num = find_vertices(vertices, 0, "Y")
+    stream_left_wall_left_coner_ids, stream_left_wall_points_num = find_vertices(vertices, cubic_length, "Y")
+    stream_right_wall_bottom_left_coner_ids = sorted(list(set(stream_right_wall_left_coner_ids) & set(bottom_left_coner_ids)))
+    stream_right_wall_root_left_coner_ids = sorted(list(set(stream_right_wall_left_coner_ids) & set(root_left_coner_ids)))
+    stream_right_wall_top_left_coner_ids = sorted(list(set(stream_right_wall_left_coner_ids) & set(bristle_top_left_coner_ids)))
+    stream_right_wall_roof_left_coner_ids = sorted(list(set(stream_right_wall_left_coner_ids) & set(roof_left_coner_ids)))
+    stream_left_wall_bottom_left_coner_ids = sorted(list(set(stream_left_wall_left_coner_ids) & set(bottom_left_coner_ids)))
+    stream_left_wall_root_left_coner_ids = sorted(list(set(stream_left_wall_left_coner_ids) & set(root_left_coner_ids)))
+    stream_left_wall_top_left_coner_ids = sorted(list(set(stream_left_wall_left_coner_ids) & set(bristle_top_left_coner_ids)))
+    stream_left_wall_roof_left_coner_ids = sorted(list(set(stream_left_wall_left_coner_ids) & set(roof_left_coner_ids)))
+    for index, id in enumerate(stream_right_wall_bottom_left_coner_ids[0:-1]):
+        output_patches.append(f"\t\t({stream_right_wall_bottom_left_coner_ids[index]} {stream_right_wall_bottom_left_coner_ids[index+1]} {stream_right_wall_root_left_coner_ids[index+1]} {stream_right_wall_root_left_coner_ids[index]})\n")
+        output_patches.append(f"\t\t({stream_right_wall_root_left_coner_ids[index]} {stream_right_wall_root_left_coner_ids[index+1]} {stream_right_wall_top_left_coner_ids[index+1]} {stream_right_wall_top_left_coner_ids[index]})\n")
+        output_patches.append(f"\t\t({stream_right_wall_top_left_coner_ids[index]} {stream_right_wall_top_left_coner_ids[index+1]} {stream_right_wall_roof_left_coner_ids[index+1]} {stream_right_wall_roof_left_coner_ids[index]})\n")
+        
+        output_patches.append(f"\t\t({stream_left_wall_bottom_left_coner_ids[index]} {stream_left_wall_root_left_coner_ids[index]} {stream_left_wall_root_left_coner_ids[index+1]} {stream_left_wall_bottom_left_coner_ids[index+1]})\n")
+        output_patches.append(f"\t\t({stream_left_wall_root_left_coner_ids[index]} {stream_left_wall_top_left_coner_ids[index]} {stream_left_wall_top_left_coner_ids[index+1]} {stream_left_wall_root_left_coner_ids[index+1]})\n")
+        output_patches.append(f"\t\t({stream_left_wall_top_left_coner_ids[index]} {stream_left_wall_roof_left_coner_ids[index]} {stream_left_wall_roof_left_coner_ids[index+1]} {stream_left_wall_top_left_coner_ids[index+1]})\n")
     
     output_patches.append("\t)\n")
     output_patches.append(");\n\n")
@@ -849,54 +950,53 @@ def generate_solid_patches(bottom_left_vertices_ids_sorted, bottom_points_num, c
     output_patches = ["patches\n(\n"]
     output_patches.append("\tpatch bristle\n")
     output_patches.append("\t(\n")
-    print(bottom_left_vertices_ids_sorted)
     for index, id in enumerate(cylinder_left_ids_sorted):
         output_patches.append(f"\t\t({bottom_left_vertices_ids_sorted[index]} {bottom_left_vertices_ids_sorted[index]+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]})\n")
         output_patches.append(f"\t\t({bottom_left_vertices_ids_sorted[index+1]+1} {bottom_left_vertices_ids_sorted[index+1]+bottom_points_num+1} {bottom_left_vertices_ids_sorted[index]+bottom_points_num+1} {bottom_left_vertices_ids_sorted[index]+1})\n")
         
         bristle_root_patch = (
             f"\t\t({bottom_left_vertices_ids_sorted[index]+bottom_points_num} {id+bottom_points_num} "
-            f"{id+2+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+bottom_points_num})\n"
+            f"{id+6+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+bottom_points_num})\n"
             
             f"\t\t({bottom_left_vertices_ids_sorted[index]+1+bottom_points_num} {id+1+bottom_points_num} "
             f"{id+bottom_points_num} {bottom_left_vertices_ids_sorted[index]+bottom_points_num})\n"
             
-            f"\t\t({bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num} {id+3+bottom_points_num} "
+            f"\t\t({bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num} {id+7+bottom_points_num} "
             f"{id+1+bottom_points_num} {bottom_left_vertices_ids_sorted[index]+1+bottom_points_num})\n"
             
-            f"\t\t({bottom_left_vertices_ids_sorted[index+1]+bottom_points_num} {id+2+bottom_points_num} "
-            f"{id+3+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num})\n"
+            f"\t\t({bottom_left_vertices_ids_sorted[index+1]+bottom_points_num} {id+6+bottom_points_num} "
+            f"{id+7+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num})\n"
         )
         output_patches.append(bristle_root_patch)
         bristle_cylinder_patch = (
             f"\t\t({id+bottom_points_num} {cylinder_top_left_ids_sorted[index]} "
-            f"{cylinder_top_left_ids_sorted[index]+2} {id+2+bottom_points_num})\n"
+            f"{cylinder_top_left_ids_sorted[index]+6} {id+6+bottom_points_num})\n"
             
             f"\t\t({id+1+bottom_points_num} {cylinder_top_left_ids_sorted[index]+1} "
             f"{cylinder_top_left_ids_sorted[index]} {id+bottom_points_num})\n"
             
-            f"\t\t({id+3+bottom_points_num} {cylinder_top_left_ids_sorted[index]+3} "
+            f"\t\t({id+7+bottom_points_num} {cylinder_top_left_ids_sorted[index]+7} "
             f"{cylinder_top_left_ids_sorted[index]+1} {id+1+bottom_points_num})\n"
             
-            f"\t\t({id+2+bottom_points_num} {cylinder_top_left_ids_sorted[index]+2} "
-            f"{cylinder_top_left_ids_sorted[index]+3} {id+3+bottom_points_num})\n"
+            f"\t\t({id+6+bottom_points_num} {cylinder_top_left_ids_sorted[index]+6} "
+            f"{cylinder_top_left_ids_sorted[index]+7} {id+7+bottom_points_num})\n"
         )
         output_patches.append(bristle_cylinder_patch)
         bristle_top_patch = (
             f"\t\t({cylinder_top_inner_left_ids_sorted[index]} {cylinder_top_inner_left_ids_sorted[index]+1} "
-            f"{cylinder_top_inner_left_ids_sorted[index]+2} {cylinder_top_inner_left_ids_sorted[index]+3})\n"
+            f"{cylinder_top_inner_left_ids_sorted[index]+3} {cylinder_top_inner_left_ids_sorted[index]+2})\n"
             
             f"\t\t({cylinder_top_left_ids_sorted[index]} {cylinder_top_inner_left_ids_sorted[index]} "
-            f"{cylinder_top_inner_left_ids_sorted[index]+3} {cylinder_top_left_ids_sorted[index]+2})\n"
+            f"{cylinder_top_inner_left_ids_sorted[index]+2} {cylinder_top_left_ids_sorted[index]+6})\n"
             
             f"\t\t({cylinder_top_left_ids_sorted[index]+1} {cylinder_top_inner_left_ids_sorted[index]+1} "
             f"{cylinder_top_inner_left_ids_sorted[index]} {cylinder_top_left_ids_sorted[index]})\n"
             
-            f"\t\t({cylinder_top_left_ids_sorted[index]+3} {cylinder_top_inner_left_ids_sorted[index]+2} "
+            f"\t\t({cylinder_top_left_ids_sorted[index]+7} {cylinder_top_inner_left_ids_sorted[index]+3} "
             f"{cylinder_top_inner_left_ids_sorted[index]+1} {cylinder_top_left_ids_sorted[index]+1})\n"
             
-            f"\t\t({cylinder_top_left_ids_sorted[index]+2} {cylinder_top_inner_left_ids_sorted[index]+3} "
-            f"{cylinder_top_inner_left_ids_sorted[index]+2} {cylinder_top_left_ids_sorted[index]+3})\n"
+            f"\t\t({cylinder_top_left_ids_sorted[index]+6} {cylinder_top_inner_left_ids_sorted[index]+2} "
+            f"{cylinder_top_inner_left_ids_sorted[index]+3} {cylinder_top_left_ids_sorted[index]+7})\n"
             
         )
         output_patches.append(bristle_top_patch)
@@ -909,35 +1009,35 @@ def generate_solid_patches(bottom_left_vertices_ids_sorted, bottom_points_num, c
     
     for index, id in enumerate(cylinder_left_ids_sorted):
         bottom_patch = (
-            f"\t\t({bottom_left_vertices_ids_sorted[index+1]} {id+2} "
+            f"\t\t({bottom_left_vertices_ids_sorted[index+1]} {id+6} "
             f"{id} {bottom_left_vertices_ids_sorted[index]})\n"
             
             f"\t\t({bottom_left_vertices_ids_sorted[index]} {id} "
             f"{id+1} {bottom_left_vertices_ids_sorted[index]+1})\n"
             
             f"\t\t({bottom_left_vertices_ids_sorted[index]+1} {id+1} "
-            f"{id+3} {bottom_left_vertices_ids_sorted[index+1]+1})\n"
+            f"{id+7} {bottom_left_vertices_ids_sorted[index+1]+1})\n"
             
-            f"\t\t({bottom_left_vertices_ids_sorted[index+1]+1} {id+3} "
-            f"{id+2} {bottom_left_vertices_ids_sorted[index+1]})\n"
+            f"\t\t({bottom_left_vertices_ids_sorted[index+1]+1} {id+7} "
+            f"{id+6} {bottom_left_vertices_ids_sorted[index+1]})\n"
         )
         output_patches.append(bottom_patch)
         
         bottom_cylinder_patch = (
-            f"\t\t({cylinder_inner_left_ids_sorted[index]+3} {cylinder_inner_left_ids_sorted[index]+2} "
+            f"\t\t({cylinder_inner_left_ids_sorted[index]+2} {cylinder_inner_left_ids_sorted[index]+3} "
             f"{cylinder_inner_left_ids_sorted[index]+1} {cylinder_inner_left_ids_sorted[index]})\n"
             
-            f"\t\t({id+2} {cylinder_inner_left_ids_sorted[index]+3} "
+            f"\t\t({id+6} {cylinder_inner_left_ids_sorted[index]+2} "
             f"{cylinder_inner_left_ids_sorted[index]} {id})\n"
             
             f"\t\t({id} {cylinder_inner_left_ids_sorted[index]} "
             f"{cylinder_inner_left_ids_sorted[index]+1} {id+1})\n"
             
             f"\t\t({id+1} {cylinder_inner_left_ids_sorted[index]+1} "
-            f"{cylinder_inner_left_ids_sorted[index]+2} {id+3})\n"
+            f"{cylinder_inner_left_ids_sorted[index]+3} {id+7})\n"
             
-            f"\t\t({id+3} {cylinder_inner_left_ids_sorted[index]+2} "
-            f"{cylinder_inner_left_ids_sorted[index]+3} {id+2})\n"
+            f"\t\t({id+7} {cylinder_inner_left_ids_sorted[index]+3} "
+            f"{cylinder_inner_left_ids_sorted[index]+2} {id+6})\n"
         )
         output_patches.append(bottom_cylinder_patch)
     # for index, id in enumerate(bottom_left_vertices_ids_sorted[:-1]):
