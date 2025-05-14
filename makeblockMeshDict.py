@@ -534,7 +534,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     bristle_top_left_bottom_points_right_row = sorted(list(set(bristle_top_ids_all) & set(bristle_right_ids)))
     for index, id in enumerate(bristle_top_left_bottom_points_left_row[0:-1]):
         block_line = (
-            f"\thex ({id} {id+1} {bristle_top_left_bottom_points_left_row[index+1]} {bristle_top_left_bottom_points_left_row[index+1]+1} "
+            f"\thex ({id} {id+1} {bristle_top_left_bottom_points_left_row[index+1]+1} {bristle_top_left_bottom_points_left_row[index+1]} "
             f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_bottom_points_left_row[index+1]+1+bristle_top_points_num} {bristle_top_left_bottom_points_left_row[index+1]+bristle_top_points_num}) "
             f"({partition_X} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
         )
@@ -544,7 +544,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     
     for index, id in enumerate(bristle_top_left_bottom_points_right_row[0:-1]):
         block_line = (
-            f"\thex ({id} {id+1} {bristle_top_left_bottom_points_right_row[index+1]} {bristle_top_left_bottom_points_right_row[index+1]+1} "
+            f"\thex ({id} {id+1} {bristle_top_left_bottom_points_right_row[index+1]+1} {bristle_top_left_bottom_points_right_row[index+1]} "
             f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_bottom_points_right_row[index+1]+1+bristle_top_points_num} {bristle_top_left_bottom_points_right_row[index+1]+bristle_top_points_num}) "
             f"({partition_X} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
         )
@@ -560,10 +560,10 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     for index, id in enumerate(top_ids_left_corner):
         block_line = (
             f"\thex ({id} {id+1} {id+5} {id+4} "
-            f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {id+4+bristle_top_points_num} {id+5+bristle_top_points_num}) "
+            f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {id+5+bristle_top_points_num} {id+4+bristle_top_points_num}) "
             f"({partition_X} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
         )
-        top_patches.append([id+bristle_top_points_num, id+1+bristle_top_points_num, id+4+bristle_top_points_num, id+5+bristle_top_points_num])
+        top_patches.append([id+bristle_top_points_num, id+1+bristle_top_points_num, id+5+bristle_top_points_num, id+4+bristle_top_points_num])
         output_blocks.append(block_line)
     output_blocks.append("\n")
     
