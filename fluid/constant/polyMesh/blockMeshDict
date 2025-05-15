@@ -267,7 +267,7 @@ blocks
 	hex (26 27 31 30 78 79 83 82) (5 5 1) simpleGrading (1 1 1)
 
 	hex (1 2 6 5 33 34 38 37) (5 5 1) simpleGrading (1 1 1)
-	hex (25 26 30 29 57 58 62 61) (5 5 1) simpleGrading (1 1 1)
+	hex (25 26 30 29 77 78 82 81) (5 5 1) simpleGrading (1 1 1)
 
 	hex (32 33 37 36 84 85 89 88) (5 5 10) simpleGrading (1 1 1)
 	hex (36 37 45 44 88 89 101 100) (5 5 10) simpleGrading (1 1 1)
@@ -286,7 +286,7 @@ blocks
 	hex (78 79 83 82 150 151 155 154) (5 5 10) simpleGrading (1 1 1)
 
 	hex (33 34 38 37 85 86 90 89) (5 5 10) simpleGrading (1 1 1)
-	hex (77 78 82 81 129 130 134 133) (5 5 10) simpleGrading (1 1 1)
+	hex (77 78 82 81 149 150 154 153) (5 5 10) simpleGrading (1 1 1)
 
 	hex (37 40 42 45 89 92 98 101) (5 5 10) simpleGrading (1 1 1)
 	hex (38 41 40 37 90 93 92 89) (5 5 10) simpleGrading (1 1 1)
