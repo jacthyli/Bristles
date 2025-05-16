@@ -788,7 +788,7 @@ def generate_edges(bristle_length, root_block_hight, cubic_width, cubic_length, 
     output_edges = ["edges\n(\n"]
     
     for index in root_bristle_vertices_ids_sorted:
-        root_out_circle_ids = [index, index+1, index+7, index+6]
+        root_out_circle_ids = [index, index+1, index+3, index+2]
         edge_generation(root_out_circle_ids, root_block_hight)
     output_edges.append("\n")
     for index in bristle_top_vertices_ids_sorted:
