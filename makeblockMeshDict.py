@@ -773,31 +773,31 @@ def generate_solid_blocks(vertices, root_block_width, root_block_hight, bristle_
     
 def generate_edges(bristle_length, root_block_hight, cubic_width, cubic_length, root_bristle_vertices_ids_sorted, bristle_top_vertices_ids_sorted, bristle_top_points_num):
     
-    def edge_generation(ids, z):
+    def edge_generation(ids, index, z):
         alpha = 0
         beta = 0
         num_points = len(ids)
         for i in range(num_points):
             start_id = ids[i]
             end_id = ids[(i + 1) % num_points]
-            edge_line = f"\tarc {start_id} {end_id} ({cubic_width/2+radius*np.sin(alpha)} {cubic_length/2-radius*np.cos(beta)} {z})\n"
+            edge_line = f"\tarc {start_id} {end_id} ({cubic_width/2+radius*np.sin(alpha)} {cubic_length/2-radius*np.cos(beta)+index*cubic_length/7} {z})\n"
             alpha += np.pi/2
             beta += np.pi/2
             output_edges.append(edge_line)
 
     output_edges = ["edges\n(\n"]
     
-    for index in root_bristle_vertices_ids_sorted:
-        root_out_circle_ids = [index, index+1, index+3, index+2]
-        edge_generation(root_out_circle_ids, root_block_hight)
+    for index, id in enumerate(root_bristle_vertices_ids_sorted):
+        root_out_circle_ids = [id, id+1, id+3, id+2]
+        edge_generation(root_out_circle_ids, index, root_block_hight)
     output_edges.append("\n")
-    for index in bristle_top_vertices_ids_sorted:
-        bristle_out_circle_ids = [index, index+1, index+7, index+6]
-        edge_generation(bristle_out_circle_ids, root_block_hight+bristle_length)
+    for index, id in enumerate(bristle_top_vertices_ids_sorted):
+        bristle_out_circle_ids = [id, id+1, id+7, id+6]
+        edge_generation(bristle_out_circle_ids, index, root_block_hight+bristle_length)
     output_edges.append("\n")
-    for index in bristle_top_vertices_ids_sorted:
-        top_out_circle_ids = [index+bristle_top_points_num, index+1+bristle_top_points_num, index+7+bristle_top_points_num, index+6+bristle_top_points_num]
-        edge_generation(top_out_circle_ids, root_block_hight+bristle_length*4/3)
+    for index, id in enumerate(bristle_top_vertices_ids_sorted):
+        top_out_circle_ids = [id+bristle_top_points_num, id+1+bristle_top_points_num, id+7+bristle_top_points_num, id+6+bristle_top_points_num]
+        edge_generation(top_out_circle_ids, index, root_block_hight+bristle_length*4/3)
 
     output_edges.append(");\n\n")
     return output_edges
@@ -812,19 +812,19 @@ def generate_solid_edges(cubic_width, cubic_length, radius, bristle_length, root
         for i in range(num_points):
             start_id = ids[i]
             end_id = ids[(i + 1) % num_points]
-            edge_line = f"\tarc {start_id} {end_id} ({cubic_width/2+radius*np.sin(alpha)} {cubic_length/2-radius*np.cos(beta)} {z})\n"
+            edge_line = f"\tarc {start_id} {end_id} ({cubic_width/2+radius*np.sin(alpha)} {cubic_length/2-radius*np.cos(beta)+index*cubic_length/7} {z})\n"
             alpha += np.pi/2
             beta += np.pi/2
             output_edges.append(edge_line)
 
-    for index in cylinder_left_ids_sorted:
-        bottom_out_circle_ids = [index, index+1, index+7, index+6]
+    for index, id in enumerate(cylinder_left_ids_sorted):
+        bottom_out_circle_ids = [id, id+1, id+7, id+6]
         root_out_circle_ids = [i+bottom_points_num for i in bottom_out_circle_ids]
-        edge_generation(bottom_out_circle_ids, 0)
-        edge_generation(root_out_circle_ids, root_block_hight)
-    for index in cylinder_top_left_ids_sorted:
-        root_out_circle_ids = [index, index+1, index+7, index+6]
-        edge_generation(root_out_circle_ids, root_block_hight+bristle_length)
+        edge_generation(bottom_out_circle_ids, index, 0)
+        edge_generation(root_out_circle_ids, index, root_block_hight)
+    for index, id in enumerate(cylinder_top_left_ids_sorted):
+        root_out_circle_ids = [id, id+1, id+7, id+6]
+        edge_generation(root_out_circle_ids, index, root_block_hight+bristle_length)
 
     
     output_edges.append(");\n\n")
