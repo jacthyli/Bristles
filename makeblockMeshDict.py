@@ -805,7 +805,7 @@ def generate_edges(bristle_length, root_block_hight, cubic_width, cubic_length, 
 def generate_solid_edges(cubic_width, cubic_length, radius, bristle_length, root_block_hight, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, bottom_points_num):
     output_edges = ["edges\n(\n"]
     
-    def edge_generation(ids, z):
+    def edge_generation(ids, index, z):
         alpha = 0
         beta = 0
         num_points = len(ids)
