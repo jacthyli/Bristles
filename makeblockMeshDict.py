@@ -737,8 +737,8 @@ def generate_solid_blocks(vertices, root_block_width, root_block_hight, bristle_
             f"{bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num} {cylinder_left_ids_sorted[index]+7+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num} {bottom_left_vertices_ids_sorted[index]+1+bottom_points_num}) "
             f"({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
             
-            f"\thex ({bottom_left_vertices_ids_sorted[index+1]} {cylinder_left_ids_sorted[index]+3} {cylinder_left_ids_sorted[index]+2} {bottom_left_vertices_ids_sorted[index+1]+1} " 
-            f"{bottom_left_vertices_ids_sorted[index+1]+bottom_points_num} {cylinder_left_ids_sorted[index]+3+bottom_points_num} {cylinder_left_ids_sorted[index]+2+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num}) "
+            f"\thex ({bottom_left_vertices_ids_sorted[index+1]} {cylinder_left_ids_sorted[index]+6} {cylinder_left_ids_sorted[index]+7} {bottom_left_vertices_ids_sorted[index+1]+1} " 
+            f"{bottom_left_vertices_ids_sorted[index+1]+bottom_points_num} {cylinder_left_ids_sorted[index]+6+bottom_points_num} {cylinder_left_ids_sorted[index]+7+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num}) "
             f"({partition_X} {partition_X} 1) simpleGrading (1 1 1)\n"
         )
         output_blocks.append(cylinder_out_hex_line)
