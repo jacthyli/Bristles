@@ -1086,12 +1086,12 @@ def extract_vertices(vertices_manager):
 fluid_mesh = "fluid/constant/polyMesh/blockMeshDict"
 head = generate_FOAM_head()
 bristle_length = 1500
-radius = 250
+radius = 70
 partition_X = 5
 partition_Y = 5
 partition_Z = 10
 num_bristles = 5
-bristle_gap = 50
+bristle_gap = 350
 root_block_hight = int(bristle_length / partition_Z)
 root_block_length = (radius * 2 + bristle_gap) * num_bristles
 root_block_width = radius * 2 + bristle_gap * 2
