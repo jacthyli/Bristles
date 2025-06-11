@@ -33,7 +33,7 @@ boundaryField
     inlet
     {
         type            transitionalParabolicVelocity;
-        maxValue        3;
+        maxValue        0.1;
         n               ( 1 0 0 );
         y               ( 0 1 0 );
         transitionPeriod 2;
