@@ -9,13 +9,15 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       labelList;
-    location    "constant";
-    object      cellDecomposition;
+    class       volScalarField;
+    location    "0";
+    object      cellDist;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+dimensions      [0 0 0 0 0 0 0];
 
+internalField   nonuniform List<scalar> 
 104500
 (
 0
@@ -104519,6 +104521,19 @@ FoamFile
 7
 7
 )
+;
+
+boundaryField
+{
+    bristle
+    {
+        type            zeroGradient;
+    }
+    plateFix
+    {
+        type            zeroGradient;
+    }
+}
 
 
 // ************************************************************************* //
