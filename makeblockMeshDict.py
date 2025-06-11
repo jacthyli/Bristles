@@ -1085,13 +1085,15 @@ def extract_vertices(vertices_manager):
 # 生成 blockMeshDict 文件
 fluid_mesh = "fluid/constant/polyMesh/blockMeshDict"
 head = generate_FOAM_head()
-bristle_length = 1500
-radius = 70
-partition_X = 5
-partition_Y = 5
-partition_Z = 10
+
+bristle_length = 100
+radius = 1.4 * bristle_length / 150 # 150是翅尖部分的bristle长度，1.4是实际bristle的直径
+partition_X = 10
+partition_Y = 10
+partition_Z = 40
 num_bristles = 5
-bristle_gap = 350
+bristle_gap = radius * 5 # 这个数字是 gap/diameter
+
 root_block_hight = int(bristle_length / partition_Z)
 root_block_length = (radius * 2 + bristle_gap) * num_bristles
 root_block_width = radius * 2 + bristle_gap * 2
@@ -1115,9 +1117,9 @@ with open(fluid_mesh, 'w') as file:
 
 solid_mesh = "solid/constant/polyMesh/blockMeshDict"#"blockMeshDict.solid"
 solid_partition_XY = 5
-solid_partition_Z = 10
+solid_partition_Z = 20
 solid_vertices = generate_solid_vertices(solid_blocks_xy_vertices, root_block_hight, bristle_length, root_block_width)
-solid_blocks, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, bottom_points_num, bottom_left_vertices_ids_sorted, cylinder_inner_left_ids_sorted, cylinder_top_inner_left_ids_sorted = generate_solid_blocks(solid_vertices, root_block_width, root_block_hight, bristle_length, radius, partition_X, partition_Z)
+solid_blocks, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, bottom_points_num, bottom_left_vertices_ids_sorted, cylinder_inner_left_ids_sorted, cylinder_top_inner_left_ids_sorted = generate_solid_blocks(solid_vertices, root_block_width, root_block_hight, bristle_length, radius, solid_partition_XY, solid_partition_Z)
 solid_edges = generate_solid_edges(cubic_width, cubic_length, radius, bristle_length, root_block_hight, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, bottom_points_num)
 solid_patches = generate_solid_patches(bottom_left_vertices_ids_sorted, bottom_points_num, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, cylinder_inner_left_ids_sorted, cylinder_top_inner_left_ids_sorted)
 with open(solid_mesh, 'w') as file:
