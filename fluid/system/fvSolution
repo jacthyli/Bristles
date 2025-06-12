@@ -30,7 +30,7 @@ solvers
         scaleCorrection true;
         directSolveCoarsest false;
         cacheAgglomeration true;
-        nCellsInCoarsestLevel 200;
+        nCellsInCoarsestLevel 10;
         agglomerator    faceAreaPair;
         mergeLevels     1;
     }
@@ -49,7 +49,7 @@ solvers
         scaleCorrection true;
         directSolveCoarsest false;
         cacheAgglomeration true;
-        nCellsInCoarsestLevel 200;
+        nCellsInCoarsestLevel 10;
         agglomerator    faceAreaPair;
         mergeLevels     1;
     }

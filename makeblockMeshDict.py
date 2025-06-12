@@ -1088,9 +1088,9 @@ head = generate_FOAM_head()
 
 bristle_length = 100
 radius = 1.4 * bristle_length / 150 # 150是翅尖部分的bristle长度，1.4是实际bristle的直径
-partition_X = 10
-partition_Y = 10
-partition_Z = 40
+partition_X = 5
+partition_Y = 5
+partition_Z = 20
 num_bristles = 5
 bristle_gap = radius * 5 # 这个数字是 gap/diameter
 
