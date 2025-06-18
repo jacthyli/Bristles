@@ -20,7 +20,7 @@ solvers
     {
         solver          GAMG;
         tolerance       1e-06;
-        relTol          0;
+        relTol          0.1;
         minIter         1;
         maxIter         1000;
         smoother        GaussSeidel;
@@ -30,7 +30,7 @@ solvers
         scaleCorrection true;
         directSolveCoarsest false;
         cacheAgglomeration true;
-        nCellsInCoarsestLevel 20;
+        nCellsInCoarsestLevel 500;
         agglomerator    faceAreaPair;
         mergeLevels     1;
     }
@@ -39,7 +39,7 @@ solvers
     {
         solver          GAMG;
         tolerance       1e-09;
-        relTol          0;
+        relTol          0.1;
         minIter         1;
         maxIter         200;
         smoother        GaussSeidel;
@@ -49,7 +49,7 @@ solvers
         scaleCorrection true;
         directSolveCoarsest false;
         cacheAgglomeration true;
-        nCellsInCoarsestLevel 20;
+        nCellsInCoarsestLevel 500;
         agglomerator    faceAreaPair;
         mergeLevels     1;
     }
@@ -63,5 +63,10 @@ solvers
         minIter         1;
     }
 }
+// relaxationFactors
+// {
+//     p                   0.2;          // 压力强弛豫
+//     U                   0.5;          // 速度中等弛豫
+// }
 
 // ************************************************************************* //

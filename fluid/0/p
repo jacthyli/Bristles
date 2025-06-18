@@ -38,18 +38,15 @@ boundaryField
     }
     frontAndBackPlanes
     {
-        type            extrapolatedPressure;
-        value           uniform 0;
+        type            symmetryPlane;
     }
     bottom
     {
-        type            extrapolatedPressure;
-        value           uniform 0;
+        type            zeroGradient;
     }
     top
     {
-        type            extrapolatedPressure;
-        value           uniform 0;
+        type            zeroGradient;
     }
 }
 

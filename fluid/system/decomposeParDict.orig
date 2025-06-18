@@ -22,7 +22,7 @@ globalFaceZones ( plateZone );
 
 simpleCoeffs
 {
-    n               (1 NSLOTS 1);
+    n               (1 1 NSLOTS);
     delta           0.001;
 }
 
