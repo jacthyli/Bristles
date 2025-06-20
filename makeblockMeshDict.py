@@ -112,14 +112,14 @@ def generate_vertices(cubic_width, cubic_length, radius, bristle_length, num_bri
     ]
     for i in range(num_bristles):
         bottom_middle_sector = [
-            [0, cubic_length/2-root_block_length/2 + i * root_block_length / 5, 0],
-            [cubic_width/2-root_block_width/2, cubic_length/2-root_block_length/2 + i * root_block_length / 5, 0],
-            [cubic_width/2+root_block_width/2, cubic_length/2-root_block_length/2 + i * root_block_length / 5, 0],
-            [cubic_width, cubic_length/2-root_block_length/2 + i * root_block_length / 5, 0]
+            [0, cubic_length/2-root_block_length/2 + i * root_block_length / num_bristles, 0],
+            [cubic_width/2-root_block_width/2, cubic_length/2-root_block_length/2 + i * root_block_length / num_bristles, 0],
+            [cubic_width/2+root_block_width/2, cubic_length/2-root_block_length/2 + i * root_block_length / num_bristles, 0],
+            [cubic_width, cubic_length/2-root_block_length/2 + i * root_block_length / num_bristles, 0]
         ]
         solid_blocks_xy = [
-            [cubic_width/2-root_block_width/2, cubic_length/2-root_block_length/2 + i * root_block_length / 5, 0],
-            [cubic_width/2+root_block_width/2, cubic_length/2-root_block_length/2 + i * root_block_length / 5, 0]
+            [cubic_width/2-root_block_width/2, cubic_length/2-root_block_length/2 + i * root_block_length / num_bristles, 0],
+            [cubic_width/2+root_block_width/2, cubic_length/2-root_block_length/2 + i * root_block_length / num_bristles, 0]
         ]
         solid_blocks_xy_vertices.extend(solid_blocks_xy)
         bottom_vertices.extend(bottom_middle_sector)
@@ -153,7 +153,7 @@ def generate_vertices(cubic_width, cubic_length, radius, bristle_length, num_bri
     ]
     root_vertices.extend(add_middle_vertices)
     bristle_bit_vertices.extend(add_middle_vertices)
-    count = 2
+    count = (num_bristles-1)/2
     for i in range(1, num_bristles):
         # 奇数往下，偶数往上
         offset = count * (bristle_gap + radius * 2)
@@ -184,7 +184,7 @@ def generate_vertices(cubic_width, cubic_length, radius, bristle_length, num_bri
     inner_circle_points = bristle_points(center_of_bristle[0], center_of_bristle[1], radius / 2)
     bristle_end_vertices += [[x, y, bristle_length + root_block_hight] for x, y in inner_circle_points]  # 这里添加 inner_circle_points
     bristle_inner_vertices = [[x, y, bristle_length] for x, y in inner_circle_points]
-    count = 2
+    count = (num_bristles-1)/2
     for i in range(1, num_bristles, 1):
         # 奇数往下，偶数往上
         offset = count * (bristle_gap + radius * 2)
@@ -202,7 +202,7 @@ def generate_vertices(cubic_width, cubic_length, radius, bristle_length, num_bri
     vertices_manager.add_vertices(bristle_end_vertices)
 
     # === 3. 生成 roof_vertices（Z = cubic_size，包含 inner_circle_points） ===
-    roof_vertices = [[x, y, bristle_length*4/3 + root_block_hight] for x, y, _ in bristle_end_vertices]
+    roof_vertices = [[x, y, bristle_length*2 + root_block_hight] for x, y, _ in bristle_end_vertices]
     vertices_manager.add_vertices(roof_vertices)
     vertices_manager.sort_vertices_by_zyx()
 
@@ -445,7 +445,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         block_line = (
             f"\thex ({id} {id+1} {bottom_ids_left_corner_left_row[index+1]+1} {bottom_ids_left_corner_left_row[index+1]} "
             f"{root_left_bottom_points_left_row[index]} {root_left_bottom_points_left_row[index]+1} {root_left_bottom_points_left_row[index+1]+1} {root_left_bottom_points_left_row[index+1]}) "
-            f"({partition_Y} {partition_Y} 1) simpleGrading (1 1 1)\n"
+            f"({partition_X} {partition_Y} 1) simpleGrading (0.2 1 1)\n"
         )
         output_blocks.append(block_line)
     output_blocks.append("\n")
@@ -454,7 +454,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         block_line = (
             f"\thex ({id} {id+1} {bottom_ids_left_corner_right_row[index+1]+1} {bottom_ids_left_corner_right_row[index+1]} "
             f"{root_left_bottom_points_right_row[index]} {root_left_bottom_points_right_row[index]+1} {root_left_bottom_points_right_row[index+1]+1} {root_left_bottom_points_right_row[index+1]}) "
-            f"({partition_Y} {partition_Y} 1) simpleGrading (1 1 1)\n"
+            f"({partition_X} {partition_Y} 1) simpleGrading (1.2 1 1)\n"
         )
         output_blocks.append(block_line)
     output_blocks.append("\n")
@@ -474,7 +474,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         block_line = (
             f"\thex ({id} {id+1} {root_left_bottom_points_left_row[index+1]+1} {root_left_bottom_points_left_row[index+1]} "
             f"{bristle_top_left_bottom_points_left_row[index]} {bristle_top_left_bottom_points_left_row[index]+1} {bristle_top_left_bottom_points_left_row[index+1]+1} {bristle_top_left_bottom_points_left_row[index+1]}) "
-            f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
+            f"({partition_X} {partition_Y} {partition_Z}) simpleGrading (0.2 1 1)\n"
         )
         output_blocks.append(block_line)
     output_blocks.append("\n")
@@ -483,7 +483,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         block_line = (
             f"\thex ({id} {id+1} {root_left_bottom_points_right_row[index+1]+1} {root_left_bottom_points_right_row[index+1]} "
             f"{bristle_top_left_bottom_points_right_row[index]} {bristle_top_left_bottom_points_right_row[index]+1} {bristle_top_left_bottom_points_right_row[index+1]+1} {bristle_top_left_bottom_points_right_row[index+1]}) "
-            f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
+            f"({partition_X} {partition_Y} {partition_Z}) simpleGrading (1.2 1 1)\n"
         )
         output_blocks.append(block_line)
     output_blocks.append("\n")
@@ -550,7 +550,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         block_line = (
             f"\thex ({id} {id+1} {bristle_top_left_bottom_points_left_row[index+1]+1} {bristle_top_left_bottom_points_left_row[index+1]} "
             f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_bottom_points_left_row[index+1]+1+bristle_top_points_num} {bristle_top_left_bottom_points_left_row[index+1]+bristle_top_points_num}) "
-            f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+            f"({partition_X} {partition_Y} {partition_Z}) simpleGrading (0.2 1 1)\n"
         )
         top_patches.append([id+bristle_top_points_num, id+1+bristle_top_points_num, bristle_top_left_bottom_points_left_row[index+1]+1+bristle_top_points_num, bristle_top_left_bottom_points_left_row[index+1]+bristle_top_points_num])
         output_blocks.append(block_line)
@@ -560,7 +560,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         block_line = (
             f"\thex ({id} {id+1} {bristle_top_left_bottom_points_right_row[index+1]+1} {bristle_top_left_bottom_points_right_row[index+1]} "
             f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_bottom_points_right_row[index+1]+1+bristle_top_points_num} {bristle_top_left_bottom_points_right_row[index+1]+bristle_top_points_num}) "
-            f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+            f"({partition_X} {partition_Y} {partition_Z}) simpleGrading (1.2 1 1)\n"
         )
         top_patches.append([id+bristle_top_points_num, id+1+bristle_top_points_num, bristle_top_left_bottom_points_right_row[index+1]+1+bristle_top_points_num, bristle_top_left_bottom_points_right_row[index+1]+bristle_top_points_num])
         output_blocks.append(block_line)
@@ -570,7 +570,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         block_line = (
             f"\thex ({id} {id+1} {id+5} {id+4} "
             f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {id+5+bristle_top_points_num} {id+4+bristle_top_points_num}) "
-            f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+            f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
         )
         top_patches.append([id+bristle_top_points_num, id+1+bristle_top_points_num, id+5+bristle_top_points_num, id+4+bristle_top_points_num])
         output_blocks.append(block_line)
@@ -584,19 +584,19 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     for index, id in enumerate(bristle_top_vertices_ids_sorted):
         hex_line = (f"\thex ({bristle_top_left_vertices_ids_sorted[index]} {id} {id+6} {bristle_top_left_vertices_ids_sorted[index+1]} "
                     f"{bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num} {id+bristle_top_points_num} {id+6+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num}) "
-                    f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+                    f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({bristle_top_left_vertices_ids_sorted[index]+1} {id+1} {id} {bristle_top_left_vertices_ids_sorted[index]} "
                     f"{bristle_top_left_vertices_ids_sorted[index]+1+bristle_top_points_num} {id+1+bristle_top_points_num} {id+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num}) "
-                    f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+                    f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({bristle_top_left_vertices_ids_sorted[index+1]+1} {id+7} {id+1} {bristle_top_left_vertices_ids_sorted[index]+1} "
                     f"{bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num} {id+7+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index]+1+bristle_top_points_num}) "
-                    f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+                    f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({bristle_top_left_vertices_ids_sorted[index+1]} {id+6} {id+7} {bristle_top_left_vertices_ids_sorted[index+1]+1} "
                     f"{bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num} {id+6+bristle_top_points_num} {id+7+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index+1]+1+bristle_top_points_num}) "
-                    f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+                    f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
         )
         top_patch_outside_bristle = [
             [bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num, id+bristle_top_points_num, id+6+bristle_top_points_num, bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num],
@@ -618,23 +618,23 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     for index, id in enumerate(bristle_top_inner_vertices_ids_sorted):
         hex_line = (f"\thex ({id} {id+1} {id+3} {id+2} "
                     f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {id+3+bristle_top_points_num} {id+2+bristle_top_points_num}) "
-                    f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+                    f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({bristle_top_vertices_ids_sorted[index]} {id} {id+2} {bristle_top_vertices_ids_sorted[index]+6} "
                     f"{bristle_top_vertices_ids_sorted[index]+bristle_top_points_num} {id+bristle_top_points_num} {id+2+bristle_top_points_num} {bristle_top_vertices_ids_sorted[index]+6+bristle_top_points_num}) "
-                    f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+                    f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({bristle_top_vertices_ids_sorted[index]+1} {id+1} {id} {bristle_top_vertices_ids_sorted[index]} "
                     f"{bristle_top_vertices_ids_sorted[index]+1+bristle_top_points_num} {id+1+bristle_top_points_num} {id+bristle_top_points_num} {bristle_top_vertices_ids_sorted[index]+bristle_top_points_num}) "
-                    f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+                    f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({bristle_top_vertices_ids_sorted[index]+7} {id+3} {id+1} {bristle_top_vertices_ids_sorted[index]+1} "
                     f"{bristle_top_vertices_ids_sorted[index]+7+bristle_top_points_num} {id+3+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_vertices_ids_sorted[index]+1+bristle_top_points_num}) "
-                    f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+                    f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
                     
                     f"\thex ({bristle_top_vertices_ids_sorted[index]+6} {id+2} {id+3} {bristle_top_vertices_ids_sorted[index]+7} "
                     f"{bristle_top_vertices_ids_sorted[index]+6+bristle_top_points_num} {id+2+bristle_top_points_num} {id+3+bristle_top_points_num} {bristle_top_vertices_ids_sorted[index]+7+bristle_top_points_num}) "
-                    f"({partition_Y} {partition_Y} {int(partition_Z/3)}) simpleGrading (1 1 1)\n"
+                    f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
         )
         top_patch = [
             [id+bristle_top_points_num, id+1+bristle_top_points_num, id+3+bristle_top_points_num, id+2+bristle_top_points_num],
@@ -780,7 +780,7 @@ def generate_edges(bristle_length, root_block_hight, cubic_width, cubic_length, 
         for i in range(num_points):
             start_id = ids[i]
             end_id = ids[(i + 1) % num_points]
-            edge_line = f"\tarc {start_id} {end_id} ({cubic_width/2+radius*np.sin(alpha)} {cubic_length/2/7*3-radius*np.cos(beta)+index*cubic_length/7} {z})\n"
+            edge_line = f"\tarc {start_id} {end_id} ({cubic_width/2+radius*np.sin(alpha)} {cubic_length/2-root_block_length/2-radius*np.cos(beta)+(index+1/2)*root_block_length/num_bristles} {z})\n"
             alpha += np.pi/2
             beta += np.pi/2
             output_edges.append(edge_line)
@@ -797,7 +797,7 @@ def generate_edges(bristle_length, root_block_hight, cubic_width, cubic_length, 
     output_edges.append("\n")
     for index, id in enumerate(bristle_top_vertices_ids_sorted):
         top_out_circle_ids = [id+bristle_top_points_num, id+1+bristle_top_points_num, id+7+bristle_top_points_num, id+6+bristle_top_points_num]
-        edge_generation(top_out_circle_ids, index, root_block_hight+bristle_length*4/3)
+        edge_generation(top_out_circle_ids, index, root_block_hight+bristle_length*2)
 
     output_edges.append(");\n\n")
     return output_edges
@@ -812,7 +812,7 @@ def generate_solid_edges(cubic_width, cubic_length, radius, bristle_length, root
         for i in range(num_points):
             start_id = ids[i]
             end_id = ids[(i + 1) % num_points]
-            edge_line = f"\tarc {start_id} {end_id} ({cubic_width/2+radius*np.sin(alpha)} {cubic_length/2/7*3-radius*np.cos(beta)+index*cubic_length/7} {z})\n"
+            edge_line = f"\tarc {start_id} {end_id} ({cubic_width/2+radius*np.sin(alpha)} {cubic_length/2-root_block_length/2-radius*np.cos(beta)+(index+1/2)*root_block_length/num_bristles} {z})\n"
             alpha += np.pi/2
             beta += np.pi/2
             output_edges.append(edge_line)
@@ -857,7 +857,7 @@ def generate_patches(vertices, root_block_hight, top_patches, root_patches, bris
     bottom_left_coner_ids, bottom_points_num = find_vertices(vertices, 0, "Z")
     root_left_coner_ids, root_points_num = find_vertices(vertices, root_block_hight, "Z")
     bristle_top_left_coner_ids, bristle_top_points_num = find_vertices(vertices, root_block_hight+bristle_length, "Z")
-    roof_left_coner_ids, roof_points_num = find_vertices(vertices, root_block_hight+bristle_length*4/3, "Z")
+    roof_left_coner_ids, roof_points_num = find_vertices(vertices, root_block_hight+bristle_length*2, "Z")
     inlet_bottom_left_coner_ids = sorted(list(set(inlet_left_coner_ids) & set(bottom_left_coner_ids)))
     inlet_root_left_coner_ids = sorted(list(set(inlet_left_coner_ids) & set(root_left_coner_ids)))
     inlet_bristle_top_left_coner_ids = sorted(list(set(inlet_left_coner_ids) & set(bristle_top_left_coner_ids)))
@@ -1088,18 +1088,18 @@ head = generate_FOAM_head()
 
 bristle_length = 100
 radius = 1.4 * bristle_length / 140 / 2 # 140是翅尖部分的bristle长度，1.4是实际bristle的直径
-partition_XY = 5
-num_bristles = 5
+partition_XY = 20
+num_bristles = 7
 bristle_gap = radius * 2 * 5 # 这个数字是 gap/diameter
 
-mesh_size = radius / (partition_XY * 3 / 2)
-outside_bristle_partition_half = 10 # int(bristle_gap / 2 / mesh_size)
+# mesh_size = radius / (partition_XY * 3 / 2)
+outside_bristle_partition_half = 5 # int(bristle_gap / 2 / mesh_size)
 partition_Z = 80 # int(bristle_length / mesh_size)
 
 root_block_hight = 1
 root_block_length = (radius * 2 + bristle_gap) * num_bristles
 root_block_width = radius * 2 + bristle_gap
-cubic_width = root_block_width * 7
+cubic_width = root_block_width * 35
 cubic_length = root_block_length * 3
 
 
@@ -1117,9 +1117,10 @@ with open(fluid_mesh, 'w') as file:
     file.write("".join(patches))
     file.write("".join(end))
 
+solid_partition_XY = 2
 solid_mesh = "solid/constant/polyMesh/blockMeshDict"#"blockMeshDict.solid"
 solid_vertices = generate_solid_vertices(solid_blocks_xy_vertices, root_block_hight, bristle_length, root_block_width)
-solid_blocks, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, bottom_points_num, bottom_left_vertices_ids_sorted, cylinder_inner_left_ids_sorted, cylinder_top_inner_left_ids_sorted = generate_solid_blocks(solid_vertices, root_block_width, root_block_hight, bristle_length, radius, partition_XY, outside_bristle_partition_half, partition_Z)
+solid_blocks, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, bottom_points_num, bottom_left_vertices_ids_sorted, cylinder_inner_left_ids_sorted, cylinder_top_inner_left_ids_sorted = generate_solid_blocks(solid_vertices, root_block_width, root_block_hight, bristle_length, radius, solid_partition_XY, solid_partition_XY, partition_Z)
 solid_edges = generate_solid_edges(cubic_width, cubic_length, radius, bristle_length, root_block_hight, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, bottom_points_num)
 solid_patches = generate_solid_patches(bottom_left_vertices_ids_sorted, bottom_points_num, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, cylinder_inner_left_ids_sorted, cylinder_top_inner_left_ids_sorted)
 with open(solid_mesh, 'w') as file:
