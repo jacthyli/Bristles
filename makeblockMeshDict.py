@@ -1108,6 +1108,15 @@ def generate_solid_patches(bottom_left_vertices_ids_sorted, bottom_points_num, c
             
         )
         output_patches.append(bristle_top_patch)
+        
+    output_patches.append(f"\t\t({bottom_left_vertices_ids_sorted[0]} {bottom_left_vertices_ids_sorted[0]+1} {bottom_left_vertices_ids_sorted[0]+1+bottom_points_num} {bottom_left_vertices_ids_sorted[0]+bottom_points_num})\n")
+    output_patches.append(f"\t\t({bottom_left_vertices_ids_sorted[-1]+1} {bottom_left_vertices_ids_sorted[-1]} {bottom_left_vertices_ids_sorted[-1]+bottom_points_num} {bottom_left_vertices_ids_sorted[-1]+1+bottom_points_num})\n")
+    output_patches.append("\t)\n\n")
+    
+    output_patches.append("\tpatch plateFix\n")
+    output_patches.append("\t(\n")
+    
+    for index, id in enumerate(cylinder_left_ids_sorted):
         bottom_patch = (
             f"\t\t({bottom_left_vertices_ids_sorted[index+1]} {id+6} "
             f"{id} {bottom_left_vertices_ids_sorted[index]})\n"
@@ -1122,15 +1131,7 @@ def generate_solid_patches(bottom_left_vertices_ids_sorted, bottom_points_num, c
             f"{id+6} {bottom_left_vertices_ids_sorted[index+1]})\n"
         )
         output_patches.append(bottom_patch)
-    output_patches.append(f"\t\t({bottom_left_vertices_ids_sorted[0]} {bottom_left_vertices_ids_sorted[0]+1} {bottom_left_vertices_ids_sorted[0]+1+bottom_points_num} {bottom_left_vertices_ids_sorted[0]+bottom_points_num})\n")
-    output_patches.append(f"\t\t({bottom_left_vertices_ids_sorted[-1]+1} {bottom_left_vertices_ids_sorted[-1]} {bottom_left_vertices_ids_sorted[-1]+bottom_points_num} {bottom_left_vertices_ids_sorted[-1]+1+bottom_points_num})\n")
-    output_patches.append("\t)\n\n")
-    
-    output_patches.append("\tpatch plateFix\n")
-    output_patches.append("\t(\n")
-    
-    for index, id in enumerate(cylinder_left_ids_sorted):
-        
+
         bottom_cylinder_patch = (
             f"\t\t({cylinder_inner_left_ids_sorted[index]+2} {cylinder_inner_left_ids_sorted[index]+3} "
             f"{cylinder_inner_left_ids_sorted[index]+1} {cylinder_inner_left_ids_sorted[index]})\n"
@@ -1187,13 +1188,13 @@ head = generate_FOAM_head()
 
 bristle_length = 100
 radius = 1.4 * bristle_length / 140 / 2 # 140是翅尖部分的bristle长度，1.4是实际bristle的直径
-partition_XY = 20
-num_bristles = 7
+partition_XY = 2
+num_bristles = 1
 bristle_gap = radius * 2 * 5 # 这个数字是 gap/diameter
 
 # mesh_size = radius / (partition_XY * 3 / 2)
-outside_bristle_partition_half = 5 # int(bristle_gap / 2 / mesh_size)
-partition_Z = 80 # int(bristle_length / mesh_size)
+outside_bristle_partition_half = 2 # int(bristle_gap / 2 / mesh_size)
+partition_Z = 20 # int(bristle_length / mesh_size)
 
 root_block_hight = 1
 root_block_length = (radius * 2 + bristle_gap) * num_bristles
