@@ -395,10 +395,6 @@ def get_all_circle_points_separately(vertex_manager, target_z, inner_circle_poin
     
     return out_circle_ids, inner_circle_ids
 
-def surrounding_blocks(start_id, length_each_layer, partition_X, partition_Y, partition_Z):
-    block_line = f"\thex ({start_id} {start_id+1} {start_id+5} {start_id+4} {start_id+length_each_layer} {start_id+length_each_layer+1} {start_id+length_each_layer+5} {start_id+length_each_layer+4}) ({partition_X} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
-    return block_line
-
 def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partition_Z, root_block_hight, root_block_width, cubic_length, radius):
     output_blocks = ["blocks\n(\n"]
     
@@ -440,7 +436,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     top_ids_left_corner = sorted(list(set(bristle_top_ids)-set(bristle_left_ids_not_full_top[1:-2])
                                        -set(bristle_top_left_bottom_points_right_row)-set(bristle_top_left_bottom_points_left_row)
                                        -set(bristle_ids_right)-set(bristle_ids)-set(inner_bristle_ids_left)-set(inner_bristle_ids_right)))
-    
+    #入口处网格，翅膀根
     for index, id in enumerate(bottom_ids_left_corner_left_row[0:-1]):
         if index == 0:
             block_line = (
@@ -462,7 +458,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
             )
         output_blocks.append(block_line)
     output_blocks.append("\n")
-    
+    #出口网格，翅膀根
     for index, id in enumerate(bottom_ids_left_corner_right_row[0:-1]):
         if index == 0:
             block_line = (
@@ -484,7 +480,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
             )
         output_blocks.append(block_line)
     output_blocks.append("\n")
-    
+    #翅膀上下边界，翅膀根
     bottom_top_left_corner = sorted(list(set(bottom_ids)-set(bristle_left_ids_not_full[1:-2])-set(bottom_ids_left_corner_right_row)-set(bottom_ids_left_corner_left_row)))
     for index, id in enumerate(bottom_top_left_corner):
         if index == 0:
@@ -502,7 +498,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         output_blocks.append(block_line)
     output_blocks.append("\n")
     bottom_ids_left_corner = bottom_top_left_corner + bottom_ids_left_corner_left_row + bottom_ids_left_corner_right_row
-    
+    #入口边界，翅膀等高的部分
     for index, id in enumerate(root_left_bottom_points_left_row[0:-1]):
         if index == 0:
             block_line = (
@@ -524,7 +520,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
             )
         output_blocks.append(block_line)
     output_blocks.append("\n")
-    
+    #出口边界，翅膀等高的部分
     for index, id in enumerate(root_left_bottom_points_right_row[0:-1]):
         if index == 0:
             block_line = (
@@ -550,7 +546,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     root_left_vertices_ids = set(root_ids) & set(bristle_left_ids)
     root_left_vertices_ids = root_left_vertices_ids - set(stream_right_wall) - set(stream_left_wall)
     root_left_vertices_ids_sorted = sort_ids_by_axis(vertices, root_left_vertices_ids, axis='y')
-    
+    #翅膀两侧边界，翅膀等高的部分
     bristle_ids, bristle_points_num = find_vertices(vertices, cubic_width/2-radius/(2**(0.5)), XYZ="X")
     bristle_ids_right, bristle_points_num = find_vertices(vertices, cubic_width/2+radius/(2**(0.5)), XYZ="X")
     root_ids_left_corner = sorted(list(set(root_ids)-set(bristle_left_ids_not_full_root[1:-2])-set(root_left_bottom_points_right_row)-set(root_left_bottom_points_left_row)-set(bristle_ids_right)-set(bristle_ids)))
@@ -581,7 +577,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     bristle_top_left_vertices_ids = set(bristle_top_ids) & set(bristle_left_ids)
     bristle_top_left_vertices_ids = bristle_top_left_vertices_ids - set(stream_right_wall) - set(stream_left_wall)
     bristle_top_left_vertices_ids_sorted = sort_ids_by_axis(vertices, bristle_top_left_vertices_ids, axis='y')
-    
+    #翅膀周围那一圈的网格，翅膀根到翅膀顶
     root_patches = []
     for index, id in enumerate(root_bristle_vertices_ids_sorted):
         hex_line = (f"\thex ({root_left_vertices_ids_sorted[index]} {id} {id+2} {root_left_vertices_ids_sorted[index+1]} "
@@ -611,7 +607,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     output_blocks.append("\n")
     
     top_patches = []
-    
+    #入口边界，翅膀顶
     for index, id in enumerate(bristle_top_left_bottom_points_left_row[0:-1]):
         if index == 0:
             block_line = (
@@ -634,7 +630,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         top_patches.append([id+bristle_top_points_num, id+1+bristle_top_points_num, bristle_top_left_bottom_points_left_row[index+1]+1+bristle_top_points_num, bristle_top_left_bottom_points_left_row[index+1]+bristle_top_points_num])
         output_blocks.append(block_line)
     output_blocks.append("\n")
-    
+    #出口边界，翅膀顶
     for index, id in enumerate(bristle_top_left_bottom_points_right_row[0:-1]):
         if index == 0:
             block_line = (
@@ -657,7 +653,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
         top_patches.append([id+bristle_top_points_num, id+1+bristle_top_points_num, bristle_top_left_bottom_points_right_row[index+1]+1+bristle_top_points_num, bristle_top_left_bottom_points_right_row[index+1]+bristle_top_points_num])
         output_blocks.append(block_line)
     output_blocks.append("\n")
-
+    #翅膀上下边界，翅膀顶
     for index, id in enumerate(top_ids_left_corner):
         if index == 0:
             block_line = (
@@ -679,7 +675,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     bristle_top_vertices_ids_sorted = sort_ids_by_axis(vertices, bristle_top_vertices_ids, axis='y')
     bristle_top_vertices_ids_sorted = bristle_top_vertices_ids_sorted[::2]
     
-    
+    #翅膀顶周围那一圈的网格，翅膀顶
     for index, id in enumerate(bristle_top_vertices_ids_sorted):
         hex_line = (f"\thex ({bristle_top_left_vertices_ids_sorted[index]} {id} {id+6} {bristle_top_left_vertices_ids_sorted[index+1]} "
                     f"{bristle_top_left_vertices_ids_sorted[index]+bristle_top_points_num} {id+bristle_top_points_num} {id+6+bristle_top_points_num} {bristle_top_left_vertices_ids_sorted[index+1]+bristle_top_points_num}) "
@@ -712,7 +708,7 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y, partitio
     bristle_top_inner_vertices_ids_sorted = sort_ids_by_axis(vertices, bristle_top_inner_left_vertices_ids, axis='y')
     bristle_top_inner_vertices_ids_sorted = bristle_top_inner_vertices_ids_sorted[::2]
     
-
+    #翅膀顶填补的网格
     top_inner_patches = []
     for index, id in enumerate(bristle_top_inner_vertices_ids_sorted):
         hex_line = (f"\thex ({id} {id+1} {id+3} {id+2} "
@@ -803,8 +799,10 @@ def generate_solid_blocks(vertices, root_block_width, root_block_hight, bristle_
     cylinder_top_inner_left_ids_sorted = cylinder_top_inner_left_ids_sorted[::2]
     
     for index, id in enumerate(cylinder_inner_left_ids_sorted):
+        #底层鬃毛内圈
         hex_line = f"\thex ({id} {id+1} {id+3} {id+2} {id+bottom_points_num} {id+1+bottom_points_num} {id+3+bottom_points_num} {id+2+bottom_points_num}) ({partition_Y} {partition_Y} 1) simpleGrading (1 1 1)\n"
         output_blocks.append(hex_line)
+        #底层鬃毛外圈
         cylinder_hex_line = (
             f"\thex ({cylinder_left_ids_sorted[index]} {id} {id+2} {cylinder_left_ids_sorted[index]+6} " 
             f"{cylinder_left_ids_sorted[index]+bottom_points_num} {id+bottom_points_num} {id+2+bottom_points_num} {cylinder_left_ids_sorted[index]+6+bottom_points_num}) "
@@ -823,30 +821,33 @@ def generate_solid_blocks(vertices, root_block_width, root_block_hight, bristle_
             f"({partition_Y} {partition_Y} 1) simpleGrading (1 1 1)\n"
         )
         output_blocks.append(cylinder_hex_line)
+        #底层基座
         cylinder_out_hex_line = (
             f"\thex ({bottom_left_vertices_ids_sorted[index]} {cylinder_left_ids_sorted[index]} {cylinder_left_ids_sorted[index]+6} {bottom_left_vertices_ids_sorted[index+1]} " 
             f"{bottom_left_vertices_ids_sorted[index]+bottom_points_num} {cylinder_left_ids_sorted[index]+bottom_points_num} {cylinder_left_ids_sorted[index]+6+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+bottom_points_num}) "
-            f"({partition_Y} {partition_Y} 1) simpleGrading (1 1 1)\n"
+            f"({partition_Y * 4} {partition_Y} 1) simpleGrading (0.1 1 1)\n"
             
             f"\thex ({bottom_left_vertices_ids_sorted[index]+1} {cylinder_left_ids_sorted[index]+1} {cylinder_left_ids_sorted[index]} {bottom_left_vertices_ids_sorted[index]} " 
             f"{bottom_left_vertices_ids_sorted[index]+1+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num} {cylinder_left_ids_sorted[index]+bottom_points_num} {bottom_left_vertices_ids_sorted[index]+bottom_points_num}) "
-            f"({partition_Y} {partition_Y} 1) simpleGrading (1 1 1)\n"
+            f"({partition_Y * 4} {partition_Y} 1) simpleGrading (0.1 1 1)\n"
             
             f"\thex ({bottom_left_vertices_ids_sorted[index+1]+1} {cylinder_left_ids_sorted[index]+7} {cylinder_left_ids_sorted[index]+1} {bottom_left_vertices_ids_sorted[index]+1} " 
             f"{bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num} {cylinder_left_ids_sorted[index]+7+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num} {bottom_left_vertices_ids_sorted[index]+1+bottom_points_num}) "
-            f"({partition_Y} {partition_Y} 1) simpleGrading (1 1 1)\n"
+            f"({partition_Y * 4} {partition_Y} 1) simpleGrading (0.1 1 1)\n"
             
             f"\thex ({bottom_left_vertices_ids_sorted[index+1]} {cylinder_left_ids_sorted[index]+6} {cylinder_left_ids_sorted[index]+7} {bottom_left_vertices_ids_sorted[index+1]+1} " 
             f"{bottom_left_vertices_ids_sorted[index+1]+bottom_points_num} {cylinder_left_ids_sorted[index]+6+bottom_points_num} {cylinder_left_ids_sorted[index]+7+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num}) "
-            f"({partition_Y} {partition_Y} 1) simpleGrading (1 1 1)\n"
+            f"({partition_Y * 4} {partition_Y} 1) simpleGrading (0.1 1 1)\n"
         )
         output_blocks.append(cylinder_out_hex_line)
+        #鬃毛内层
         hex_line = (
             f"\thex ({id+bottom_points_num} {id+1+bottom_points_num} {id+3+bottom_points_num} {id+2+bottom_points_num} "
             f"{cylinder_top_inner_left_ids_sorted[index]} {1+cylinder_top_inner_left_ids_sorted[index]} {cylinder_top_inner_left_ids_sorted[index]+3} {cylinder_top_inner_left_ids_sorted[index]+2}) "
             f"({partition_Y} {partition_Y} {partition_Z}) simpleGrading (1 1 1)\n"
         )
         output_blocks.append(hex_line)
+        #鬃毛外圈
         bristle_hex_line = (
             f"\thex ({cylinder_left_ids_sorted[index]+bottom_points_num} {id+bottom_points_num} {id+2+bottom_points_num} {cylinder_left_ids_sorted[index]+6+bottom_points_num} " 
             f"{cylinder_top_left_ids_sorted[index]} {cylinder_top_inner_left_ids_sorted[index]} {cylinder_top_inner_left_ids_sorted[index]+2} {cylinder_top_left_ids_sorted[index]+6}) "
