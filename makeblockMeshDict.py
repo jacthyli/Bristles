@@ -1109,70 +1109,20 @@ def generate_solid_patches(bottom_left_vertices_ids_sorted, bottom_points_num, c
             
         )
         output_patches.append(bristle_top_patch)
-        if index == 0:
-            bottom_patch = (
-                f"\t\t({bottom_left_vertices_ids_sorted[index+1]} {id+6} "
-                f"{id} {bottom_left_vertices_ids_sorted[index]})\n"
-                
-                f"\t\t({bottom_left_vertices_ids_sorted[index]} {id} "
-                f"{id+1} {bottom_left_vertices_ids_sorted[index]+1})\n"
-                
-                f"\t\t({bottom_left_vertices_ids_sorted[index]+1} {id+1} "
-                f"{id+7} {bottom_left_vertices_ids_sorted[index+1]+1})\n"
-                
-                f"\t\t({bottom_left_vertices_ids_sorted[index+1]+1} {id+7} "
-                f"{id+6} {bottom_left_vertices_ids_sorted[index+1]})\n"
-            )
-            output_patches.append(bottom_patch)
-
-            bottom_cylinder_patch = (
-                
-                f"\t\t({id+6} {cylinder_inner_left_ids_sorted[index]+2} "
-                f"{cylinder_inner_left_ids_sorted[index]} {id})\n"
-                
-                f"\t\t({id} {cylinder_inner_left_ids_sorted[index]} "
-                f"{cylinder_inner_left_ids_sorted[index]+1} {id+1})\n"
-                
-                f"\t\t({id+1} {cylinder_inner_left_ids_sorted[index]+1} "
-                f"{cylinder_inner_left_ids_sorted[index]+3} {id+7})\n"
-                
-                f"\t\t({id+7} {cylinder_inner_left_ids_sorted[index]+3} "
-                f"{cylinder_inner_left_ids_sorted[index]+2} {id+6})\n"
-            )
-            output_patches.append(bottom_cylinder_patch)
-        else:
-            bottom_patch = (
-                f"\t\t({bottom_left_vertices_ids_sorted[index+1]} {id+6} "
-                f"{id} {bottom_left_vertices_ids_sorted[index]})\n"
-                
-                f"\t\t({bottom_left_vertices_ids_sorted[index]} {id} "
-                f"{id+1} {bottom_left_vertices_ids_sorted[index]+1})\n"
-                
-                f"\t\t({bottom_left_vertices_ids_sorted[index]+1} {id+1} "
-                f"{id+7} {bottom_left_vertices_ids_sorted[index+1]+1})\n"
-                
-                f"\t\t({bottom_left_vertices_ids_sorted[index+1]+1} {id+7} "
-                f"{id+6} {bottom_left_vertices_ids_sorted[index+1]})\n"
-            )
-            output_patches.append(bottom_patch)
-
-            bottom_cylinder_patch = (
-                f"\t\t({cylinder_inner_left_ids_sorted[index]+2} {cylinder_inner_left_ids_sorted[index]+3} "
-                f"{cylinder_inner_left_ids_sorted[index]+1} {cylinder_inner_left_ids_sorted[index]})\n"
-                
-                f"\t\t({id+6} {cylinder_inner_left_ids_sorted[index]+2} "
-                f"{cylinder_inner_left_ids_sorted[index]} {id})\n"
-                
-                f"\t\t({id} {cylinder_inner_left_ids_sorted[index]} "
-                f"{cylinder_inner_left_ids_sorted[index]+1} {id+1})\n"
-                
-                f"\t\t({id+1} {cylinder_inner_left_ids_sorted[index]+1} "
-                f"{cylinder_inner_left_ids_sorted[index]+3} {id+7})\n"
-                
-                f"\t\t({id+7} {cylinder_inner_left_ids_sorted[index]+3} "
-                f"{cylinder_inner_left_ids_sorted[index]+2} {id+6})\n"
-            )
-            output_patches.append(bottom_cylinder_patch)
+        bottom_patch = (
+            f"\t\t({bottom_left_vertices_ids_sorted[index+1]} {id+6} "
+            f"{id} {bottom_left_vertices_ids_sorted[index]})\n"
+            
+            f"\t\t({bottom_left_vertices_ids_sorted[index]} {id} "
+            f"{id+1} {bottom_left_vertices_ids_sorted[index]+1})\n"
+            
+            f"\t\t({bottom_left_vertices_ids_sorted[index]+1} {id+1} "
+            f"{id+7} {bottom_left_vertices_ids_sorted[index+1]+1})\n"
+            
+            f"\t\t({bottom_left_vertices_ids_sorted[index+1]+1} {id+7} "
+            f"{id+6} {bottom_left_vertices_ids_sorted[index+1]})\n"
+        )
+        output_patches.append(bottom_patch)
         
     output_patches.append(f"\t\t({bottom_left_vertices_ids_sorted[0]} {bottom_left_vertices_ids_sorted[0]+1} {bottom_left_vertices_ids_sorted[0]+1+bottom_points_num} {bottom_left_vertices_ids_sorted[0]+bottom_points_num})\n")
     output_patches.append(f"\t\t({bottom_left_vertices_ids_sorted[-1]+1} {bottom_left_vertices_ids_sorted[-1]} {bottom_left_vertices_ids_sorted[-1]+bottom_points_num} {bottom_left_vertices_ids_sorted[-1]+1+bottom_points_num})\n")
@@ -1182,41 +1132,24 @@ def generate_solid_patches(bottom_left_vertices_ids_sorted, bottom_points_num, c
     output_patches.append("\t(\n")
     
     for index, id in enumerate(cylinder_left_ids_sorted):
-        if index == 0:
-            # bottom_patch = (
-            #     f"\t\t({bottom_left_vertices_ids_sorted[index+1]} {id+6} "
-            #     f"{id} {bottom_left_vertices_ids_sorted[index]})\n"
-                
-            #     f"\t\t({bottom_left_vertices_ids_sorted[index]} {id} "
-            #     f"{id+1} {bottom_left_vertices_ids_sorted[index]+1})\n"
-                
-            #     f"\t\t({bottom_left_vertices_ids_sorted[index]+1} {id+1} "
-            #     f"{id+7} {bottom_left_vertices_ids_sorted[index+1]+1})\n"
-                
-            #     f"\t\t({bottom_left_vertices_ids_sorted[index+1]+1} {id+7} "
-            #     f"{id+6} {bottom_left_vertices_ids_sorted[index+1]})\n"
-            # )
-            # output_patches.append(bottom_patch)
 
-            bottom_cylinder_patch = (
-                f"\t\t({cylinder_inner_left_ids_sorted[index]+2} {cylinder_inner_left_ids_sorted[index]+3} "
-                f"{cylinder_inner_left_ids_sorted[index]+1} {cylinder_inner_left_ids_sorted[index]})\n"
-                
-                # f"\t\t({id+6} {cylinder_inner_left_ids_sorted[index]+2} "
-                # f"{cylinder_inner_left_ids_sorted[index]} {id})\n"
-                
-                # f"\t\t({id} {cylinder_inner_left_ids_sorted[index]} "
-                # f"{cylinder_inner_left_ids_sorted[index]+1} {id+1})\n"
-                
-                # f"\t\t({id+1} {cylinder_inner_left_ids_sorted[index]+1} "
-                # f"{cylinder_inner_left_ids_sorted[index]+3} {id+7})\n"
-                
-                # f"\t\t({id+7} {cylinder_inner_left_ids_sorted[index]+3} "
-                # f"{cylinder_inner_left_ids_sorted[index]+2} {id+6})\n"
-            )
-            output_patches.append(bottom_cylinder_patch)
-    # for index, id in enumerate(bottom_left_vertices_ids_sorted[:-1]):
-    #     output_patches.append(f"\t\t({id} {bottom_left_vertices_ids_sorted[index+1]} {bottom_left_vertices_ids_sorted[index+1]+1} {id+1})\n")
+        bottom_cylinder_patch = (
+            f"\t\t({cylinder_inner_left_ids_sorted[index]+2} {cylinder_inner_left_ids_sorted[index]+3} "
+            f"{cylinder_inner_left_ids_sorted[index]+1} {cylinder_inner_left_ids_sorted[index]})\n"
+            
+            f"\t\t({id+6} {cylinder_inner_left_ids_sorted[index]+2} "
+            f"{cylinder_inner_left_ids_sorted[index]} {id})\n"
+            
+            f"\t\t({id} {cylinder_inner_left_ids_sorted[index]} "
+            f"{cylinder_inner_left_ids_sorted[index]+1} {id+1})\n"
+            
+            f"\t\t({id+1} {cylinder_inner_left_ids_sorted[index]+1} "
+            f"{cylinder_inner_left_ids_sorted[index]+3} {id+7})\n"
+            
+            f"\t\t({id+7} {cylinder_inner_left_ids_sorted[index]+3} "
+            f"{cylinder_inner_left_ids_sorted[index]+2} {id+6})\n"
+        )
+        output_patches.append(bottom_cylinder_patch)
     
     output_patches.append("\t)\n\n")
     
@@ -1254,13 +1187,13 @@ head = generate_FOAM_head()
 
 bristle_length = 100
 radius = 1.4 * bristle_length / 140 / 2 # 140是翅尖部分的bristle长度，1.4是实际bristle的直径
-partition_XY = 4
-num_bristles = 1
+partition_XY = 7
+num_bristles = 7
 bristle_gap = radius * 2 * 5 # 这个数字是 gap/diameter
 
 # mesh_size = radius / (partition_XY * 3 / 2)
-outside_bristle_partition_half = 2 # int(bristle_gap / 2 / mesh_size)
-partition_Z = 20 # int(bristle_length / mesh_size)
+outside_bristle_partition_half = 5 # int(bristle_gap / 2 / mesh_size)
+partition_Z = 50 # int(bristle_length / mesh_size)
 
 root_block_hight = 1
 root_block_length = (radius * 2 + bristle_gap) * num_bristles

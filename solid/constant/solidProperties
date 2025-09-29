@@ -30,11 +30,11 @@ femLargeStrainCoeffs
     beta 0.4;
     delta 0.6;
 
-    PCGTolerance    1e-6;
-    PCGLimit        5000;
+    PCGTolerance    1e-8;
+    PCGLimit        10000;
     NRTolerance     1e-5;
 
-    rbfUpdate true;
+    rbfUpdate false;
 }
 
 
