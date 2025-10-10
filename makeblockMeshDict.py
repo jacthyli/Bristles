@@ -1193,7 +1193,7 @@ bristle_gap = radius * 2 * 5 # 这个数字是 gap/diameter
 
 # mesh_size = radius / (partition_XY * 3 / 2)
 outside_bristle_partition_half = 10 # int(bristle_gap / 2 / mesh_size)
-partition_Z = 60 # int(bristle_length / mesh_size)
+partition_Z = 150 # int(bristle_length / mesh_size)
 
 root_block_hight = 1
 root_block_length = (radius * 2 + bristle_gap) * num_bristles
