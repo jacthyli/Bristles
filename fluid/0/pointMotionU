@@ -21,7 +21,7 @@ internalField   uniform ( 0 0 0 );
 
 boundaryField
 {
-    bristle
+    bristle_interFSI
     {
         type            fixedValue;
         value           uniform ( 0 0 0 );
@@ -36,17 +36,7 @@ boundaryField
         type            fixedValue;
         value           uniform ( 0 0 0 );
     }
-    frontAndBackPlanes
-    {
-        type            fixedValue;
-        value           uniform ( 0 0 0 );
-    }
-    bottom
-    {
-        type            fixedValue;
-        value           uniform ( 0 0 0 );
-    }
-    top
+    sidewall
     {
         type            fixedValue;
         value           uniform ( 0 0 0 );

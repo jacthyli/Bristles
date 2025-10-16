@@ -15,10 +15,10 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 
-solidPatch bristle;
+solidPatch bristle_interFSI;
 solidZone plateZone;
 
-fluidPatch bristle;
+fluidPatch bristle_interFSI;
 fluidZone plateZone;
 
 relaxationFactor 0.05;

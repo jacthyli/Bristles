@@ -21,7 +21,7 @@ internalField   uniform 0;
 
 boundaryField
 {
-    bristle
+    bristle_interFSI
     {
         type            extrapolatedPressure;
         value           uniform 0;
@@ -36,17 +36,10 @@ boundaryField
         type            extrapolatedPressure;
         value           uniform 0;
     }
-    frontAndBackPlanes
+    sidewall
     {
-        type            symmetryPlane;
-    }
-    bottom
-    {
-        type            zeroGradient;
-    }
-    top
-    {
-        type            zeroGradient;
+        type            extrapolatedPressure;
+        value           uniform 0;
     }
 }
 

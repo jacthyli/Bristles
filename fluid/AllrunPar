@@ -26,8 +26,13 @@ sed s/NSLOTS/$NSLOTS/g ../solid/system/decomposeParDict.orig > ../solid/system/d
 runApplication -l log.decomposePar.solid decomposePar -case ../solid -cellDist
 
 # Fluid Domain
+cp -f system/blockMeshDict constant/polyMesh/blockMeshDict
 runApplication blockMesh
 #runApplication refineMesh -overwrite
+runApplication snappyHexMesh
+\rm -rf constant/polyMesh
+\mv 0.0003/polyMesh constant
+\rm -rf 0.0001 0.0002 0.0003
 runApplication setSet -batch setBatch
 runApplication setsToZones -noFlipMap
 
@@ -44,7 +49,7 @@ cd fluid
 
 # Run test Case
 
-runParallel $application $NSLOTS &
+# runParallel $application $NSLOTS &
 
 # ----------------------------------------------------------------- end-of-file
 
