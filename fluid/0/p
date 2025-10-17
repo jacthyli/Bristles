@@ -38,7 +38,7 @@ boundaryField
     }
     frontAndBackPlanes
     {
-        type            symmetryPlane;
+        type            zeroGradient;
     }
     bottom
     {

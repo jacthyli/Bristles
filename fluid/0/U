@@ -30,25 +30,15 @@ boundaryField
     {
         type            zeroGradient;
     }
-    // inlet
-    // {
-    //     type            transitionalParabolicVelocity;
-    //     maxValue        0.1;
-    //     n               ( 1 0 0 );
-    //     y               ( 0 1 0 );
-    //     transitionPeriod 2;
-    //     boundBoxMin     ( 0 0 -0.025334 );
-    //     boundBoxMax     ( 0 0.41 0.025334 );
-    //     value           uniform ( 0 0 0 );
-    // }
     inlet
     {
         type            fixedValue;
-        value           uniform ( 0.1 0 0 );
+        value           uniform ( 0.001 0 0 );
     }
     frontAndBackPlanes
     {
-        type            symmetryPlane;
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
     }
     bottom
     {
