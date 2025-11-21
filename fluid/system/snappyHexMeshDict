@@ -27,7 +27,7 @@ addLayers       true;
 // - to 'snap' the mesh boundary to the surface
 geometry
 {
-    bristle.stl
+    bristle_15.stl
     {
         type triSurfaceMesh;
         name bristle;
@@ -36,8 +36,8 @@ geometry
     refinementBox
     {
         type searchableBox;
-        min ( -0.002 -0.006 0);
-        max ( 0.003 0.001 0.12);
+        min ( -0.01 -0.01 0);
+        max ( 0.012 0.122 0.112);
     }
 };
 
@@ -51,7 +51,7 @@ castellatedMeshControls
     // If local number of cells is >= maxLocalCells on any processor
     // switches from from refinement followed by balancing
     // (current method) to (weighted) balancing before refinement.
-    maxLocalCells 100000;
+    maxLocalCells 200000;
 
     // Overall cell limit (approximately). Refinement will stop immediately
     // upon reaching this number so a refinement level might not complete.
@@ -114,7 +114,7 @@ castellatedMeshControls
     }
 
     // Resolve sharp angles
-    resolveFeatureAngle 30;
+    resolveFeatureAngle 60;
 
     // Region-wise refinement
     // ~~~~~~~~~~~~~~~~~~~~~~
@@ -146,7 +146,7 @@ castellatedMeshControls
     // section reachable from the locationInMesh is kept.
     // NOTE: This point should never be on a face, always inside a cell, even
     // after refinement.
-    locationInMesh (0 0 0.15);
+    locationInMesh (0 0 0.12);
 }
 
 // Settings for the snapping.
@@ -193,12 +193,12 @@ addLayersControls
     //- Wanted thickness of final added cell layer. If multiple layers
     //  is the thickness of the layer furthest away from the wall.
     //  See relativeSizes parameter.
-    finalLayerThickness 0.0005;
+    finalLayerThickness 0.3;
 
     //- Minimum thickness of cell layer. If for any reason layer
     //  cannot be above minThickness do not add layer.
     //  Relative to undistorted size of cell outside layer.
-    minThickness 0.001;
+    minThickness 0.1;
 
     //- If points get not extruded do nGrow layers of connected faces that are
     //  also not grown. This helps convergence of the layer addition process
@@ -209,7 +209,7 @@ addLayersControls
 
     //- When not to extrude surface. 0 is flat surface, 90 is when two faces
     //  make straight angle.
-    featureAngle 30;
+    featureAngle 60;
 
     //- Maximum number of snapping relaxation iterations. Should stop
     //  before upon reaching a correct mesh.
@@ -225,14 +225,14 @@ addLayersControls
     nSmoothThickness 10;
 
     // Stop layer growth on highly warped cells
-    maxFaceThicknessRatio 0.5;
+    maxFaceThicknessRatio 0.8;
 
     // Reduce layer growth where ratio thickness to medial
     // distance is large
-    maxThicknessToMedialRatio 0.3;
+    maxThicknessToMedialRatio 0.5;
 
     // Angle used to pick up medial axis points
-    minMedianAxisAngle 130;
+    minMedianAxisAngle 90;
 
     // Create buffer region for new layer terminations
     nBufferCellsNoExtrude 0;
