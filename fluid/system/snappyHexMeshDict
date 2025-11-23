@@ -51,7 +51,7 @@ castellatedMeshControls
     // If local number of cells is >= maxLocalCells on any processor
     // switches from from refinement followed by balancing
     // (current method) to (weighted) balancing before refinement.
-    maxLocalCells 200000;
+    maxLocalCells 100000;
 
     // Overall cell limit (approximately). Refinement will stop immediately
     // upon reaching this number so a refinement level might not complete.
@@ -104,7 +104,7 @@ castellatedMeshControls
         bristle
         {
             // Surface-wise min and max refinement level
-            level (5 6);
+            level (4 5);
 
             patchInfo
             {
@@ -114,7 +114,7 @@ castellatedMeshControls
     }
 
     // Resolve sharp angles
-    resolveFeatureAngle 60;
+    resolveFeatureAngle 30;
 
     // Region-wise refinement
     // ~~~~~~~~~~~~~~~~~~~~~~
@@ -134,7 +134,7 @@ castellatedMeshControls
         refinementBox
         {
             mode inside;
-            levels ((1E15 5));
+            levels ((1E15 4));
         }
     }
 
@@ -168,7 +168,9 @@ snapControls
     //  before upon reaching a correct mesh.
     nRelaxIter 5;
     
-    implicitFeatureSnap true;
+    implicitFeatureSnap false;
+    explicitFeatureSnap true;
+    multiRegionFeatureSnap true;
 }
 
 // Settings for the layer addition.
@@ -209,7 +211,7 @@ addLayersControls
 
     //- When not to extrude surface. 0 is flat surface, 90 is when two faces
     //  make straight angle.
-    featureAngle 60;
+    featureAngle 30;
 
     //- Maximum number of snapping relaxation iterations. Should stop
     //  before upon reaching a correct mesh.
@@ -225,14 +227,14 @@ addLayersControls
     nSmoothThickness 10;
 
     // Stop layer growth on highly warped cells
-    maxFaceThicknessRatio 0.8;
+    maxFaceThicknessRatio 0.5;
 
     // Reduce layer growth where ratio thickness to medial
     // distance is large
-    maxThicknessToMedialRatio 0.5;
+    maxThicknessToMedialRatio 0.3;
 
     // Angle used to pick up medial axis points
-    minMedianAxisAngle 90;
+    minMedianAxisAngle 130;
 
     // Create buffer region for new layer terminations
     nBufferCellsNoExtrude 0;

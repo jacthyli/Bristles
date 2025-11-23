@@ -369,30 +369,30 @@ def generate_solid_blocks(vertices, cubic_width, root_block_hight, bristle_lengt
     #底层基座上下
     for index, id in enumerate(bottom_left_vertices_ids_sorted[:-1]):
         hex_line = (f"\thex ({id} {id+1} {id+3} {id+2} {id+bottom_points_num} {id+1+bottom_points_num} {id+3+bottom_points_num} {id+2+bottom_points_num})"
-        f"(2 {partition_G} 2) simpleGrading (1 1 1)\n")
+        f"({partition_Y} {partition_G} {partition_Y}) simpleGrading (1 1 1)\n")
         output_blocks.append(hex_line)
     
     for index, id in enumerate(cylinder_inner_left_ids_sorted):
         #底层鬃毛内圈
-        hex_line = f"\thex ({id} {id+1} {id+3} {id+2} {id+bottom_points_num} {id+1+bottom_points_num} {id+3+bottom_points_num} {id+2+bottom_points_num}) ({partition_Y} {partition_Y} 2) simpleGrading (1 1 1)\n"
+        hex_line = f"\thex ({id} {id+1} {id+3} {id+2} {id+bottom_points_num} {id+1+bottom_points_num} {id+3+bottom_points_num} {id+2+bottom_points_num}) ({partition_Y} {partition_Y} {partition_Y}) simpleGrading (1 1 1)\n"
         output_blocks.append(hex_line)
         #底层鬃毛外圈
         cylinder_hex_line = (
                 f"\thex ({cylinder_left_ids_sorted[index]} {id} {id+2} {cylinder_left_ids_sorted[index]+6} " 
                 f"{cylinder_left_ids_sorted[index]+bottom_points_num} {id+bottom_points_num} {id+2+bottom_points_num} {cylinder_left_ids_sorted[index]+6+bottom_points_num}) "
-                f"({partition_Y} {partition_Y} 2) simpleGrading (1 1 1)\n"
+                f"({partition_Y} {partition_Y} {partition_Y}) simpleGrading (1 1 1)\n"
                 
                 f"\thex ({cylinder_left_ids_sorted[index]+1} {id+1} {id} {cylinder_left_ids_sorted[index]} " 
                 f"{cylinder_left_ids_sorted[index]+1+bottom_points_num} {id+1+bottom_points_num} {id+bottom_points_num} {cylinder_left_ids_sorted[index]+bottom_points_num}) "
-                f"({partition_Y} {partition_Y} 2) simpleGrading (1 1 1)\n"
+                f"({partition_Y} {partition_Y} {partition_Y}) simpleGrading (1 1 1)\n"
                 
                 f"\thex ({cylinder_left_ids_sorted[index]+7} {id+3} {id+1} {cylinder_left_ids_sorted[index]+1} " 
                 f"{cylinder_left_ids_sorted[index]+7+bottom_points_num} {id+3+bottom_points_num} {id+1+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num}) "
-                f"({partition_Y} {partition_Y} 2) simpleGrading (1 1 1)\n"
+                f"({partition_Y} {partition_Y} {partition_Y}) simpleGrading (1 1 1)\n"
                 
                 f"\thex ({cylinder_left_ids_sorted[index]+6} {id+2} {id+3} {cylinder_left_ids_sorted[index]+7} " 
                 f"{cylinder_left_ids_sorted[index]+6+bottom_points_num} {id+2+bottom_points_num} {id+3+bottom_points_num} {cylinder_left_ids_sorted[index]+7+bottom_points_num}) "
-                f"({partition_Y} {partition_Y} 2) simpleGrading (1 1 1)\n"
+                f"({partition_Y} {partition_Y} {partition_Y}) simpleGrading (1 1 1)\n"
             )
         output_blocks.append(cylinder_hex_line)
         
@@ -400,19 +400,19 @@ def generate_solid_blocks(vertices, cubic_width, root_block_hight, bristle_lengt
         cylinder_out_hex_line = (
             f"\thex ({bottom_left_blocks_ids_sorted[index]+2} {cylinder_left_ids_sorted[index]} {cylinder_left_ids_sorted[index]+6} {bottom_left_blocks_ids_sorted[index]+12} " 
             f"{bottom_left_blocks_ids_sorted[index]+2+bottom_points_num} {cylinder_left_ids_sorted[index]+bottom_points_num} {cylinder_left_ids_sorted[index]+6+bottom_points_num} {bottom_left_blocks_ids_sorted[index]+12+bottom_points_num}) "
-            f"(2 2 2) simpleGrading (1 1 1)\n"
+            f"({partition_Y} {partition_Y} {partition_Y}) simpleGrading (1 1 1)\n"
             
             f"\thex ({bottom_left_blocks_ids_sorted[index]+3} {cylinder_left_ids_sorted[index]+1} {cylinder_left_ids_sorted[index]} {bottom_left_blocks_ids_sorted[index]+2} " 
             f"{bottom_left_blocks_ids_sorted[index]+3+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num} {cylinder_left_ids_sorted[index]+bottom_points_num} {bottom_left_blocks_ids_sorted[index]+2+bottom_points_num}) "
-            f"(2 2 2) simpleGrading (1 1 1)\n"
+            f"({partition_Y} {partition_Y} {partition_Y}) simpleGrading (1 1 1)\n"
             
             f"\thex ({bottom_left_blocks_ids_sorted[index]+13} {cylinder_left_ids_sorted[index]+7} {cylinder_left_ids_sorted[index]+1} {bottom_left_blocks_ids_sorted[index]+3} " 
             f"{bottom_left_blocks_ids_sorted[index]+13+bottom_points_num} {cylinder_left_ids_sorted[index]+7+bottom_points_num} {cylinder_left_ids_sorted[index]+1+bottom_points_num} {bottom_left_blocks_ids_sorted[index]+3+bottom_points_num}) "
-            f"(2 2 2) simpleGrading (1 1 1)\n"
+            f"({partition_Y} {partition_Y} {partition_Y}) simpleGrading (1 1 1)\n"
             
             f"\thex ({bottom_left_blocks_ids_sorted[index]+12} {cylinder_left_ids_sorted[index]+6} {cylinder_left_ids_sorted[index]+7} {bottom_left_blocks_ids_sorted[index]+13} " 
             f"{bottom_left_blocks_ids_sorted[index]+12+bottom_points_num} {cylinder_left_ids_sorted[index]+6+bottom_points_num} {cylinder_left_ids_sorted[index]+7+bottom_points_num} {bottom_left_blocks_ids_sorted[index]+13+bottom_points_num}) "
-            f"(2 2 2) simpleGrading (1 1 1)\n"
+            f"({partition_Y} {partition_Y} {partition_Y}) simpleGrading (1 1 1)\n"
         )
             
         output_blocks.append(cylinder_out_hex_line)
@@ -623,12 +623,12 @@ num_bristles = 7
 bristle_gap = radius * 2 * G_over_D # 这个数字是 gap/diameter
 partition_G = 8
 
-partition_Z = 100 # int(bristle_length / mesh_size)
+partition_Z = 200 # int(bristle_length / mesh_size)
 root_width, root_length, root_hight = 2, num_bristles * (radius*2+bristle_gap), 2 
 
 end = generate_ends()
 
-solid_partition_XY = 2
+solid_partition_XY = 3
 solid_mesh = "solid/constant/polyMesh/blockMeshDict"#"blockMeshDict.solid"
 solid_vertices = generate_solid_vertices(root_width, root_length, root_hight, radius, bristle_length, num_bristles, G_over_D)
 solid_blocks, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, bottom_points_num, bottom_left_vertices_ids_sorted, cylinder_inner_left_ids_sorted, cylinder_top_inner_left_ids_sorted = generate_solid_blocks(solid_vertices, root_width, root_hight, bristle_length, radius, solid_partition_XY, partition_Z, partition_G)
