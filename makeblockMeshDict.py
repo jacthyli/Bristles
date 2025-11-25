@@ -1207,18 +1207,22 @@ head = generate_FOAM_head()
 G_D = 2
 bristle_length = 80
 radius = 0.5 # 140是翅尖部分的bristle长度，1.4是实际bristle的直径
-partition_XY = 39 
 num_bristles = 7
 bristle_gap = radius * 2 * 5 * G_D # 这个数字是 gap/diameter
 
 # mesh_size = radius / (partition_XY * 3 / 2)
 if G_D == 1:
-    outside_bristle_partition_half = 7
+    outside_bristle_partition_half = 5
+    partition_XY = 39
+    outside_partition_Y = 45
 elif G_D == 2:
-    outside_bristle_partition_half = 11
+    outside_bristle_partition_half = 9
+    partition_XY = 37
+    outside_partition_Y = 50
 elif G_D == 3:
-    outside_bristle_partition_half = 15# * G_D # int(bristle_gap / 2 / mesh_size)
-outside_partition_Y = 45
+    outside_bristle_partition_half = 13
+    partition_XY = 34
+    outside_partition_Y = 56
 partition_Z_top = 50
 partition_Z = 120# int(bristle_length / mesh_size)
 
