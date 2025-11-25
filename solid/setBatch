@@ -1,2 +1,2 @@
-faceSet plateZone new patchToFace bristle_interFSI
+faceSet bristle_interFSI_Zone new patchToFace bristle_interFSI
 quit

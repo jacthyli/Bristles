@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.py": "python",
-        "snappyhexmeshdict": "cpp"
+        "snappyhexmeshdict": "cpp",
+        "fsiproperties": "cpp"
     }
 }

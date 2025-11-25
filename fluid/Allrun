@@ -18,12 +18,13 @@ cd ../solid
 cp -rf constant/polyMesh constant/oldPoints
 cd ../fluid
 
+mkdir -p constant/polyMesh
 cp -f system/blockMeshDict constant/polyMesh/blockMeshDict
 runApplication blockMesh
 runApplication snappyHexMesh
 \rm -rf constant/polyMesh
-\mv 0.0003/polyMesh constant
-\rm -rf 0.0001 0.0002 0.0003
+\mv 0.003/polyMesh constant
+\rm -rf 0.001 0.002 0.003
 runApplication setSet -batch setBatch
 runApplication setsToZones -noFlipMap
 

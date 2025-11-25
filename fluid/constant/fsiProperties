@@ -16,12 +16,12 @@ FoamFile
 
 
 solidPatch bristle_interFSI;
-solidZone plateZone;
+solidZone bristle_interFSI_Zone;
 
 fluidPatch bristle_interFSI;
-fluidZone plateZone;
+fluidZone bristle_interFSI_Zone;
 
-relaxationFactor 0.05;
+relaxationFactor 0.1;
 
 interfaceDeformationLimit 0;
 
@@ -35,7 +35,7 @@ couplingScheme IQN-ILS;
 
 couplingReuse 0;
 
-rbfInterpolation yes;
+// rbfInterpolation yes;
 
 coupled yes; // Will be swithed to yes by the function object
 predictor yes;

@@ -31,7 +31,7 @@ femLargeStrainCoeffs
     delta 0.6;
 
     PCGTolerance    1e-8;
-    PCGLimit        10000;
+    PCGLimit        20000;
     NRTolerance     1e-5;
 
     rbfUpdate false;

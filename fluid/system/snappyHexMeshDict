@@ -108,7 +108,7 @@ castellatedMeshControls
 
             patchInfo
             {
-                type patch;
+                type wall;
             }
         }
     }
