@@ -1204,7 +1204,7 @@ def extract_vertices(vertices_manager):
 fluid_mesh = "fluid/constant/polyMesh/blockMeshDict"
 head = generate_FOAM_head()
 
-G_D = 1
+G_D = 3
 bristle_length = 80
 radius = 0.5 # 140是翅尖部分的bristle长度，1.4是实际bristle的直径
 num_bristles = 7
@@ -1217,19 +1217,19 @@ if G_D == 1:
     outside_partition_Y = 20
 elif G_D == 2:
     outside_bristle_partition_half = 7
-    partition_XY = 12
-    outside_partition_Y = 45
-elif G_D == 3:
-    outside_bristle_partition_half = 9
     partition_XY = 10
-    outside_partition_Y = 40
+    outside_partition_Y = 20
+elif G_D == 3:
+    outside_bristle_partition_half = 7
+    partition_XY = 10
+    outside_partition_Y = 15
 partition_Z_top = 30
-partition_Z = 60
+partition_Z = 80
 
 root_block_hight = 8
 root_block_length = (radius * 2 + bristle_gap) * num_bristles
 root_block_width = radius * 2 + bristle_gap
-cubic_width = 80
+cubic_width = 80 + G_D * 5
 cubic_length = 100 + G_D * 50
 
 
