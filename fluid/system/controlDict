@@ -65,7 +65,7 @@ functions
        );
 
         region solid;
-        refHistoryPoint (0.6 0.2 0.025334);
+        refHistoryPoint (0.043 0.096 0.008);
    }
 
    //hronTurekReport

@@ -37,18 +37,15 @@ boundaryField
     }
     frontAndBackPlanes
     {
-        type            fixedValue;
-        value           uniform ( 0 0 0 );
+        type            slip;
     }
     bottom
     {
-        type            fixedValue;
-        value           uniform ( 0 0 0 );
+        type            slip;
     }
     top
     {
-        type            fixedValue;
-        value           uniform ( 0 0 0 );
+        type            slip;
     }
 }
 
