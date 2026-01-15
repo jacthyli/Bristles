@@ -38,15 +38,15 @@ boundaryField
     }
     frontAndBackPlanes
     {
-        type            zeroGradient;
+        type            slip;
     }
     bottom
     {
-        type            zeroGradient;
+        type            slip;
     }
     top
     {
-        type            zeroGradient;
+        type            slip;
     }
 }
 

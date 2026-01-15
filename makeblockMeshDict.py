@@ -1309,29 +1309,29 @@ bristle_gap = radius * 2 * 5 * G_D # 这个数字是 gap/diameter
 
 # mesh_size = radius / (partition_XY * 3 / 2)
 if G_D == 1:
-    outside_bristle_partition_half = 10
-    partition_X_out = 7
-    partition_X_middle = 7
+    outside_bristle_partition_half = 5
+    partition_X_out = 4
+    partition_X_middle = 4
     partition_XY = 20
     outside_partition_Y = 30
-    partition_Z_top = 150
-    partition_Z = 300
+    partition_Z_top = 80
+    partition_Z = 160
 elif G_D == 2:
-    outside_bristle_partition_half = 10
-    partition_X_out = 8
-    partition_X_middle = 10
+    outside_bristle_partition_half = 6
+    partition_X_out = 5
+    partition_X_middle = 5
     partition_XY = 20
     outside_partition_Y = 30
-    partition_Z_top = 120
-    partition_Z = 250
+    partition_Z_top = 80
+    partition_Z = 160
 elif G_D == 3:
-    outside_bristle_partition_half = 10
-    partition_X_out = 9
-    partition_X_middle = 15
+    outside_bristle_partition_half = 7
+    partition_X_out = 5
+    partition_X_middle = 8
     partition_XY = 20
     outside_partition_Y = 30
-    partition_Z_top = 120
-    partition_Z = 250
+    partition_Z_top = 90
+    partition_Z = 160
 
 
 root_block_hight = 8

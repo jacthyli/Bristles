@@ -50,9 +50,11 @@ timePrecision   6;
 
 runTimeModifiable yes;
 
-adjustTimeStep  no;
+adjustTimeStep  yes;
 
 maxCo           0.2;
+
+maxDeltaT        1e-3;
 
 functions
 (
