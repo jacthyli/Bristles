@@ -1312,7 +1312,7 @@ if G_D == 1:
     outside_bristle_partition_half = 5
     partition_X_out = 4
     partition_X_middle = 4
-    partition_XY = 20
+    partition_XY = 40
     outside_partition_Y = 30
     partition_Z_top = 80
     partition_Z = 160
@@ -1320,7 +1320,7 @@ elif G_D == 2:
     outside_bristle_partition_half = 6
     partition_X_out = 5
     partition_X_middle = 5
-    partition_XY = 20
+    partition_XY = 40
     outside_partition_Y = 30
     partition_Z_top = 80
     partition_Z = 160
@@ -1328,7 +1328,7 @@ elif G_D == 3:
     outside_bristle_partition_half = 7
     partition_X_out = 5
     partition_X_middle = 8
-    partition_XY = 20
+    partition_XY = 40
     outside_partition_Y = 30
     partition_Z_top = 90
     partition_Z = 160
@@ -1337,7 +1337,7 @@ elif G_D == 3:
 root_block_hight = 8
 root_block_length = (radius * 2 + bristle_gap) * num_bristles
 root_block_width = radius * 2 + bristle_gap
-cubic_width = 80 + G_D * 5
+cubic_width = 160 + G_D * 5
 cubic_length = 100 + G_D * 50
 
 
