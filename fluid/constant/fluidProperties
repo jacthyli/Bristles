@@ -27,7 +27,7 @@ icoFluidCoeffs
 consistentIcoFluidCoeffs
 {
     nCorrectors 3;
-    nNonOrthogonalCorrectors 1;
+    nNonOrthogonalCorrectors 3;
 }
 
 // ************************************************************************* //

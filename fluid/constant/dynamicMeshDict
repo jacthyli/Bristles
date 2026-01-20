@@ -20,7 +20,7 @@ solver refVelocityLaplacian;
 
 diffusivity quadratic inverseDistance (bristle);
 
-nNonOrthogonalCorrectors 2;
+nNonOrthogonalCorrectors 3;
 leastSquaresVolPoint yes;
 
 
