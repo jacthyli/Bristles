@@ -1337,7 +1337,7 @@ elif G_D == 3:
 root_block_hight = 8
 root_block_length = (radius * 2 + bristle_gap) * num_bristles
 root_block_width = radius * 2 + bristle_gap
-cubic_width = 80 + G_D * 5
+cubic_width = 100 + G_D * 5
 cubic_length = 100 + G_D * 50
 
 
