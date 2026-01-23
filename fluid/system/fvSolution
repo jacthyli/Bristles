@@ -58,7 +58,7 @@ solvers
     {
         solver          PBiCG;
         preconditioner  DILU;
-        tolerance       1e-06;
+        tolerance       1e-09;
         relTol          0;
         minIter         1;
     }

@@ -27,8 +27,8 @@ gradSchemes
 divSchemes
 {
     default none;
-    // div(phi,U)   Gauss linearUpwind cellLimited leastSquares 1;
-    div(phi,U)      Gauss upwind;
+    div(phi,U)   Gauss linearUpwind cellLimited leastSquares 1;
+    // div(phi,U)      Gauss upwind;
 }
 
 laplacianSchemes
