@@ -1254,7 +1254,7 @@ def generate_solid_patches(bottom_left_vertices_ids_sorted, bottom_points_num, c
     output_patches.append("\tpatch bristle\n")
     output_patches.append("\t(\n")
     for index, id in enumerate(bottom_left_vertices_ids_sorted):
-        if id < len(bottom_left_vertices_ids_sorted)-1:
+        if index < len(bottom_left_vertices_ids_sorted)-1:
             output_patches.append(f"\t\t({id} {id+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]+bottom_points_num} {bottom_left_vertices_ids_sorted[index+1]})\n")
             output_patches.append(f"\t\t({bottom_left_vertices_ids_sorted[index+1]+1} {bottom_left_vertices_ids_sorted[index+1]+1+bottom_points_num} {id+1+bottom_points_num} {id+1} )\n")
 
