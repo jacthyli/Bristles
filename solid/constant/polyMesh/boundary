@@ -9,36 +9,27 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    object      fsiProperties;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+2
+(
+    bristle
+    {
+        type            patch;
+        nFaces          13491;
+        startFace       144444;
+    }
+    plateFix
+    {
+        type            patch;
+        nFaces          651;
+        startFace       157935;
+    }
+)
 
-solidPatch bristle;
-solidZone plateZone;
-
-fluidPatch bristle;
-fluidZone plateZone;
-
-relaxationFactor 0.1;
-
-interfaceDeformationLimit 0;
-
-outerCorrTolerance 1e-6;
-nOuterCorr 40;
-
-interpolatorUpdateFrequency 0;
-
-//couplingScheme Aitken;
-couplingScheme IQN-ILS;
-
-couplingReuse 0;
-
-rbfInterpolation yes;
-
-coupled yes; // Will be swithed to yes by the function object
-predictor yes;
 
 // ************************************************************************* //
-

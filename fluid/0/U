@@ -35,7 +35,7 @@ boundaryField
     inlet
     {
         type            fixedValue;
-        value           uniform ( 1.562e-4 0 0 );
+        value           uniform ( 0.0781 0 0 );
     }
     frontAndBackPlanes
     {
