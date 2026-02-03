@@ -1577,13 +1577,13 @@ with open(fluid_mesh, 'w') as file:
     file.write("".join(patches))
     file.write("".join(end))
 
-solid_partition_XY = 10
-partition_Y_out = 4
-solid_partition_Z = 400
-partition_X_in = 5
-solid_partition_X_out = 4
-partition_Z_base = 20
-partition_X_gap = 4
+solid_partition_XY = 4
+partition_Y_out = 2
+solid_partition_Z = 150
+partition_X_in = 2
+solid_partition_X_out = 2
+partition_Z_base = 3
+partition_X_gap = 2
 solid_mesh = "solid/constant/polyMesh/blockMeshDict"#"blockMeshDict.solid"
 solid_vertices = generate_solid_vertices(solid_blocks_xy_vertices, root_block_hight, bristle_length, root_block_width)
 solid_blocks, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, bottom_points_num, bottom_left_vertices_ids_sorted, cylinder_inner_left_ids_sorted, cylinder_top_inner_left_ids_sorted ,middle_left_ids_sorted, bristle_left_ids_only_4_bristles, gap_left_ids= generate_solid_blocks(solid_vertices, root_block_width, root_block_hight, bristle_length, radius, partition_X_in, solid_partition_X_out, partition_Z_base, solid_partition_XY, solid_partition_Z, partition_X_gap, partition_Y_out)
