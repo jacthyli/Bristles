@@ -1523,7 +1523,7 @@ def extract_vertices(vertices_manager):
 fluid_mesh = "fluid/constant/polyMesh/blockMeshDict"
 head = generate_FOAM_head()
 
-G_D = 2
+G_D = 1
 bristle_length = 140
 radius = 1 
 num_bristles = 7
