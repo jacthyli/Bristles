@@ -26,7 +26,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-convertToMeters 1e-6;
+convertToMeters 1;
     """)
     return head
 
@@ -108,11 +108,11 @@ def generate_vertices(cubic_width, cubic_length, radius, bristle_length, num_bri
         [0, 0, 0],
         [cubic_width/2-root_block_width/2, 0, 0],
         [cubic_width/2+root_block_width/2, 0, 0],
-        [cubic_width+40, 0, 0],
+        [cubic_width+50, 0, 0],
         [0, cubic_length/2-root_block_length/2, 0],
         [cubic_width/2-root_block_width/2, cubic_length/2-root_block_length/2, 0],
         [cubic_width/2+root_block_width/2, cubic_length/2-root_block_length/2, 0],
-        [cubic_width+40, cubic_length/2-root_block_length/2, 0]
+        [cubic_width+50, cubic_length/2-root_block_length/2, 0]
     ]
     for i in range(num_bristles-1):
         solid_blocks_xy = [
@@ -123,7 +123,7 @@ def generate_vertices(cubic_width, cubic_length, radius, bristle_length, num_bri
             [0, cubic_length/2-root_block_length/2 + (i+1)*(bristle_gap+radius*2), 0],
             [cubic_width/2-root_block_width/2, cubic_length/2-root_block_length/2 + (i+1)*(bristle_gap+radius*2), 0],
             [cubic_width/2+root_block_width/2, cubic_length/2-root_block_length/2 + (i+1)*(bristle_gap+radius*2), 0],
-            [cubic_width+40, cubic_length/2-root_block_length/2 + (i+1)*(bristle_gap+radius*2), 0]
+            [cubic_width+50, cubic_length/2-root_block_length/2 + (i+1)*(bristle_gap+radius*2), 0]
         ]
         solid_blocks_xy_vertices.extend(solid_blocks_xy)
         bottom_vertices.extend(bottom_middle_sector)
@@ -132,22 +132,22 @@ def generate_vertices(cubic_width, cubic_length, radius, bristle_length, num_bri
             [0, cubic_length/2-root_block_length/2 + (i+1/2)*(bristle_gap+radius*2) - root_block_width/2 , 0],
             [cubic_width/2-root_block_width/2, cubic_length/2-root_block_length/2 + (i+1/2)*(bristle_gap+radius*2) - root_block_width/2, 0],
             [cubic_width/2+root_block_width/2, cubic_length/2-root_block_length/2 + (i+1/2)*(bristle_gap+radius*2) - root_block_width/2, 0],
-            [cubic_width+40, cubic_length/2-root_block_length/2 + (i+1/2)*(bristle_gap+radius*2) - root_block_width/2, 0],
+            [cubic_width+50, cubic_length/2-root_block_length/2 + (i+1/2)*(bristle_gap+radius*2) - root_block_width/2, 0],
             [0, cubic_length/2-root_block_length/2 + (i+1/2)*(bristle_gap+radius*2) + root_block_width/2 , 0],
             [cubic_width/2-root_block_width/2, cubic_length/2-root_block_length/2 + (i+1/2)*(bristle_gap+radius*2) + root_block_width/2, 0],
             [cubic_width/2+root_block_width/2, cubic_length/2-root_block_length/2 + (i+1/2)*(bristle_gap+radius*2) + root_block_width/2, 0],
-            [cubic_width+40, cubic_length/2-root_block_length/2 + (i+1/2)*(bristle_gap+radius*2) + root_block_width/2, 0]
+            [cubic_width+50, cubic_length/2-root_block_length/2 + (i+1/2)*(bristle_gap+radius*2) + root_block_width/2, 0]
         ]
         bottom_vertices.extend(bottom_middle_sector)
     bottom_top_sector = [
         [0, cubic_length/2+root_block_length/2, 0],
         [cubic_width/2-root_block_width/2, cubic_length/2+root_block_length/2, 0],
         [cubic_width/2+root_block_width/2, cubic_length/2+root_block_length/2, 0],
-        [cubic_width+40, cubic_length/2+root_block_length/2, 0],
+        [cubic_width+50, cubic_length/2+root_block_length/2, 0],
         [0, cubic_length, 0],
         [cubic_width/2-root_block_width/2, cubic_length, 0],
         [cubic_width/2+root_block_width/2, cubic_length, 0],
-        [cubic_width+40, cubic_length, 0]
+        [cubic_width+50, cubic_length, 0]
     ]
     solid_blocks_xy = [
         [cubic_width/2-root_block_width/2, cubic_length/2+root_block_length/2, 0],
@@ -1250,7 +1250,7 @@ def generate_patches(vertices, root_block_hight, top_patches, root_patches, bris
     
     output_patches.append("\tpatch outlet\n")
     output_patches.append("\t(\n")
-    outlet_left_coner_ids, outlet_points_num = find_vertices(vertices, cubic_width+40, "X")
+    outlet_left_coner_ids, outlet_points_num = find_vertices(vertices, cubic_width+50, "X")
     outlet_bottom_left_coner_ids = sorted(list(set(outlet_left_coner_ids) & set(bottom_left_coner_ids)))
     outlet_root_left_coner_ids = sorted(list(set(outlet_left_coner_ids) & set(root_left_coner_ids)))
     outlet_roof_left_coner_ids = sorted(list(set(outlet_left_coner_ids) & set(roof_left_coner_ids)))
@@ -1523,45 +1523,37 @@ def extract_vertices(vertices_manager):
 fluid_mesh = "fluid/constant/polyMesh/blockMeshDict"
 head = generate_FOAM_head()
 
-G_D = 1
+G_D = 2
 bristle_length = 140
 radius = 1 
 num_bristles = 7
 bristle_gap = radius * 2 * 5 * G_D # 这个数字是 gap/diameter
 
 # mesh_size = radius / (partition_XY * 3 / 2)
+outside_bristle_partition_half = 4
+partition_X_out = 2
+partition_X_middle = 3
+partition_XY = 20
+partition_Z_top = 80
+partition_Z = 160
+outside_partition_Y = 20
 if G_D == 1:
-    outside_bristle_partition_half = 4
-    partition_X_out = 2
-    partition_X_middle = 3
-    partition_XY = 20
-    outside_partition_Y = 20
-    partition_Z_top = 80
-    partition_Z = 160
+    cubic_length = 150
+    partition_Y_gap = 2
+    partition_X_gap = 2 # solid only
 elif G_D == 2:
-    outside_bristle_partition_half = 6
-    partition_X_out = 5
-    partition_X_middle = 5
-    partition_XY = 20
-    outside_partition_Y = 30
-    partition_Z_top = 80
-    partition_Z = 160
+    cubic_length = 230
+    partition_Y_gap = 5
+    partition_X_gap = 5 # solid only
 elif G_D == 3:
-    outside_bristle_partition_half = 7
-    partition_X_out = 5
-    partition_X_middle = 8
-    partition_XY = 20
-    outside_partition_Y = 30
-    partition_Z_top = 90
-    partition_Z = 160
+    cubic_length = 300
+    partition_Y_gap = 8
+    partition_X_gap = 8 # solid only
 
-partition_Y_gap = 2
 root_block_hight = 4
 root_block_length = (radius * 2 + bristle_gap) * num_bristles
 root_block_width = 6
-cubic_width = 100 + G_D * 5
-cubic_length = 100 + G_D * 50
-
+cubic_width = 106
 
 vertices, solid_blocks_xy_vertices = generate_vertices(cubic_width, cubic_length, radius, bristle_length, num_bristles, bristle_gap, root_block_hight, root_block_length, root_block_width, G_D)
 blocks, top_patches, root_patches, root_bristle_vertices_ids_sorted, id_xy_list, bristle_top_vertices_ids_sorted, bristle_top_points_num, bottom_ids_left_corner, root_middle_bristle_vertices_ids_sorted, top_middle_bristle_vertices_ids_sorted = generate_blocks(vertices, bristle_length, partition_XY, outside_bristle_partition_half, partition_Z, root_block_hight, root_block_width, cubic_length, radius, outside_partition_Y, partition_Z_top, partition_X_out, partition_X_middle, G_D, partition_Y_gap)
@@ -1583,7 +1575,7 @@ solid_partition_Z = 150
 partition_X_in = 2
 solid_partition_X_out = 2
 partition_Z_base = 3
-partition_X_gap = 2
+
 solid_mesh = "solid/constant/polyMesh/blockMeshDict"#"blockMeshDict.solid"
 solid_vertices = generate_solid_vertices(solid_blocks_xy_vertices, root_block_hight, bristle_length, root_block_width)
 solid_blocks, cylinder_left_ids_sorted, cylinder_top_left_ids_sorted, bottom_points_num, bottom_left_vertices_ids_sorted, cylinder_inner_left_ids_sorted, cylinder_top_inner_left_ids_sorted ,middle_left_ids_sorted, bristle_left_ids_only_4_bristles, gap_left_ids= generate_solid_blocks(solid_vertices, root_block_width, root_block_hight, bristle_length, radius, partition_X_in, solid_partition_X_out, partition_Z_base, solid_partition_XY, solid_partition_Z, partition_X_gap, partition_Y_out)
