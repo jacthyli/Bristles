@@ -28,13 +28,13 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         5;
+endTime         7;
 
-deltaT          1e-3;
+deltaT          5e-3;
 
 writeControl    timeStep;
 
-writeInterval   50;
+writeInterval   20;
 
 purgeWrite      0;
 
@@ -54,7 +54,7 @@ adjustTimeStep  yes;
 
 maxCo           0.2;
 
-maxDeltaT        5e-3;
+maxDeltaT        1e-2;
 
 functions
 (
@@ -67,7 +67,7 @@ functions
        );
 
         region solid;
-        refHistoryPoint (5.2954e-05 0.000111891 0.000144);
+        refHistoryPoint (50 33 0);
    }
 
    //hronTurekReport
