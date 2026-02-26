@@ -516,13 +516,13 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y_bristle, 
             block_line = (
                 f"\thex ({id} {id+1} {bottom_ids_left_corner_left_row[index+1]+1} {bottom_ids_left_corner_left_row[index+1]} "
                 f"{root_left_bottom_points_left_row[index]} {root_left_bottom_points_left_row[index]+1} {root_left_bottom_points_left_row[index+1]+1} {root_left_bottom_points_left_row[index+1]}) "
-                f"({partition_X} {partition_Y_up_bottom} 5) simpleGrading (0.5 0.5 1)\n"
+                f"({partition_X} {partition_Y_up_bottom} 5) simpleGrading (0.5 0.2 1)\n"
             )
         elif index == len(bottom_ids_left_corner_left_row[0:-1])-1:
             block_line = (
                 f"\thex ({id} {id+1} {bottom_ids_left_corner_left_row[index+1]+1} {bottom_ids_left_corner_left_row[index+1]} "
                 f"{root_left_bottom_points_left_row[index]} {root_left_bottom_points_left_row[index]+1} {root_left_bottom_points_left_row[index+1]+1} {root_left_bottom_points_left_row[index+1]}) "
-                f"({partition_X} {partition_Y_up_bottom} 5) simpleGrading (0.5 2 1)\n"
+                f"({partition_X} {partition_Y_up_bottom} 5) simpleGrading (0.5 5 1)\n"
             )
         elif id in bristle_left_corner_id[0:-1]:
             block_line = (
@@ -545,13 +545,13 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y_bristle, 
             block_line = (
                 f"\thex ({id} {id+1} {bottom_ids_left_corner_right_row[index+1]+1} {bottom_ids_left_corner_right_row[index+1]} "
                 f"{root_left_bottom_points_right_row[index]} {root_left_bottom_points_right_row[index]+1} {root_left_bottom_points_right_row[index+1]+1} {root_left_bottom_points_right_row[index+1]}) "
-                f"({partition_X*2} {partition_Y_up_bottom} 5) simpleGrading (2 0.5 1)\n"
+                f"({partition_X*2} {partition_Y_up_bottom} 5) simpleGrading (2 0.2 1)\n"
             )
         elif index == len(bottom_ids_left_corner_right_row[0:-1])-1:
             block_line = (
                 f"\thex ({id} {id+1} {bottom_ids_left_corner_right_row[index+1]+1} {bottom_ids_left_corner_right_row[index+1]} "
                 f"{root_left_bottom_points_right_row[index]} {root_left_bottom_points_right_row[index]+1} {root_left_bottom_points_right_row[index+1]+1} {root_left_bottom_points_right_row[index+1]}) "
-                f"({partition_X*2} {partition_Y_up_bottom} 5) simpleGrading (2 2 1)\n"
+                f"({partition_X*2} {partition_Y_up_bottom} 5) simpleGrading (2 5 1)\n"
             )
         elif id in bristle_right_corner_id[0:-1]:
             block_line = (
@@ -574,13 +574,13 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y_bristle, 
             block_line = (
                 f"\thex ({id} {id+1} {id+5} {id+4} "
                 f"{root_ids_left_corner[index]} {root_ids_left_corner[index]+1} {root_ids_left_corner[index]+5} {root_ids_left_corner[index]+4}) "
-                f"({partition_Y_bristle} {partition_Y_up_bottom} 5) simpleGrading (1 0.5 1)\n"
+                f"({partition_Y_bristle} {partition_Y_up_bottom} 5) simpleGrading (1 0.2 1)\n"
             )
         else:
             block_line = (
             f"\thex ({id} {id+1} {id+5} {id+4} "
             f"{root_ids_left_corner[-1]} {root_ids_left_corner[-1]+1} {root_ids_left_corner[-1]+5} {root_ids_left_corner[-1]+4}) "
-            f"({partition_Y_bristle} {partition_Y_up_bottom} 5) simpleGrading (1 2 1)\n"
+            f"({partition_Y_bristle} {partition_Y_up_bottom} 5) simpleGrading (1 5 1)\n"
         )
         output_blocks.append(block_line)
     output_blocks.append("\n")
@@ -592,13 +592,13 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y_bristle, 
             block_line = (
                 f"\thex ({id} {id+1} {root_left_bottom_points_left_row[index+1]+1} {root_left_bottom_points_left_row[index+1]} "
                 f"{bristle_top_left_bottom_points_left_row[index]} {bristle_top_left_bottom_points_left_row[index]+1} {bristle_top_left_bottom_points_left_row[index+1]+1} {bristle_top_left_bottom_points_left_row[index+1]}) "
-                f"({partition_X} {partition_Y_up_bottom} {partition_Z}) simpleGrading (0.5 0.5 1)\n"
+                f"({partition_X} {partition_Y_up_bottom} {partition_Z}) simpleGrading (0.5 0.2 1)\n"
             )
         elif index == len(root_left_bottom_points_left_row[0:-1])-1:
             block_line = (
                 f"\thex ({id} {id+1} {root_left_bottom_points_left_row[index+1]+1} {root_left_bottom_points_left_row[index+1]} "
                 f"{bristle_top_left_bottom_points_left_row[index]} {bristle_top_left_bottom_points_left_row[index]+1} {bristle_top_left_bottom_points_left_row[index+1]+1} {bristle_top_left_bottom_points_left_row[index+1]}) "
-                f"({partition_X} {partition_Y_up_bottom} {partition_Z}) simpleGrading (0.5 2 1)\n"
+                f"({partition_X} {partition_Y_up_bottom} {partition_Z}) simpleGrading (0.5 5 1)\n"
             )
         elif id in bristle_root_right_corner_id[0:-1]:
             block_line = (
@@ -621,13 +621,13 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y_bristle, 
             block_line = (
                 f"\thex ({id} {id+1} {root_left_bottom_points_right_row[index+1]+1} {root_left_bottom_points_right_row[index+1]} "
                 f"{bristle_top_left_bottom_points_right_row[index]} {bristle_top_left_bottom_points_right_row[index]+1} {bristle_top_left_bottom_points_right_row[index+1]+1} {bristle_top_left_bottom_points_right_row[index+1]}) "
-                f"({partition_X*2} {partition_Y_up_bottom} {partition_Z}) simpleGrading (2 0.5 1)\n"
+                f"({partition_X*2} {partition_Y_up_bottom} {partition_Z}) simpleGrading (2 0.2 1)\n"
             )
         elif index == len(root_left_bottom_points_right_row[0:-1])-1:
             block_line = (
                 f"\thex ({id} {id+1} {root_left_bottom_points_right_row[index+1]+1} {root_left_bottom_points_right_row[index+1]} "
                 f"{bristle_top_left_bottom_points_right_row[index]} {bristle_top_left_bottom_points_right_row[index]+1} {bristle_top_left_bottom_points_right_row[index+1]+1} {bristle_top_left_bottom_points_right_row[index+1]}) "
-                f"({partition_X*2} {partition_Y_up_bottom} {partition_Z}) simpleGrading (2 2 1)\n"
+                f"({partition_X*2} {partition_Y_up_bottom} {partition_Z}) simpleGrading (2 5 1)\n"
             )
         elif id in bristle_root_right_corner_id[0:-1]:
             block_line = (
@@ -667,13 +667,13 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y_bristle, 
             block_line = (
                 f"\thex ({id} {id+1} {id+5} {id+4} "
                 f"{top_ids_left_corner[index]} {top_ids_left_corner[index]+1} {top_ids_left_corner[index]+5} {top_ids_left_corner[index]+4}) "
-                f"({partition_Y_bristle} {partition_Y_up_bottom} {partition_Z}) simpleGrading (1 0.5 1)\n"
+                f"({partition_Y_bristle} {partition_Y_up_bottom} {partition_Z}) simpleGrading (1 0.2 1)\n"
             )
         else:
             block_line = (
             f"\thex ({id} {id+1} {id+5} {id+4} "
             f"{top_ids_left_corner[index]} {top_ids_left_corner[index]+1} {top_ids_left_corner[index]+5} {top_ids_left_corner[index]+4}) "
-            f"({partition_Y_bristle} {partition_Y_up_bottom} {partition_Z}) simpleGrading (1 2 1)\n"
+            f"({partition_Y_bristle} {partition_Y_up_bottom} {partition_Z}) simpleGrading (1 5 1)\n"
         )
         output_blocks.append(block_line)
     output_blocks.append("\n")
@@ -770,13 +770,13 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y_bristle, 
             block_line = (
                 f"\thex ({id} {id+1} {bristle_top_left_bottom_points_left_row[index+1]+1} {bristle_top_left_bottom_points_left_row[index+1]} "
                 f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_bottom_points_left_row[index+1]+1+bristle_top_points_num} {bristle_top_left_bottom_points_left_row[index+1]+bristle_top_points_num}) "
-                f"({partition_X} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (0.5 0.5 1)\n"
+                f"({partition_X} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (0.5 0.2 1)\n"
             )
         elif index == len(bristle_top_left_bottom_points_left_row[0:-1])-1:
             block_line = (
                 f"\thex ({id} {id+1} {bristle_top_left_bottom_points_left_row[index+1]+1} {bristle_top_left_bottom_points_left_row[index+1]} "
                 f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_bottom_points_left_row[index+1]+1+bristle_top_points_num} {bristle_top_left_bottom_points_left_row[index+1]+bristle_top_points_num}) "
-                f"({partition_X} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (0.5 2 1)\n"
+                f"({partition_X} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (0.5 5 1)\n"
             )
         elif id in bristle_top_right_corner_id[0:-1]:
             block_line = (
@@ -800,13 +800,13 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y_bristle, 
             block_line = (
                 f"\thex ({id} {id+1} {bristle_top_left_bottom_points_right_row[index+1]+1} {bristle_top_left_bottom_points_right_row[index+1]} "
                 f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_bottom_points_right_row[index+1]+1+bristle_top_points_num} {bristle_top_left_bottom_points_right_row[index+1]+bristle_top_points_num}) "
-                f"({partition_X*2} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (2 0.5 1)\n"
+                f"({partition_X*2} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (2 0.2 1)\n"
             )
         elif index == len(bristle_top_left_bottom_points_right_row[0:-1])-1:
             block_line = (
                 f"\thex ({id} {id+1} {bristle_top_left_bottom_points_right_row[index+1]+1} {bristle_top_left_bottom_points_right_row[index+1]} "
                 f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {bristle_top_left_bottom_points_right_row[index+1]+1+bristle_top_points_num} {bristle_top_left_bottom_points_right_row[index+1]+bristle_top_points_num}) "
-                f"({partition_X*2} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (2 2 1)\n"
+                f"({partition_X*2} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (2 5 1)\n"
             )
         elif id in bristle_top_right_corner_id[0:-1]:
             block_line = (
@@ -829,13 +829,13 @@ def generate_blocks(vertices, bristle_length, partition_X, partition_Y_bristle, 
             block_line = (
                 f"\thex ({id} {id+1} {id+5} {id+4} "
                 f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {id+5+bristle_top_points_num} {id+4+bristle_top_points_num}) "
-                f"({partition_Y_bristle} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (1 0.5 1)\n"
+                f"({partition_Y_bristle} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (1 0.2 1)\n"
             )
         else:
             block_line = (
                 f"\thex ({id} {id+1} {id+5} {id+4} "
                 f"{id+bristle_top_points_num} {id+1+bristle_top_points_num} {id+5+bristle_top_points_num} {id+4+bristle_top_points_num}) "
-                f"({partition_Y_bristle} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (1 2 1)\n"
+                f"({partition_Y_bristle} {partition_Y_up_bottom} {partition_Z_top}) simpleGrading (1 5 1)\n"
             )
         top_patches.append([id+bristle_top_points_num, id+1+bristle_top_points_num, id+5+bristle_top_points_num, id+4+bristle_top_points_num])
         output_blocks.append(block_line)
@@ -1536,13 +1536,13 @@ partition_X_middle = 3
 partition_XY = 20
 partition_Z_top = 80
 partition_Z = 160
-outside_partition_Y = 40
+outside_partition_Y = 60
 if G_D == 1:
-    cubic_length = 300
+    cubic_length = 600
     partition_Y_gap = 2
     partition_X_gap = 2 # solid only
 elif G_D == 2:
-    cubic_length = 460
+    cubic_length = 920
     partition_Y_gap = 5
     partition_X_gap = 5 # solid only
 elif G_D == 3:
