@@ -1523,7 +1523,7 @@ def extract_vertices(vertices_manager):
 fluid_mesh = "fluid/constant/polyMesh/blockMeshDict"
 head = generate_FOAM_head()
 
-G_D = 1
+G_D = 2
 bristle_length = 140
 radius = 1 
 num_bristles = 7
@@ -1536,13 +1536,15 @@ partition_X_middle = 3
 partition_XY = 20
 partition_Z_top = 80
 partition_Z = 160
-outside_partition_Y = 60
+
 if G_D == 1:
-    cubic_length = 600
+    cubic_length = 300
+    outside_partition_Y = 30
     partition_Y_gap = 2
     partition_X_gap = 2 # solid only
 elif G_D == 2:
-    cubic_length = 920
+    cubic_length = 460
+    outside_partition_Y = 40
     partition_Y_gap = 5
     partition_X_gap = 5 # solid only
 elif G_D == 3:
