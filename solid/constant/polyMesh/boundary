@@ -9,19 +9,27 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    object      rheologyProperties;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-planeStress no;
+2
+(
+    bristle
+    {
+        type            patch;
+        nFaces          18056;
+        startFace       149788;
+    }
+    plateFix
+    {
+        type            patch;
+        nFaces          896;
+        startFace       167844;
+    }
+)
 
-rheology
-{
-    type linearElastic;
-    rho rho [1 -3 0 0 0 0 0] 1.1;
-    E E [1 -1 -2 0 0 0 0] 0.5e9;
-    nu nu [0 0 0 0 0 0 0] 0.3;
-}
 
 // ************************************************************************* //

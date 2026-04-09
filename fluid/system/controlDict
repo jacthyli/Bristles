@@ -28,7 +28,7 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         5;
+endTime         6;
 
 deltaT          5e-3;
 
@@ -67,7 +67,7 @@ functions
        );
 
         region solid;
-        refHistoryPoint (50 33 0);
+        refHistoryPoint (50 108 0);
    }
 
    //hronTurekReport
