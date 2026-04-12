@@ -82,7 +82,7 @@ class VertexManager:
     def sort_vertices_by_zyx(self):
         """按 Z, Y, X 排序所有点并重新分配 ID"""
         # 提取所有点并排序
-        sorted_points = sorted(self.id_to_vertex.values(), key=lambda p: (p[2], p[1], p[0]))
+        sorted_points = sorted(self.id_to_vertex.values(), key=lambda p: (round(p[2], 4), round(p[1], 4), round(p[0], 4)))
 
         # 清空原有数据
         self.id_to_vertex.clear()
@@ -1305,7 +1305,7 @@ num_bristles = 7
 bristle_gap = radius_base * 2 * 5 * G_D # 这个数字是 gap/diameter
 
 outside_bristle_partition_half = 4
-partition_X_out = 2
+partition_X_out = 2 # 如果是cone shape 这里需要是 4， reverse cone 则保持是2就好了
 partition_X_middle = 3
 partition_XY = 20
 partition_Z_top = 80
@@ -1313,7 +1313,7 @@ partition_Z = 160
 
 if G_D == 1:
     cubic_length = 300
-    outside_partition_Y = 30
+    outside_partition_Y = 30 # 如果是reverse cone，这里要稍微降低一些，因为 root_block_width变宽了。
     partition_Y_gap = 2
     partition_X_gap = 2 
 elif G_D == 2:
@@ -1328,7 +1328,7 @@ elif G_D == 3:
 
 root_block_hight = 4
 root_block_length = (radius_base * 2 + bristle_gap) * num_bristles
-root_block_width = 6
+root_block_width = 6 # 如果是reverse cone，这里需要增加宽度到8
 cubic_width = 106
 
 # ================= 函数调用区 ================= #
@@ -1351,7 +1351,7 @@ solid_partition_XY = 4
 partition_Y_out = 2
 solid_partition_Z = 150
 partition_X_in = 2
-solid_partition_X_out = 2
+solid_partition_X_out = 2 # 如果是cone shape 需要和 partition_X_out 保持一致
 partition_Z_base = 3
 
 solid_mesh = "solid/constant/polyMesh/blockMeshDict"
