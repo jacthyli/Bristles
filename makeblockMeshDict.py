@@ -26,7 +26,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-convertToMeters 1;
+convertToMeters 1e-6;
     """)
     return head
 
@@ -1523,11 +1523,11 @@ def extract_vertices(vertices_manager):
 fluid_mesh = "fluid/constant/polyMesh/blockMeshDict"
 head = generate_FOAM_head()
 
-G_D = 2
-bristle_length = 140
+G_D = 1
+bristle_length = 185
 radius = 1 
 num_bristles = 7
-bristle_gap = radius * 2 * 5 * G_D # 这个数字是 gap/diameter
+bristle_gap = radius * 2 * 6 * G_D # 这个数字是 gap/diameter
 
 # mesh_size = radius / (partition_XY * 3 / 2)
 outside_bristle_partition_half = 4
@@ -1540,8 +1540,8 @@ partition_Z = 160
 if G_D == 1:
     cubic_length = 300
     outside_partition_Y = 30
-    partition_Y_gap = 2
-    partition_X_gap = 2 # solid only
+    partition_Y_gap = 3
+    partition_X_gap = 3 # solid only
 elif G_D == 2:
     cubic_length = 460
     outside_partition_Y = 40

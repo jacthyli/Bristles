@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-numberOfSubdomains 2;
+numberOfSubdomains 32;
 
 method          simple;
 
@@ -22,7 +22,7 @@ globalFaceZones ( plateZone );
 
 simpleCoeffs
 {
-    n               (1 1 2);
+    n               (1 1 32);
     delta           0.001;
 }
 

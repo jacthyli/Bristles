@@ -35,7 +35,7 @@ couplingScheme IQN-ILS;
 
 couplingReuse 0;
 
-rbfInterpolation yes;
+rbfInterpolation no;
 
 coupled yes; // Will be swithed to yes by the function object
 predictor yes;
