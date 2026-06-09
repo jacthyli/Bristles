@@ -21,11 +21,11 @@ solidZone plateZone;
 fluidPatch bristle;
 fluidZone plateZone;
 
-relaxationFactor 0.1;
+relaxationFactor 0.4;
 
 interfaceDeformationLimit 0;
 
-outerCorrTolerance 1e-6;
+outerCorrTolerance 1e-5;
 nOuterCorr 40;
 
 interpolatorUpdateFrequency 0;
