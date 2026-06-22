@@ -16,19 +16,19 @@ FoamFile
 
 application stressFoam;
 
-startFrom       latestTime;
+startFrom       startTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         5;
+endTime         1e-4;
 
-deltaT          1e-3;
+deltaT          5e-8;
 
 writeControl    timeStep;
 
-writeInterval   50;
+writeInterval   100;
 
 purgeWrite      0;
 

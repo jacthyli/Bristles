@@ -21,7 +21,7 @@ solvers
         solver          GAMG;
         tolerance       1e-06;
         relTol          0;
-        minIter         1;
+        minIter         2;
         maxIter         500;
         smoother        GaussSeidel;
         nPreSweeps      0;
@@ -40,7 +40,7 @@ solvers
         solver          GAMG;
         tolerance       1e-09;
         relTol          0;
-        minIter         1;
+        minIter         2;
         maxIter         200;
         smoother        GaussSeidel;
         nPreSweeps      0;
@@ -60,7 +60,7 @@ solvers
         preconditioner  DILU;
         tolerance       1e-06;
         relTol          0;
-        minIter         1;
+        minIter         2;
     }
 }
 // relaxationFactors

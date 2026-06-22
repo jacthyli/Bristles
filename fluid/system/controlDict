@@ -22,19 +22,19 @@ OptimisationSwitches
 
 application     fsiFoam;
 
-startFrom       latestTime;
+startFrom       startTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         3e-5;
+endTime         1e-4;
 
-deltaT          2e-8;
+deltaT          5e-8;
 
 writeControl    timeStep;
 
-writeInterval   50;
+writeInterval   100;
 
 purgeWrite      0;
 
@@ -48,13 +48,7 @@ timeFormat      general;
 
 timePrecision   6;
 
-runTimeModifiable yes;
-
-adjustTimeStep  yes;
-
-maxCo           0.2;
-
-maxDeltaT        1e-2;
+runTimeModifiable no;
 
 functions
 (

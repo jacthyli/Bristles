@@ -21,7 +21,7 @@ solidZone plateZone;
 fluidPatch bristle;
 fluidZone plateZone;
 
-relaxationFactor 0.4;
+relaxationFactor 0.1;
 
 interfaceDeformationLimit 0;
 
