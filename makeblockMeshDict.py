@@ -1527,7 +1527,7 @@ G_D = 1
 bristle_length = 185
 radius = 1 
 num_bristles = 7
-bristle_gap = radius * 2 * 5 * G_D # 这个数字是 gap/diameter
+bristle_gap = radius * 2 * 6 * G_D # 这个数字是 gap/diameter
 
 # mesh_size = radius / (partition_XY * 3 / 2)
 outside_bristle_partition_half = 4

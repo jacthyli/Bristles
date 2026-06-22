@@ -30,7 +30,11 @@ stopAt          endTime;
 
 endTime         1e-4;
 
+<<<<<<< HEAD
 deltaT          5e-8;
+=======
+deltaT          2e-7;
+>>>>>>> aef4709872fd3e73a4ed0fa4eab28909bccb01ff
 
 writeControl    timeStep;
 

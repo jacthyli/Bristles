@@ -14,7 +14,11 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+<<<<<<< HEAD
 numberOfSubdomains 8;
+=======
+numberOfSubdomains 32;
+>>>>>>> aef4709872fd3e73a4ed0fa4eab28909bccb01ff
 
 method          simple;
 
@@ -22,7 +26,11 @@ globalFaceZones ( plateZone );
 
 simpleCoeffs
 {
+<<<<<<< HEAD
     n               (1 1 8);
+=======
+    n               (1 1 32);
+>>>>>>> aef4709872fd3e73a4ed0fa4eab28909bccb01ff
     delta           0.001;
 }
 
