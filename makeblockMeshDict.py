@@ -1,7 +1,7 @@
 import textwrap, re
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 data_frame_columns = ['id', 'x', 'y', 'z', 'geometry']
 df = pd.DataFrame(columns=data_frame_columns)

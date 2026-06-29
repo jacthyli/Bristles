@@ -19,7 +19,7 @@ solvers
     p
     {
         solver          GAMG;
-        tolerance       1e-09;
+        tolerance       1e-06;
         relTol          0;
         minIter         2;
         maxIter         500;
@@ -38,7 +38,7 @@ solvers
     cellMotionU
     {
         solver          GAMG;
-        tolerance       1e-10;
+        tolerance       1e-09;
         relTol          0;
         minIter         2;
         maxIter         200;
@@ -58,7 +58,7 @@ solvers
     {
         solver          PBiCG;
         preconditioner  DILU;
-        tolerance       1e-10;
+        tolerance       1e-6;
         relTol          0;
         minIter         2;
     }

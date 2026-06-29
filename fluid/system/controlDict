@@ -22,15 +22,15 @@ OptimisationSwitches
 
 application     fsiFoam;
 
-startFrom       latestTime;
+startFrom       startTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         1e-4;
+endTime         2e-4;
 
-deltaT          2e-7;
+deltaT          1e-7;
 
 writeControl    timeStep;
 
@@ -54,7 +54,7 @@ adjustTimeStep  yes;
 
 maxCo           0.2;
 
-maxDeltaT        1e-2;
+maxDeltaT        5e-7;
 
 functions
 (
