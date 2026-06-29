@@ -16,7 +16,7 @@ FoamFile
 
 application stressFoam;
 
-startFrom       latestTime;
+startFrom       startTime;
 
 startTime       0;
 
