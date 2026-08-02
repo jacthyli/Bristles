@@ -28,17 +28,18 @@ boundaryField
     }
     outlet
     {
-        type            zeroGradient;
+        type            inletOutlet;
+        inletValue      uniform ( 7.53e-2 0 0 );
+        value           $internalField;
     }
     inlet
     {
         type            fixedValue;
-        value           uniform ( 0.1 0 0 );
+        value           uniform ( 7.53e-2 0 0 );
     }
     sidewall
     {
-        type            fixedValue;
-        value           uniform ( 0 0 0 );
+        type            slip;
     }
 }
 

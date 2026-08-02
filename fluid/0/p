@@ -33,11 +33,12 @@ boundaryField
     }
     inlet
     {
-        type            zeroGradient;
+        type            extrapolatedPressure;
+        value           uniform 0;
     }
     sidewall
     {
-        type            zeroGradient;
+        type            slip;
     }
 }
 
