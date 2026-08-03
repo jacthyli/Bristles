@@ -1,24 +1,108 @@
-#!/bin/sh
+#!/bin/bash
 
-# Source tutorial clean functions
-. $WM_PROJECT_DIR/bin/tools/CleanFunctions
+# Allclean located in:
+#   caseRoot/fluid/Allclean
+#
+# Expected layout:
+#   caseRoot/
+#   ├── fluid/
+#   │   ├── 0/solid          -> ../../solid/0
+#   │   ├── constant/solid   -> ../../solid/constant
+#   │   ├── system/solid     -> ../../solid/system
+#   │   └── Allclean
+#   └── solid/
+
+set -e
+
+FLUID_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CASE_ROOT="$(cd "$FLUID_DIR/.." && pwd)"
+SOLID_DIR="$CASE_ROOT/solid"
+
+if [ -z "${WM_PROJECT_DIR:-}" ]; then
+    echo "Error: foam-extend/OpenFOAM environment is not loaded."
+    echo "Source the corresponding bashrc first."
+    exit 1
+fi
+
+. "$WM_PROJECT_DIR/bin/tools/CleanFunctions"
+
+echo "=================================================="
+echo "Removing fluid-to-solid symbolic links"
+echo "=================================================="
+
+remove_link()
+{
+    link_path="$1"
+
+    if [ -L "$link_path" ]; then
+        echo "Removing symlink: $link_path -> $(readlink "$link_path")"
+        rm -f "$link_path"
+    elif [ -e "$link_path" ]; then
+        echo "Warning: $link_path exists but is not a symbolic link; not removing it."
+    else
+        echo "Not present: $link_path"
+    fi
+}
+
+remove_link "$FLUID_DIR/constant/solid"
+remove_link "$FLUID_DIR/system/solid"
+remove_link "$FLUID_DIR/0/solid"
+
+echo "=================================================="
+echo "Cleaning fluid case"
+echo "=================================================="
+
+cd "$FLUID_DIR"
 
 cleanCase
-\rm -f constant/polyMesh/boundary
-\rm -rf history
 
-\rm -f constant/solid/polyMesh/boundary
-\rm -rf constant/solid/polyMesh/[c-z]*
-\rm -rf ../solid/VTK
-\rm -f *.ps
-\rm -f *.pdf
+rm -rf processor*
+rm -rf history
+rm -rf VTK
+rm -rf postProcessing
 
-cd ..
-./removeSerialLinks fluid
-wclean hronTurekReport
+# Remove generated fluid mesh. Keep constant/triSurface and dictionaries.
+rm -rf constant/polyMesh/*
 
-cd solid
-cleanCase
-\rm -rf processor*
-cd ..
-cd fluid
+# Remove common log/output files in fluid.
+rm -f log log.*
+rm -f *.log
+rm -f *.ps
+rm -f *.pdf
+
+echo "=================================================="
+echo "Cleaning solid case"
+echo "=================================================="
+
+if [ -d "$SOLID_DIR" ]; then
+    cd "$SOLID_DIR"
+
+    cleanCase
+
+    rm -rf processor*
+    rm -rf history
+    rm -rf VTK
+    rm -rf postProcessing
+
+    # Remove generated solid mesh.
+    rm -rf constant/polyMesh/*
+
+    # Remove oldPoints directories, including any nested occurrence.
+    find "$SOLID_DIR" -type d -name oldPoints -prune -exec rm -rf {} +
+
+    # Remove solid-case logs and report files.
+    rm -f log log.*
+    rm -f *.log
+    rm -f *.ps
+    rm -f *.pdf
+else
+    echo "Warning: solid case directory not found: $SOLID_DIR"
+fi
+
+cd "$FLUID_DIR"
+
+echo "=================================================="
+echo "Cleaning completed"
+echo "Fluid directory: $FLUID_DIR"
+echo "Solid directory: $SOLID_DIR"
+echo "=================================================="

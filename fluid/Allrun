@@ -9,24 +9,34 @@ source $HOME/foam/foam-extend-4.0/etc/bashrc
 # Get application name
 application=`getApplication`
 
-runApplication -l log.blockMesh.solid blockMesh -case ../solid
-runApplication -l log.setSet.solid setSet -case ../solid -batch ../solid/setBatch
-runApplication -l log.setToZones.solid setsToZones -case ../solid -noFlipMap
+# runApplication -l log.blockMesh.solid blockMesh -case ../solid
+# runApplication -l log.setSet.solid setSet -case ../solid -batch ../solid/setBatch
+# runApplication -l log.setToZones.solid setsToZones -case ../solid -noFlipMap
 
 cd ../solid
+cp -f system/blockMeshDict constant/polyMesh/blockMeshDict
+runApplication -l log.blockMesh.solid blockMesh
+runApplication -l log.snappyHexMesh.solid snappyHexMesh
+\rm -rf constant/polyMesh
+\mv 0.003/polyMesh constant
+\rm -rf 0.001 0.002 0.003
+runApplication -l log.setSet.solid setSet -batch setBatch
+runApplication -l log.setToZones.solid setsToZones -noFlipMap
+
 # cp -rf 0/polyMesh/sets constant/polyMesh/.
 cp -rf constant/polyMesh constant/oldPoints
+
 cd ../fluid
 
 mkdir -p constant/polyMesh
 cp -f system/blockMeshDict constant/polyMesh/blockMeshDict
-runApplication blockMesh
-runApplication snappyHexMesh
+runApplication -l log.blockMesh blockMesh
+runApplication -l log.snappyHexMesh snappyHexMesh
 \rm -rf constant/polyMesh
 \mv 0.003/polyMesh constant
 \rm -rf 0.001 0.002 0.003
-runApplication setSet -batch setBatch
-runApplication setsToZones -noFlipMap
+runApplication  -l log.setSet setSet -batch setBatch
+runApplication -l log.setToZones setsToZones -noFlipMap
 
 cd ..
 

@@ -3,5 +3,6 @@
         "*.py": "python",
         "snappyhexmeshdict": "cpp",
         "fsiproperties": "cpp"
-    }
+    },
+    "python-envs.defaultEnvManager": "ms-python.python:system"
 }

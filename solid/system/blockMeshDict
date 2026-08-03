@@ -1,0 +1,68 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 1e-6;
+
+// STL bounds are approximately:
+// x = -3 ... 3 um
+// y = -49 ... 49 um
+// z = -2 ... 187 um
+//
+// Initial cell sizes:
+// dx = 2.0 um
+// dy = 2.0 um
+// dz = 4.825 um
+
+vertices
+(
+    (-5 -52  -3)    // 0
+    ( 5 -52  -3)    // 1
+    ( 5  52  -3)    // 2
+    (-5  52  -3)    // 3
+
+    (-5 -52 190)    // 4
+    ( 5 -52 190)    // 5
+    ( 5  52 190)    // 6
+    (-5  52 190)    // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (5 52 40) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+patches
+(
+    patch outerBox
+    (
+        (0 4 5 1)
+        (1 5 6 2)
+        (2 6 7 3)
+        (3 7 4 0)
+        (0 1 2 3)
+        (4 7 6 5)
+    )
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

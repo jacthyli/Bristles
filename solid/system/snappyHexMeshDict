@@ -17,7 +17,7 @@ FoamFile
 // Which of the steps to run
 castellatedMesh true;
 snap            true;
-addLayers       true;
+addLayers       false;
 
 // Geometry. Definition of all surfaces. All surfaces are of class
 // searchableSurface.
@@ -36,8 +36,8 @@ geometry
     refinementBox
     {
         type searchableBox;
-        min ( -6e-6 -52e-6 0);
-        max ( 6e-6 52e-6 200e-6);
+        min ( -4e-6 -50e-6 0);
+        max ( 4e-6 50e-6 200e-6);
     }
 };
 
@@ -58,7 +58,7 @@ castellatedMeshControls
     // Note that this is the number of cells before removing the part which
     // is not 'visible' from the keepPoint. The final number of cells might
     // actually be a lot less.
-    maxGlobalCells 4000000;
+    maxGlobalCells 2500000;
 
     // The surface refinement loop might spend lots of iterations refining just a
     // few cells. This setting will cause refinement to stop if <= minimumRefine
@@ -75,7 +75,7 @@ castellatedMeshControls
     // Number of buffer layers between different levels.
     // 1 means normal 2:1 refinement restriction, larger means slower
     // refinement.
-    nCellsBetweenLevels 2;
+    nCellsBetweenLevels 3;
 
     // Explicit feature edge refinement
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -104,7 +104,7 @@ castellatedMeshControls
         bristle
         {
             // Surface-wise min and max refinement level
-            level (3 3);
+            level (4 4);
 
             patchInfo
             {
@@ -136,6 +136,11 @@ castellatedMeshControls
             mode inside;
             levels ((1E15 1));
         }
+        bristle
+        {
+            mode inside;
+            levels ((1E15 3));
+        }
     }
 
     // Mesh selection
@@ -146,7 +151,7 @@ castellatedMeshControls
     // section reachable from the locationInMesh is kept.
     // NOTE: This point should never be on a face, always inside a cell, even
     // after refinement.
-    locationInMesh (20e-6 0 100e-6);
+    locationInMesh (0 0 100e-6);
 }
 
 // Settings for the snapping.
@@ -162,7 +167,7 @@ snapControls
     tolerance 2.0;
 
     //- Number of mesh displacement relaxation iterations.
-    nSolveIter 50;
+    nSolveIter 60;
 
     //- Maximum number of snapping relaxation iterations. Should stop
     //  before upon reaching a correct mesh.
@@ -185,7 +190,7 @@ addLayersControls
     {
         bristle_interFSI
         {
-            nSurfaceLayers 1;
+            nSurfaceLayers 0;
         }
     }
 
@@ -211,7 +216,7 @@ addLayersControls
 
     //- When not to extrude surface. 0 is flat surface, 90 is when two faces
     //  make straight angle.
-    featureAngle 60;
+    featureAngle 30;
 
     //- Maximum number of snapping relaxation iterations. Should stop
     //  before upon reaching a correct mesh.
