@@ -27,10 +27,14 @@ boundaryField
         pressure        uniform 0;
         value           uniform (0 0 0);
     }
-    plateFix
+    plate_fixed
     {
         type            fixedDisplacement;
         value           uniform (0 0 0);
+    }
+    outerBox
+    {
+        type            zeroGradient;
     }
 }
 

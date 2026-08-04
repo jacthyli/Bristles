@@ -17,9 +17,9 @@ cd ../solid
 cp -f system/blockMeshDict constant/polyMesh/blockMeshDict
 runApplication -l log.blockMesh.solid blockMesh
 runApplication -l log.snappyHexMesh.solid snappyHexMesh
-\rm -rf constant/polyMesh
-\mv 0.003/polyMesh constant
-\rm -rf 0.001 0.002 0.003
+\rm -rf constant/polyMesh/*
+\mv 2e-07/polyMesh/* constant/polyMesh/
+\rm -rf 1e-07 2e-07 3e-07
 runApplication -l log.setSet.solid setSet -batch setBatch
 runApplication -l log.setToZones.solid setsToZones -noFlipMap
 
@@ -32,9 +32,9 @@ mkdir -p constant/polyMesh
 cp -f system/blockMeshDict constant/polyMesh/blockMeshDict
 runApplication -l log.blockMesh blockMesh
 runApplication -l log.snappyHexMesh snappyHexMesh
-\rm -rf constant/polyMesh
-\mv 0.003/polyMesh constant
-\rm -rf 0.001 0.002 0.003
+\rm -rf constant/polyMesh/*
+\mv 3e-07/polyMesh/* constant/polyMesh/
+\rm -rf 1e-07 2e-07 3e-07
 runApplication  -l log.setSet setSet -batch setBatch
 runApplication -l log.setToZones setsToZones -noFlipMap
 
